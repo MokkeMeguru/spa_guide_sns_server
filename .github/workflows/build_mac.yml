@@ -13,9 +13,9 @@ jobs:
       - name: Update Homebrew
         run: |
           brew update --preinstall
-      # - name: Install java
-      #   run: |
-      #     brew install --cask adoptopenjdk
+      - name: Install java
+        run: |
+          which java
       - name: install deps
         run: |
           npm install
