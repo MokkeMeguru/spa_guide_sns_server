@@ -4,6 +4,11 @@ SPA チュートリアルで用いる API サーバです。
 
 ## 実行方法
 
+System Requirements
+
+- java (`brew install --cask adoptopenjdk`)
+- node (> v16)
+
 ### DB マイグレーション + サンプルデータの注入
 
 サーバを立ち上げる前に DB をセットアップする必要があります
