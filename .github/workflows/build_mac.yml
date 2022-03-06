@@ -1,0 +1,23 @@
+name: build_mac
+on: push
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runs-on: macos-11
+  steps:
+    - uses: actions/checkout@v2
+    - run: env | sort
+    - name: Update Homebrew
+      run: |
+        brew update --preinstall
+    - name: Install java
+      run: |
+        brew install --cask java
+    - name: build migrate
+      run: |
+        npm run migrate
+    - name: build release
+      run: |
+        npm run release
