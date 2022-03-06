@@ -15,7 +15,7 @@
   :args ::domain.community/query
   :ret map?)
 
-(def categories-map
+(def category-map
   (let [domain->db {:gurmand 1
                     :sports 2
                     :geek 3
@@ -26,21 +26,21 @@
 
 (defn db->domain [db-model]
   (when db-model
-    (let [{:keys [id name details categories created_at updated_at]} (clojure.walk/keywordize-keys db-model)]
+    (let [{:keys [id name details category created_at updated_at]} (clojure.walk/keywordize-keys db-model)]
       {:id id
        :name name
        :details details
-       :categories (get (:db->domain categories-map) categories)
+       :category (get (:db->domain category-map) category)
        :created-at created_at
        :updated-at updated_at})))
 
 (defn domain->db [domain-model]
   (when domain-model
-    (let [{:keys [id name details categories]} domain-model]
+    (let [{:keys [id name details category]} domain-model]
       {:id (if id id (str (random-uuid)))
        :name name
        :details details
-       :categories (get (:domain->db categories-map) categories)
+       :category (get (:domain->db category-map) category)
        :created_at (interface.gateway.sqlite3.util/now)
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
@@ -62,7 +62,7 @@
     (let [^js/better-sqlite3 db (:db this)
           db-model (domain->db community)]
       (try
-        (-> db (.prepare "INSERT INTO communities (id, name, details, categories, created_at, updated_at) VALUES (@id, @name, @details, @categories, @created_at, @updated_at)") (.run (clj->js db-model)))
+        (-> db (.prepare "INSERT INTO communities (id, name, details, category, created_at, updated_at) VALUES (@id, @name, @details, @category, @created_at, @updated_at)") (.run (clj->js db-model)))
         (try (-> db (.prepare "SELECT * FROM communities WHERE id = ?") (.get (:id db-model)) (js->clj) (db->domain))
              (catch js/Error e
                (warn "insert result cannot fetched" e)

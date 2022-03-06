@@ -90,26 +90,30 @@
      :owned-member-id "eb86ddc9-6446-44d3-8afa-5def58bbe340"
      :name "社食の胡椒を使い切る会"
      :details "社食の胡椒を増やすべく、まずは需要を \"わからせ\" ていく会"
-     :hold-at "2022/05/15"}
+     :hold-at "2022/05/15"
+     :category :party}
     {:id "98ebcf3a-2f88-4205-aa69-ce6d9590ab3c"
      :community-id "f61f5f38-174b-43e1-8873-4f7cdbee1c18"
      :owned-member-id "eb86ddc9-6446-44d3-8afa-5def58bbe340"
      :name "辛ラメーンを教会で食べた話"
      :details "大学時代ボッチ飯キメていたら、知らない先輩と教会に行って辛ラーメンを食べさせてもらった話"
-     :hold-at "2022/05/17"}
+     :hold-at "2022/05/17"
+     :category :party}
     {:id "383503d8-dea4-4f26-85b5-afe00f29184b"
      :community-id "f61f5f38-174b-43e1-8873-4f7cdbee1c18"
      :owned-member-id "08da804a-8ec9-494c-bd28-f67218e30851"
      :name "会社近くの美味しい韓国料理店を周る集まり"
      :details "会社近くにある辛味の聞いた美味しいチーズタッカルビを出すお店を見つけたので行きましょうの会"
-     :hold-at "2022/06/03"}
+     :hold-at "2022/06/03"
+     :category :party}
     ;; Golang で世界を救え
     {:id "687a7541-336a-43b1-8f29-a1f5412512ee"
      :community-id "47ace9f8-55a4-4bd5-8d64-63f4d432c59e"
      :owned-member-id "06e45e1b-f801-47b9-9a28-485786aa85d6"
      :name "Clojureとかいう動的型付け言語に対して Golang の圧倒的優位性を見出していく会"
      :details "静的型付け言語で圧倒的安全性と可用性を見せていけ"
-     :hold-at "2022/05/30"}]
+     :hold-at "2022/05/30"
+     :category :party}]
    :community-event-comment
    [;; 辛いものの部 > 会社近くの美味しい韓国料理店を周る集まり
     {:id "24dc624c-fc35-46fb-86d0-f60c74c5ae6e"

@@ -6,10 +6,10 @@
 (s/def ::id (s/and string? #(re-matches domain.util/id-regex %)))
 (s/def ::name (s/and string? #(<= 0 (count %) 36)))
 (s/def ::details (s/and string? #(<= 0 (count %) 140)))
-(s/def ::categories #{:gurmand :sports :geek :anime})
+(s/def ::category #{:gurmand :sports :geek :anime})
 
-(s/def ::query (s/keys :req-un [::id ::name ::details ::categories]))
-(s/def ::command (s/keys :req-un [::name ::details ::categories] :opt-un [::id]))
+(s/def ::query (s/keys :req-un [::id ::name ::details ::category]))
+(s/def ::command (s/keys :req-un [::name ::details ::category] :opt-un [::id]))
 
 (defprotocol ICommunityQueryRepository
   (-list-community [this])

@@ -9,14 +9,15 @@
 (s/def ::name string?)
 (s/def ::details string?)
 (s/def ::hold-at string?) ;; TODO apply regex YYYY/MM/DD
+(s/def ::category #{:party})
 
 (s/def ::community ::domain.community/query)
 (s/def ::owned-member ::domain.community.member/query)
-(s/def ::query (s/keys :req-un [::id ::community ::owned-member ::name ::details ::hold-at]))
+(s/def ::query (s/keys :req-un [::id ::community ::owned-member ::name ::details ::hold-at ::category]))
 
 (s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::community-id ::domain.community/id)
-(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at] :opt-un [::id]))
+(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category] :opt-un [::id]))
 
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])

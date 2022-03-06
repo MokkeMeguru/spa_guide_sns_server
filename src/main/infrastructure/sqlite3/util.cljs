@@ -42,3 +42,13 @@
 ;; (let [repo (interface.gateway.sqlite3.community/make-community-command-repository
 ;;             (db! "./db.sqlite3"))]
 ;;   (domain.community/create-community repo {:name "sample4" :details "sample details brabra" :categories :gurmand}))
+
+;; community-members
+;; (-> (db! "./db.sqlite3")
+;;     (.prepare "SELECT * FROM community_members")
+;;     (.all))
+
+;; (let [repo (interface.gateway.sqlite3.community-member/make-community-member-query-repository (db! "./db.sqlite3"))]
+;;   (domain.community.member/list-community-member repo)
+;;   (domain.community.member/fetch-community-member repo "eb86ddc9-6446-44d3-8afa-5def58bbe340")
+;;   (domain.community.member/search-community-member-by-community-id repo "f61f5f38-174b-43e1-8873-4f7cdbee1c18"))

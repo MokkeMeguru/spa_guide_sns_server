@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS communities(
 id TEXT primary key,
 name TEXT UNIQUE,
 details TEXT,
-categories INT,
+category INT,
 created_at INT,
 updated_at INT);")
 

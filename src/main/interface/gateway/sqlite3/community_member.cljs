@@ -1,6 +1,7 @@
 (ns interface.gateway.sqlite3.community-member
   (:require ["better-sqlite3" :as better-sqlite3]
             [clojure.spec.alpha :as s]
+            [clojure.walk]
             [clojure.set]
             [taoensso.timbre :refer [warn]]
             [interface.gateway.sqlite3.util]
@@ -24,13 +25,13 @@
 
 (defn db->domain [db-model]
   (let [{:keys [community_member_id community_member_role community_member_created_at community_member_updated_at
-                community_id community_name community_details community_categories community_created_at community_updated_at
-                user_id user_name user_icon_url user_created_at user_updated_at]} db-model]
+                community_id community_name community_details community_category community_created_at community_updated_at
+                user_id user_name user_icon_url user_created_at user_updated_at]} (clojure.walk/keywordize-keys db-model)]
     {:id community_member_id
      :community {:id community_id
                  :name community_name
                  :details community_details
-                 :categories (get (:db->domain interface.gateway.sqlite3.community/categories-map) community_categories)
+                 :category (get (:db->domain interface.gateway.sqlite3.community/category-map) community_category)
                  :created_at community_created_at
                  :updated_at community_updated_at}
      :user {:id user_id
@@ -62,7 +63,7 @@ SELECT
  communities.id AS community_id,
  communities.name AS community_name,
  communities.details AS community_details,
- communities.categories AS community_categories,
+ communities.category AS community_category,
  communities.created_at AS community_created_at,
  communities.updated_at AS community_updated_at,
  users.id AS user_id,
@@ -82,7 +83,7 @@ SELECT
  communities.id AS community_id,
  communities.name AS community_name,
  communities.details AS community_details,
- communities.categories AS community_categories,
+ communities.category AS community_category,
  communities.created_at AS community_created_at,
  communities.updated_at AS community_updated_at,
  users.id AS user_id,
@@ -103,7 +104,7 @@ SELECT
  communities.id AS community_id,
  communities.name AS community_name,
  communities.details AS community_details,
- communities.categories AS community_categories,
+ communities.category AS community_category,
  communities.created_at AS community_created_at,
  communities.updated_at AS community_updated_at,
  users.id AS user_id,
@@ -145,3 +146,9 @@ WHERE community_members.community_id = ?"
         (catch js/Error e
           (warn "insert failed" e)
           nil)))))
+
+(defn make-community-member-query-repository [db]
+  (->CommunityMemberQueryRepository db))
+
+(defn make-community-member-command-repository [db]
+  (->CommunityMemberCommandRepository db))

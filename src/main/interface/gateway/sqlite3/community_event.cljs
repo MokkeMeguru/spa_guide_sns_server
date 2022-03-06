@@ -1,5 +1,7 @@
 (ns interface.gateway.sqlite3.community-event
   (:require ["better-sqlite3" :as better-sqlite3]
+            [clojure.set]
+            [clojure.walk]
             [clojure.spec.alpha :as s]
             [domain.community.event]))
 
@@ -11,25 +13,11 @@
   :args (s/cat :domain-model ::domain.community.event/command)
   :ret map?)
 
-;; (defn db->domain [db-model]
-;;   (when db-model
-;;     (let [{:keys []} db-model
-;;           community {}
-;;           owned-member {}]
-;;       {:id id
-;;        :community community
-;;        :owned-member owned-member
-;;        :name name
-;;        :details details
-;;        :hold-at hold-at
-;;        })))
+(def category-map
+  (let [domain->db {:party 1}
+        db->domain (clojure.set/map-invert domain->db)]
+    {:db->domain db->domain
+     :domain->db domain->db}))
 
-(defn domain->db [domain-model]
-  (when domain-model
-    (let [{:keys [id community-id owned-member-id name details hold-at]} domain-model]
-      {:id (if id id (str (random-uuid)))
-       :community_id community-id
-       :owned-member-id owned-member-id
-       :name name
-       :details details
-       :hold_at hold-at})))
+;; (defn db->domain [db-model]
+;;   (let [{:keys [community_event_id community_]}]))
