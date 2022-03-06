@@ -6,8 +6,11 @@ SPA チュートリアルで用いる API サーバです。
 
 System Requirements
 
-- java (`brew install --cask adoptopenjdk`)
 - node (> v16)
+
+System Requirements (with build)
+
+- java (`brew install --cask adoptopenjdk`)
 
 ### DB マイグレーション + サンプルデータの注入
 
@@ -15,25 +18,29 @@ System Requirements
 DB をリセットしたくなったときにも同じコマンドを使ってください
 
 ```sh
+npm install --production
 rm -rf db.sqlite3
 touch db.sqlite3
-npm run migrate
 npm run start_migrate
 ```
 
 ### API サーバ
 
-まずはリリースパッケージにするためのコンパイルをしてください
-(そこそこに時間がかかるので、事前に実行しておいてください)
+以下のコマンドでサーバを実行します
 
 ```
-npm run release
-```
-
-次に以下のコマンドでサーバを実行します
-
-```
+npm install --production
 npm run start_release
 ```
 
 Swager-UI は `http://127.0.0.1:3000/api-docs` にあります
+
+### ソースのビルド
+
+ソースのビルドには次のコマンドを使います
+
+```
+npm install
+npm run migrate
+npm run release
+```
