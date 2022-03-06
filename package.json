@@ -1,0 +1,31 @@
+{
+  "name": "spa_guide_sns_server",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "2.17.6"
+  },
+  "main": "index.js",
+  "scripts": {
+    "watch": "shadow-cljs watch app",
+    "watch_test": "shadow-cljs watch node-test",
+    "compile": "shadow-cljs compile app",
+    "release": "shadow-cljs release app",
+    "start_release": "node -e 'require(\"./target/cmd/server/main.js\").server()'",
+    "migrate": "shadow-cljs release migrate",
+    "start_migrate": "node -e 'require(\"./target/cmd/migrate/main.js\").migrate()'"
+  },
+  "dependencies": {
+    "better-sqlite3": "^7.5.0",
+    "concat-stream": "^2.0.0",
+    "content-type": "^1.0.4",
+    "cookies": "^0.8.0",
+    "lru": "^3.1.0",
+    "pino": "^7.8.0",
+    "qs": "^6.10.3",
+    "random-bytes": "^1.0.0",
+    "simple-encryptor": "^4.0.0",
+    "sqlite3": "^4.2.0",
+    "xregexp": "^5.1.0"
+  }
+}

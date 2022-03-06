@@ -1,0 +1,34 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src/dev"
+  "src/main"
+  "src/test"]
+
+ :dependencies
+ [[macchiato/core "0.2.16"]
+  [com.taoensso/timbre "5.1.2"]
+  [metosin/reitit "0.5.16"]
+  [metosin/spec-tools "0.10.5"]]
+
+ :builds
+ {:node-test
+  {:target :node-test
+   :output-to "out/node-tests.js"
+   :autorun true}
+  :app
+  {:target :node-library
+   :source-map true
+   :exports {:server cmd.server.core/server}
+   :output-dir "target/cmd/server"
+   :output-to "target/cmd/server/main.js"
+   :compiler-options {:optimizations :simple}
+   :closure-defines {cmd.server.config/PORT #shadow/env ["PORT" :as :int :default 3000]
+                     cmd.server.config/HOST #shadow/env ["HOST" :default "127.0.0.1"]}}
+  :migrate
+  {:target :node-library
+   :source-map true
+   :exports {:migrate cmd.migrate.core/migrate}
+   :output-dir "target/cmd/migrate/"
+   :output-to "target/cmd/migrate/main.js"
+   :compiler-options {:optimizations :simple}
+   :closure-defines {}}}}
