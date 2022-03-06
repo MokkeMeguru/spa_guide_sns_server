@@ -52,3 +52,22 @@
 ;;   (domain.community.member/list-community-member repo)
 ;;   (domain.community.member/fetch-community-member repo "eb86ddc9-6446-44d3-8afa-5def58bbe340")
 ;;   (domain.community.member/search-community-member-by-community-id repo "f61f5f38-174b-43e1-8873-4f7cdbee1c18"))
+
+;; community-events
+;; (-> (db! "./db.sqlite3")
+;;     (.prepare "SELECT * FROM community_events")
+;;     (.all))
+
+;; (let [repo (interface.gateway.sqlite3.community-event/make-community-event-query-repository (db! "./db.sqlite3"))]
+;;   (domain.community.event/list-community-event repo)
+;;   (domain.community.event/fetch-community-event repo "b6ee37fe-9191-417d-a932-f2d3d0e307dd")
+;;   (domain.community.event/search-community-event-by-community-id repo "f61f5f38-174b-43e1-8873-4f7cdbee1c1a8")
+;; )
+
+;; community-event-comments
+;; (let [repo (interface.gateway.sqlite3.community-event-comment/make-community-event-comment-query-repository (db! "./db.sqlite3"))]
+;;    (domain.community.event.comment/list-community-event-comment repo)
+;;    (domain.community.event.comment/fetch-communtiy-event-comment repo "24dc624c-fc35-46fb-86d0-f60c74c5ae6e")
+;;    (domain.community.event.comment/fetch-community-event-comment-by-event-id repo "383503d8-dea4-4f26-85b5-afe00f29184b")
+;;    (domain.community.event.comment/fetch-community-event-comment-by-event-ids repo ["383503d8-dea4-4f26-85b5-afe00f29184b"])
+;;   )

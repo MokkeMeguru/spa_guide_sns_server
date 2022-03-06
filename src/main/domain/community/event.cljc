@@ -9,7 +9,7 @@
 (s/def ::name string?)
 (s/def ::details string?)
 (s/def ::hold-at int?) ;; TODO apply regex YYYY/MM/DD
-(s/def ::category #{:party})
+(s/def ::category #{:party :seminar})
 
 (s/def ::community ::domain.community/query)
 (s/def ::owned-member ::domain.community.member/query)
@@ -22,7 +22,7 @@
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])
   (-fetch-community-event [this event-id])
-  (-seach-community-event-by-community-id [this community-id]))
+  (-search-community-event-by-community-id [this community-id]))
 
 (defprotocol ICommunityEventCommandRepository
   (-create-community-event [this event]))
@@ -47,5 +47,5 @@
 
 (defn list-community-event [this] (-list-community-event this))
 (defn fetch-community-event [this event-id] (-fetch-community-event this event-id))
-(defn search-community-event-by-community-id [this community-id] (-seach-community-event-by-community-id this community-id))
+(defn search-community-event-by-community-id [this community-id] (-search-community-event-by-community-id this community-id))
 (defn create-community-event [this event] (-create-community-event this event))

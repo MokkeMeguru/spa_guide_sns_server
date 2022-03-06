@@ -2,6 +2,8 @@
   (:require [domain.user]
             [domain.community]
             [domain.community.member]
+            [domain.community.event]
+            [domain.community.event.comment]
             [infrastructure.sqlite3.util]
             [infrastructure.sqlite3.up]
             [taoensso.timbre :refer [error info]]
@@ -98,7 +100,7 @@
      :name "辛ラメーンを教会で食べた話"
      :details "大学時代ボッチ飯キメていたら、知らない先輩と教会に行って辛ラーメンを食べさせてもらった話"
      :hold-at (.getTime (js/Date. (js/Date.UTC 2022 5 17 9 0 0)))
-     :category :party}
+     :category :seminar}
     {:id "383503d8-dea4-4f26-85b5-afe00f29184b"
      :community-id "f61f5f38-174b-43e1-8873-4f7cdbee1c18"
      :owned-member-id "08da804a-8ec9-494c-bd28-f67218e30851"
@@ -113,13 +115,13 @@
      :name "Clojureとかいう動的型付け言語に対して Golang の圧倒的優位性を見出していく会"
      :details "静的型付け言語で圧倒的安全性と可用性を見せていけ"
      :hold-at (.getTime (js/Date. (js/Date.UTC 2022 5 30 9 0 0)))
-     :category :party}]
+     :category :seminar}]
    :community-event-comment
    [;; 辛いものの部 > 会社近くの美味しい韓国料理店を周る集まり
     {:id "24dc624c-fc35-46fb-86d0-f60c74c5ae6e"
      :event-id "383503d8-dea4-4f26-85b5-afe00f29184b"
      :member-id "eb86ddc9-6446-44d3-8afa-5def58bbe340"
-     :body "僕も新卒の皮を被って参加したいで :inori:"}
+     :body "僕も新卒の皮を被って参加したいです :inori:"}
     {:id "884a9d75-2f8e-4687-804b-3e5bc4804b23"
      :event-id "383503d8-dea4-4f26-85b5-afe00f29184b"
      :member-id "08da804a-8ec9-494c-bd28-f67218e30851"
@@ -164,13 +166,26 @@
   (doall
    (map
     (fn [community-member]
-      (println
-       (domain.community.member/create-community-member
-        (:community-member-command-repository repository)
-        community-member)))
+      (domain.community.member/create-community-member
+       (:community-member-command-repository repository)
+       community-member))
     (:community-member samples)))
   (info "inject samples: event")
-  (info "inject samples: comment"))
+  (doall
+   (map
+    (fn [community-event]
+      (domain.community.event/create-community-event
+       (:community-event-command-repository repository)
+       community-event))
+    (:community-event samples)))
+  (info "inject samples: comment")
+  (doall
+   (map
+    (fn [community-event-comment]
+      (domain.community.event.comment/create-community-event-comment
+       (:community-event-comment-command-repository repository)
+       community-event-comment))
+    (:community-event-comment samples))))
 
 (defn migrate []
   (let [db-path  "db.sqlite3"]
@@ -178,24 +193,4 @@
       (let [repository (infrastructure.sqlite3.core/make-repository (infrastructure.sqlite3.util/db! db-path))]
         (inject-samples samples repository)))))
 
-
-
-;; (.get (migrate! "./db.sqlite3")
-;;       "PRAGMA foreign_keys;"
-;;       (fn [err, row] (if err (js/console.log (.-message err)) (js->clj (js/Object.assign #js {} row)))))
-
-
-;; (let [db-path  "db.sqlite3"]
-;;   (println "result>" (migrate! db-path))
-;;   (when (migrate! db-path)
-;;     (println "OK")
-;;     (let [repository (infrastructure.sqlite3.core/make-repository (infrastructure.sqlite3.util/db! db-path))]
-;;       (println repository)
-;;       (println "OK?"
-;;                (doall
-;;                 (mapv
-;;                  (fn [community-member]
-;;                    (domain.community.member/create-community-member
-;;                     (:community-member-command-repository repository)
-;;                     community-member))
-;;                  (:community-member samples)))))))
+;; (migrate)
