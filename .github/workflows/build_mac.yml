@@ -13,9 +13,12 @@ jobs:
       - name: Update Homebrew
         run: |
           brew update --preinstall
-      - name: Install java
+      # - name: Install java
+      #   run: |
+      #     brew install --cask adoptopenjdk
+      - name: install deps
         run: |
-          brew install --cask adoptopenjdk
+          npm install
       - name: build migrate
         run: |
           npm run migrate
