@@ -15,7 +15,7 @@ jobs:
           brew update --preinstall
       - name: Install java
         run: |
-          brew install --cask java
+          brew install --cask adoptopenjdk
       - name: build migrate
         run: |
           npm run migrate
