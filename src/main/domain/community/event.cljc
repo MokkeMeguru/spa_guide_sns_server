@@ -8,7 +8,7 @@
 (s/def ::id (s/and string? #(re-matches domain.util/id-regex %)))
 (s/def ::name string?)
 (s/def ::details string?)
-(s/def ::hold-at string?) ;; TODO apply regex YYYY/MM/DD
+(s/def ::hold-at int?) ;; TODO apply regex YYYY/MM/DD
 (s/def ::category #{:party})
 
 (s/def ::community ::domain.community/query)

@@ -18,5 +18,4 @@ pom.xml.asc
 
 .hgignore
 .hg/
-out/
 db.sqlite3

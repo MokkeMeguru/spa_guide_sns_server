@@ -13,14 +13,14 @@
  :builds
  {:node-test
   {:target :node-test
-   :output-to "out/node-tests.js"
+   :output-to "target/test/node-tests.js"
    :autorun true}
   :app
   {:target :node-library
    :source-map true
    :exports {:server cmd.server.core/server}
-   :output-dir "target/cmd/server"
-   :output-to "target/cmd/server/main.js"
+   :output-dir "out/cmd/server"
+   :output-to "out/cmd/server/main.js"
    :compiler-options {:optimizations :simple}
    :closure-defines {cmd.server.config/PORT #shadow/env ["PORT" :as :int :default 3000]
                      cmd.server.config/HOST #shadow/env ["HOST" :default "127.0.0.1"]}}
@@ -28,7 +28,7 @@
   {:target :node-library
    :source-map true
    :exports {:migrate cmd.migrate.core/migrate}
-   :output-dir "target/cmd/migrate/"
-   :output-to "target/cmd/migrate/main.js"
+   :output-dir "out/cmd/migrate/"
+   :output-to "out/cmd/migrate/main.js"
    :compiler-options {:optimizations :simple}
    :closure-defines {}}}}

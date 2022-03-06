@@ -11,9 +11,9 @@
     "watch_test": "shadow-cljs watch node-test",
     "compile": "shadow-cljs compile app",
     "release": "shadow-cljs release app",
-    "start_release": "node -e 'require(\"./target/cmd/server/main.js\").server()'",
+    "start_release": "node -e 'require(\"./out/cmd/server/main.js\").server()'",
     "migrate": "shadow-cljs release migrate",
-    "start_migrate": "node -e 'require(\"./target/cmd/migrate/main.js\").migrate()'"
+    "start_migrate": "node -e 'require(\"./out/cmd/migrate/main.js\").migrate()'"
   },
   "dependencies": {
     "better-sqlite3": "^7.5.0",

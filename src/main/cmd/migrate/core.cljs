@@ -20,23 +20,23 @@
    [{:id "f61f5f38-174b-43e1-8873-4f7cdbee1c18"
      :name "辛いものの部"
      :details "辛いものが好きな人集まれー"
-     :categories :gurmand}
+     :category :gurmand}
     {:id "9ec955a0-a016-4939-b64d-69d514ac4e55"
      :name "スイートなスイーツ"
      :details "明日の体重を気にしてはいけない"
-     :categories :gurmand}
+     :category :gurmand}
     {:id "4983bd6f-0397-42ce-b17d-e394a6241e42"
      :name "肉体改造部"
      :details "筋肉は全てを解決する"
-     :categories :sports}
+     :category :sports}
     {:id "f1531c66-3a07-41ae-8d98-729d61b7b24a"
      :name "モン○トの集い"
      :details "運/極周回楽しい!!!"
-     :categories :anime}
+     :category :anime}
     {:id "47ace9f8-55a4-4bd5-8d64-63f4d432c59e"
      :name "Golang で世界を救え"
      :details "静的型付け言語にあらずんばプログラミング言語にあらず"
-     :categories :geek}]
+     :category :geek}]
    :community-member
    [;; 辛いものの部
     {:id "eb86ddc9-6446-44d3-8afa-5def58bbe340"
@@ -90,21 +90,21 @@
      :owned-member-id "eb86ddc9-6446-44d3-8afa-5def58bbe340"
      :name "社食の胡椒を使い切る会"
      :details "社食の胡椒を増やすべく、まずは需要を \"わからせ\" ていく会"
-     :hold-at "2022/05/15"
+     :hold-at (.getTime (js/Date. (js/Date.UTC 2022 5 15 9 0 0)))
      :category :party}
     {:id "98ebcf3a-2f88-4205-aa69-ce6d9590ab3c"
      :community-id "f61f5f38-174b-43e1-8873-4f7cdbee1c18"
      :owned-member-id "eb86ddc9-6446-44d3-8afa-5def58bbe340"
      :name "辛ラメーンを教会で食べた話"
      :details "大学時代ボッチ飯キメていたら、知らない先輩と教会に行って辛ラーメンを食べさせてもらった話"
-     :hold-at "2022/05/17"
+     :hold-at (.getTime (js/Date. (js/Date.UTC 2022 5 17 9 0 0)))
      :category :party}
     {:id "383503d8-dea4-4f26-85b5-afe00f29184b"
      :community-id "f61f5f38-174b-43e1-8873-4f7cdbee1c18"
      :owned-member-id "08da804a-8ec9-494c-bd28-f67218e30851"
      :name "会社近くの美味しい韓国料理店を周る集まり"
      :details "会社近くにある辛味の聞いた美味しいチーズタッカルビを出すお店を見つけたので行きましょうの会"
-     :hold-at "2022/06/03"
+     :hold-at (.getTime (js/Date. (js/Date.UTC 2022 6 3 9 0 0)))
      :category :party}
     ;; Golang で世界を救え
     {:id "687a7541-336a-43b1-8f29-a1f5412512ee"
@@ -112,7 +112,7 @@
      :owned-member-id "06e45e1b-f801-47b9-9a28-485786aa85d6"
      :name "Clojureとかいう動的型付け言語に対して Golang の圧倒的優位性を見出していく会"
      :details "静的型付け言語で圧倒的安全性と可用性を見せていけ"
-     :hold-at "2022/05/30"
+     :hold-at (.getTime (js/Date. (js/Date.UTC 2022 5 30 9 0 0)))
      :category :party}]
    :community-event-comment
    [;; 辛いものの部 > 会社近くの美味しい韓国料理店を周る集まり
@@ -185,17 +185,17 @@
 ;;       (fn [err, row] (if err (js/console.log (.-message err)) (js->clj (js/Object.assign #js {} row)))))
 
 
-(let [db-path  "db.sqlite3"]
-  (println "result>" (migrate! db-path))
-  (when (migrate! db-path)
-    (println "OK")
-    (let [repository (infrastructure.sqlite3.core/make-repository (infrastructure.sqlite3.util/db! db-path))]
-      (println repository)
-      (println "OK?"
-               (doall
-                (mapv
-                 (fn [community-member]
-                   (domain.community.member/create-community-member
-                    (:community-member-command-repository repository)
-                    community-member))
-                 (:community-member samples)))))))
+;; (let [db-path  "db.sqlite3"]
+;;   (println "result>" (migrate! db-path))
+;;   (when (migrate! db-path)
+;;     (println "OK")
+;;     (let [repository (infrastructure.sqlite3.core/make-repository (infrastructure.sqlite3.util/db! db-path))]
+;;       (println repository)
+;;       (println "OK?"
+;;                (doall
+;;                 (mapv
+;;                  (fn [community-member]
+;;                    (domain.community.member/create-community-member
+;;                     (:community-member-command-repository repository)
+;;                     community-member))
+;;                  (:community-member samples)))))))

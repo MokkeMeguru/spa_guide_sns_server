@@ -116,7 +116,8 @@ FROM community_members
 INNER JOIN communities ON community_members.community_id = communities.id
 INNER JOIN users ON community_members.user_id = users.id
 WHERE community_members.community_id = ?"
-   :create "INSERT INTO community_members (id, community_id, user_id, role, created_at, updated_at) VALUES (@id, @community_id, @user_id, @role, @created_at, @updated_at)"})
+   :create "INSERT INTO community_members (id, community_id, user_id, role, created_at, updated_at)
+VALUES (@id, @community_id, @user_id, @role, @created_at, @updated_at)"})
 
 (defrecord CommunityMemberQueryRepository [db]
   ICommunityMemberQueryRepository

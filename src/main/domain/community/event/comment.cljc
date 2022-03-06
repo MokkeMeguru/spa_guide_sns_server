@@ -7,7 +7,7 @@
 
 (s/def ::id  (s/and string? #(re-matches domain.util/id-regex %)))
 (s/def ::body (s/and string? #(<= 1 (count %) 140)))
-(s/def ::comment-at string?)
+(s/def ::comment-at int?)
 
 (s/def ::event ::domain.community.event/query)
 (s/def ::member ::domain.community.member/query)
