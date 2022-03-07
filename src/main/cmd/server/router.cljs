@@ -9,7 +9,9 @@
             [infrastructure.api.handler.swagger-ui]
             [infrastructure.api.handler.swagger]
             [infrastructure.api.handler.test.get]
-            [infrastructure.api.handler.test.post]))
+            [infrastructure.api.handler.test.post]
+            [infrastructure.api.handler.user.list]
+            [infrastructure.api.handler.community.list]))
 
 (def swagger-info
   {:title       "SPA Guide: SNS API Server"
@@ -26,6 +28,12 @@
     {:swagger {:tags ["test"]}
      :get infrastructure.api.handler.test.get/operation
      :post infrastructure.api.handler.test.post/operation}]
+   ["/users"
+    {:tags ["user"]}
+    ["" {:get infrastructure.api.handler.user.list/operation}]]
+   ["/communities"
+    {:tags ["community"]}
+    ["" {:get infrastructure.api.handler.community.list/operation}]]
    ;; ["/communities"
    ;;  {:swagger {:tags ["community"]}}
    ;;  [""
@@ -46,7 +54,7 @@
    ;;   {:get {}}]]
    ])
 
-(defn app [config db]
+(defn app [config repository]
   (ring/ring-handler
    (ring/router
     [routes]
@@ -54,7 +62,7 @@
                          #(rf/wrap-restful-format % {:keywordize? true})
                          cmd.server.util/wrap-body-to-params
                          #(cmd.server.util/wrap-config % config)
-                         #(cmd.server.util/wrap-db % db)
+                         #(cmd.server.util/wrap-repository % repository)
                          cmd.server.util/wrap-coercion-exception
                          cmd.server.util/wrap-log
                          rrc/coerce-request-middleware

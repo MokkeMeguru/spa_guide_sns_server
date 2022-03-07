@@ -12,10 +12,10 @@
   (fn [request respond _]
     (handler (assoc request :config config) respond _)))
 
-(defn wrap-db
-  [handler db]
+(defn wrap-repository
+  [handler repository]
   (fn [request respond _]
-    (handler (assoc request :db db) respond _)))
+    (handler (assoc request :repository repository) respond _)))
 
 (defn wrap-coercion-exception
   "Catches potential synchronous coercion exception in middleware chain"
