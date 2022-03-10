@@ -4,6 +4,7 @@
             [cmd.server.config :as config]
             [cmd.server.util]
             [cmd.server.router]
+            [macchiato.middleware.cors]
             [infrastructure.sqlite3.core]
             [infrastructure.sqlite3.util]
             [infrastructure.api.handler.swagger-ui]
