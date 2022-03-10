@@ -31,4 +31,13 @@
    :output-dir "out/cmd/migrate/"
    :output-to "out/cmd/migrate/main.js"
    :compiler-options {:optimizations :simple}
+   :closure-defines {}}
+
+  :openapi
+  {:target :node-library
+   :source-map true
+   :exports {:openapi cmd.openapi.core/gen}
+   :output-dir "out/cmd/openapi"
+   :output-to "out/cmd/openapi/main.js"
+   :compiler-options {:optimizations :simple}
    :closure-defines {}}}}

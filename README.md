@@ -35,6 +35,13 @@ npm run start_release
 
 Swager-UI は `http://127.0.0.1:3000/api-docs` にあります
 
+## Openapi.yaml の生成
+
+```
+npm install --production
+npm run start_openapi
+```
+
 ### ソースのビルド
 
 ソースのビルドには次のコマンドを使います
@@ -43,4 +50,5 @@ Swager-UI は `http://127.0.0.1:3000/api-docs` にあります
 npm install
 npm run migrate
 npm run release
+npm run openapi
 ```

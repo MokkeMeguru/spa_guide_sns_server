@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: "SPA Guide: SNS API Server"
+  description: the sample of SNS API Server (TOY)
+  version: 0.1.1
+  termOfService: https://github.com/MokkeMeguru/spa_guide_sns_server
+  contact:
+    name: API Server support
+    url: https://github.com/MokkeMeguru
+    email: meguru.mokke@gmail.com
+  license:
+    name: MIT
+    url: https://github.com/opensource-jp/licenses/blob/dc436911d1f0f150ca66c3f6ff91c60584567933/MIT/MIT.md
+servers:
+  - url: http://128.0.0.1
+    description: local server (run with `npm run start_release`)
+components:
+  schemas:
+    user:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        icon-url:
+          type: string
+      required:
+        - id
+        - name
+        - icon-url
+      description: user information
+      title: user
+    community:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        details:
+          type: string
+        category:
+          enum:
+            - anime
+            - geek
+            - gurmand
+            - sports
+          type: string
+      required:
+        - id
+        - name
+        - details
+        - category
+      description: community information
+      title: community
+paths:
+  /test:
+    tags:
+      - test
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                example: "Hello : User"
+      parameters:
+        - name: null
+          in: query
+          description: ""
+          required: true
+          schema: {}
