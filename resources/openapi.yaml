@@ -12,7 +12,7 @@ info:
     name: MIT
     url: https://github.com/opensource-jp/licenses/blob/dc436911d1f0f150ca66c3f6ff91c60584567933/MIT/MIT.md
 servers:
-  - url: http://128.0.0.1
+  - url: http://127.0.0.1:3000
     description: local server (run with `npm run start_release`)
 components:
   schemas:
@@ -59,6 +59,7 @@ paths:
     tags:
       - test
     get:
+      operationId: getTest
       responses:
         "200":
           content:
@@ -66,8 +67,9 @@ paths:
               schema:
                 example: "Hello : User"
       parameters:
-        - name: null
+        - name: name
           in: query
           description: ""
           required: true
-          schema: {}
+          schema:
+            type: string

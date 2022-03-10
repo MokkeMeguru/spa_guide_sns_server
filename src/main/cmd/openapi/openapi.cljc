@@ -30,7 +30,8 @@
 (def paths
   {"/test"
    {:tags ["test"]
-    :get {::openapi/parameters {:query (s/keys :req-un [::name])}
+    :get {:operationId         "getTest"
+          ::openapi/parameters {:query (s/keys :req-un [::name])}
           :responses {200 {::openapi/content
                            {"application/json"
                             (st/spec {:spec
