@@ -37,6 +37,8 @@ Swager-UI は `http://127.0.0.1:3000/api-docs` にあります
 
 ## Openapi.yaml の生成
 
+OpenAPI.yaml は `resources/openapi.yaml` にあります
+
 ```
 npm install --production
 npm run start_openapi
