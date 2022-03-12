@@ -3,6 +3,7 @@ runs:
   using: composite
   steps:
     - name: Cache npm packages
+      shell: bash
       uses: actions/cache@v2
       with:
         path: |
@@ -16,6 +17,7 @@ runs:
       env:
         cache-name: "npm-package"
     - name: Cache clj/cljs packages
+      shell: bash
       uses: actions/cache@v2
       with:
         path: |
@@ -28,11 +30,14 @@ runs:
       env:
         cache-name: "clj-package"
     - name: Update Homebrew
+      shell: bash
       run: |
         brew update --preinstall
     - name: Install java
+      shell: bash
       run: |
         brew install --cask adoptopenjdk
     - name: install deps
+      shell: bash
       run: |
         npm install
