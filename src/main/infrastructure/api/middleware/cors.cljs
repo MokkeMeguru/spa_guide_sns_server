@@ -191,8 +191,6 @@
   ([handler access-control-config]
    (fn [request respond raise]
      (info "got request at cors middleware: " "preflight?:" (preflight? request) "origin:" (origin request))
-     (info (-> request (dissoc :reitit.core/match) (dissoc :reitit.core/router)))
-     (info (keys request))
      (cond
        (preflight? request) (if (allow-request? request access-control-config)
                               (respond (add-access-control request access-control-config {:status 200 :headers {} :body "preflight complete"}))
