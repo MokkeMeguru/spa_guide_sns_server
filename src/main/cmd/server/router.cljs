@@ -6,7 +6,7 @@
             [reitit.ring.coercion :as rrc]
             [macchiato.middleware.restful-format :as rf]
             [cmd.server.util]
-            [macchiato.middleware.cors :as cors]
+            [infrastructure.api.middleware.cors :as cors]
             [infrastructure.api.handler.swagger-ui]
             [infrastructure.api.handler.swagger]
             [infrastructure.api.handler.test.get]
@@ -59,8 +59,8 @@
   (ring/ring-handler
    (ring/router
     [routes]
-    {:data {:middleware [#(cors/wrap-cors % {:access-control-allow-origin [#"http://127.0.0.1:3000" #"http://127.0.0.1:8080"]
-                                             :access-control-allow-methods [:get :put :post :delete]})
+    {:data {:middleware [#(cors/wrap-cors % {:allowed-origins [#".*"]
+                                             :allowed-methods [:get :put :post :delete :options]})
                          params/wrap-params
                          #(rf/wrap-restful-format % {:keywordize? true})
                          cmd.server.util/wrap-body-to-params
