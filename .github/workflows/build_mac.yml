@@ -25,6 +25,7 @@ jobs:
         run: |
           git add .
           DIFF=`git --no-pager diff --cached | wc -l`
+          echo $DIFF
           if [ $DIFF -gt 0 ]; then
             echo "need build and push"
             exit 1
