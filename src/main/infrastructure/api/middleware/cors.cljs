@@ -1,9 +1,11 @@
 (ns infrastructure.api.middleware.cors
-  (:require [macchiato.util.response :as r]
-            [clojure.spec.alpha :as s]
-            [util.string]
-            [clojure.set :as set]
-            [clojure.string :as str]))
+  (:require
+   [taoensso.timbre :refer [info]]
+   [macchiato.util.response :as r]
+   [clojure.spec.alpha :as s]
+   [util.string]
+   [clojure.set :as set]
+   [clojure.string :as str]))
 
 (s/def ::request-method #{:get :post :delete :put :options})
 (s/def ::allowed-headers (s/nilable (s/* string?)))
@@ -94,7 +96,7 @@
                          (keyword (str/lower-case (get-in request preflight-name "")))
                          (:request-method request))]
     (or (nil? methods)
-        (contains? allowed-methods request-method))))
+        (contains? (set allowed-methods) request-method))))
 
 (defn allow-request?
   [request access-control-config]
@@ -142,7 +144,7 @@
         ->header-names #(str/join ", " (sort (map (fn [s] (-> s name (util.string/capitalize-words #"-"))) %)))]
     (reduce
      (fn [acc [k v]]
-       (assoc acc (util.string/capitalize-words k #"-")
+       (assoc acc (util.string/capitalize-words (name k) #"-")
               (case k
                 :access-control-allow-methods (upcase v)
                 :access-control-allow-headers (->header-names v)
@@ -165,6 +167,7 @@
    (wrap-cors handler {}))
   ([handler access-control-config]
    (fn [request respond raise]
+     (info "got request at cors middleware: " "preflight?:" (preflight? request) "origin:" (origin request))
      (cond
        (preflight? request) (if (allow-request? request access-control-config)
                               (respond (add-access-control request access-control-config {:status 200 :headers {} :body "preflight complete"}))

@@ -59,8 +59,8 @@
   (ring/ring-handler
    (ring/router
     [routes]
-    {:data {:middleware [#(cors/wrap-cors % {:access-control-allow-origin [#".*"]
-                                             :access-control-allow-methods [:get :put :post :delete]})
+    {:data {:middleware [#(cors/wrap-cors % {:allowed-origins [#".*"]
+                                             :allowed-methods [:get :put :post :delete :options]})
                          params/wrap-params
                          #(rf/wrap-restful-format % {:keywordize? true})
                          cmd.server.util/wrap-body-to-params
