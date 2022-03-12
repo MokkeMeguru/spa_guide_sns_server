@@ -21,12 +21,3 @@ jobs:
       - name: build release
         run: |
           npm run release
-      - name: check git diff
-        run: |
-          git add .
-          DIFF=`git --no-pager diff --cached | wc -l`
-          git --no-pager diff --name-only --cached
-          if [ $DIFF -gt 0 ]; then
-            echo "need build and push"
-            exit 1
-          fi
