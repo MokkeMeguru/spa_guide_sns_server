@@ -11,7 +11,9 @@
 (s/def ::allowed-headers (s/nilable (s/* string?)))
 (s/def ::allowed-methods (s/nilable (s/* ::request-method)))
 (s/def ::allowed-origins (s/+ regexp?))
-
+(s/def ::access-control-config (s/keys :req-un [::allowed-headers
+                                                ::allowed-origins
+                                                ::allowed-methods]))
 (s/fdef origin
   :args (s/cat :request map?)
   :ret string?)
@@ -36,11 +38,33 @@
 
 (s/fdef allow-request?
   :args (s/cat :request map?
-               :access-control-config (s/keys :req-un [::allowed-headers
-                                                       ::allowed-origins
-                                                       ::allowed-methods])))
+               :access-control-config ::access-control-config)
+  :ret boolean?)
+
+(s/fdef add-headers
+  :args (s/cat :request map?
+               :access-control-config ::access-control-config
+               :response map?)
+  :ret map?)
+
+(s/fdef add-allowed-headers
+  :args (s/cat :request map?
+               :allowed-headers ::allowed-headers
+               :response map?)
+  :ret map?)
+
+(s/fdef normalize-headers
+  :args (s/cat :headers map?)
+  :ret map?)
+
+(s/fdef add-access-control
+  :args (s/cat :request map?
+               :access-control-config ::access-control-config
+               :response map?)
+  :ret map?)
+
 ;; request parser
-(defn origin
+(defn- origin
   "get the origin of request header
 
   Examples:
@@ -53,7 +77,7 @@
   [request]
   (r/get-header request "origin"))
 
-(defn access-control-request-headers
+(defn- access-control-request-headers
   "access-control-request headers from request
 
   Examples:
@@ -65,12 +89,12 @@
   (r/get-header request "access-control-request-headers"))
 
 ;; request validator
-(defn preflight?
+(defn- preflight?
   "whether the preflight or not"
   [request]
   (-> request :request-method (= :options)))
 
-(defn allow-preflight-access-control-request-headers?
+(defn- allow-preflight-access-control-request-headers?
   "validate preflight access controll request headers are acceptable for the rule
 
   if `allowed-headers` are nil, accept all headers
@@ -85,7 +109,7 @@
        (-> allowed-headers
            util.string/string-list->lower-case-set))))
 
-(defn allow-access-control-request-method?
+(defn- allow-access-control-request-method?
   "validate request methods are acceptable for the rule
 
   if `methods` are nil, accept all methods
@@ -98,7 +122,7 @@
     (or (nil? methods)
         (contains? (set allowed-methods) request-method))))
 
-(defn allow-request?
+(defn- allow-request?
   [request access-control-config]
   (let [origin (origin request)
         {:keys [allowed-headers
@@ -114,7 +138,7 @@
            true))))
 
 ;; edit response
-(defn add-headers
+(defn- add-headers
   "add the access control headers using th request's origin to the response"
   [request access-control-config response]
   (if-let [origin (origin request)]
@@ -124,7 +148,7 @@
                       :access-control-allow-methods (:allowed-methods access-control-config)})
     response))
 
-(defn add-allowed-headers
+(defn- add-allowed-headers
   "add the allowed headers into the response"
   [request allowed-headers response]
   (if (preflight? request)
@@ -138,7 +162,7 @@
     response))
 
 ;; format response header
-(defn normalize-headers
+(defn- normalize-headers
   [headers]
   (let [upcase #(str/join ", " (sort (map (fn [s] (-> s name str/upper-case)) %)))
         ->header-names #(str/join ", " (sort (map (fn [s] (-> s name (util.string/capitalize-words #"-"))) %)))]
@@ -151,7 +175,7 @@
                 v)))
      {} headers)))
 
-(defn add-access-control
+(defn- add-access-control
   "add the access control heades to the response based on the rules
   and what came on the header"
   [request access-control-config response]
@@ -161,13 +185,14 @@
     (update-in unnormalized-resp [:headers] normalize-headers)))
 
 (defn wrap-cors
-  "middleware which adds Cross-Origin Resouce Sharing headers.
-  "
+  "middleware which adds Cross-Origin Resouce Sharing headers"
   ([handler]
    (wrap-cors handler {}))
   ([handler access-control-config]
    (fn [request respond raise]
      (info "got request at cors middleware: " "preflight?:" (preflight? request) "origin:" (origin request))
+     (info (-> request (dissoc :reitit.core/match) (dissoc :reitit.core/router)))
+     (info (keys request))
      (cond
        (preflight? request) (if (allow-request? request access-control-config)
                               (respond (add-access-control request access-control-config {:status 200 :headers {} :body "preflight complete"}))
@@ -179,3 +204,69 @@
 
 ;; (re-matches #"http://127.0.0.1:3000" "http://localhost:3000")
 ;; (re-matches #".*" "http://localhost:3000")
+
+;; sample options request
+;; {:ssl-client-cert nil
+;;  :protocol "HTTP/1.1"
+;;  :subdomains nil
+;;  :cookies nil
+;;  :remote-addr "127.0.0.1"
+;;  :secure? nil
+;;  :params nil
+;;  :stale? nil
+;;  :hostname "127.0.0.1"
+;;  :node/request {}
+;;  :xhr? nil
+;;  :headers {"host" "127.0.0.1:3000"
+;;            "user-agent" "curl/7.81.0"
+;;            "accept" "*/*"
+;;            "origin" "http://localhost:8080"
+;;            "access-control-request-method" "GET"
+;;            "access-control-request-headers" "X-Requested-With"}
+;;  :server-port 3000
+;;  :content-length nil
+;;  :signed-cookies nil
+;;  :url "/test?name=hello"
+;;  :content-type nil
+;;  :uri "/test"
+;;  :fresh? nil
+;;  :server-name "127.0.0.1"
+;;  :query-string "name=hello"
+;;  :path-params {}
+;;  :body {}
+;;  :scheme :http
+;;  :request-method :options
+;;  :node/response {}}
+
+;; sample get request
+;; {:ssl-client-cert nil
+;;  :protocol "HTTP/1.1"
+;;  :subdomains nil
+;;  :cookies nil
+;;  :remote-addr "127.0.0.1"
+;;  :secure? nil
+;;  :params nil
+;;  :stale? nil
+;;  :hostname "127.0.0.1"
+;;  :node/request {}
+;;  :xhr? nil
+;;  :headers {"host" "127.0.0.1:3000"
+;;            "user-agent" "curl/7.81.0"
+;;            "accept" "*/*"
+;;            "origin" "http://localhost:8080"
+;;            "access-control-request-method" "GET"
+;;            "access-control-request-headers" "X-Requested-With"}
+;;  :server-port 3000
+;;  :content-length nil
+;;  :signed-cookies nil
+;;  :url "/test?name=hello"
+;;  :content-type nil
+;;  :uri "/test"
+;;  :fresh? nil
+;;  :server-name "127.0.0.1"
+;;  :query-string "name=hello"
+;;  :path-params {}
+;;  :body {}
+;;  :scheme :http
+;;  :request-method :get
+;;  :node/response {}}
