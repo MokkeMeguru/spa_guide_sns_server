@@ -47,11 +47,14 @@ components:
             - gurmand
             - sports
           type: string
+        image-url:
+          type: string
       required:
         - id
         - name
         - details
         - category
+        - image-url
       description: community information
       title: community
 paths:

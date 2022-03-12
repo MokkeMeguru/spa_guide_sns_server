@@ -10,6 +10,27 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: env | sort
+      - name: Cache npm packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+             **/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Cache clj/cljs packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/shadow-cljs.edn') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
       - name: Update Homebrew
         run: |
           brew update --preinstall
@@ -19,6 +40,9 @@ jobs:
       - name: install deps
         run: |
           npm install
+      - name: build openapi
+        run: |
+          npm run openapi
       - name: build migrate
         run: |
           npm run migrate

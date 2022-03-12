@@ -1,6 +1,7 @@
 (ns domain.community.event
   (:require [clojure.spec.alpha :as s]
             [domain.util]
+            [domain.util.url]
             [domain.user]
             [domain.community]
             [domain.community.member]))
@@ -10,14 +11,15 @@
 (s/def ::details string?)
 (s/def ::hold-at int?) ;; TODO apply regex YYYY/MM/DD
 (s/def ::category #{:party :seminar})
+(s/def ::image-url ::domain.util.url/url)
 
 (s/def ::community ::domain.community/query)
 (s/def ::owned-member ::domain.community.member/query)
-(s/def ::query (s/keys :req-un [::id ::community ::owned-member ::name ::details ::hold-at ::category]))
+(s/def ::query (s/keys :req-un [::id ::community ::owned-member ::name ::details ::hold-at ::category ::image-url]))
 
 (s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::community-id ::domain.community/id)
-(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category] :opt-un [::id]))
+(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url] :opt-un [::id ::image-url]))
 
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])
@@ -49,3 +51,18 @@
 (defn fetch-community-event [this event-id] (-fetch-community-event this event-id))
 (defn search-community-event-by-community-id [this community-id] (-search-community-event-by-community-id this community-id))
 (defn create-community-event [this event] (-create-community-event this event))
+
+;; dummy-utility
+;; dummy utility
+(s/fdef sample-dummy-image-url
+  :args (s/cat :category ::category)
+  :ret ::domain.util.url/url)
+
+(def dummy-image-base-url "https://picsum.photos")
+(def dummy-image-id-map
+  "サンプル画像の URL. community 作成時に指定されなければこの中からランダムに選ぶ"
+  {:party ["139" "249" "517"]
+   :seminar ["452" "593" "20"]})
+
+(defn sample-dummy-image-url [category]
+  (str dummy-image-base-url "/id/" (rand-nth (get dummy-image-id-map category ["292"])) "/{width}/{height}.jpg"))
