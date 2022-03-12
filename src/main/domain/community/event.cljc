@@ -1,6 +1,7 @@
 (ns domain.community.event
   (:require [clojure.spec.alpha :as s]
             [domain.util]
+            [domain.util.url]
             [domain.user]
             [domain.community]
             [domain.community.member]))
@@ -10,14 +11,17 @@
 (s/def ::details string?)
 (s/def ::hold-at int?) ;; TODO apply regex YYYY/MM/DD
 (s/def ::category #{:party :seminar})
+(s/def ::image-url ::domain.util.url/url)
 
 (s/def ::community ::domain.community/query)
 (s/def ::owned-member ::domain.community.member/query)
-(s/def ::query (s/keys :req-un [::id ::community ::owned-member ::name ::details ::hold-at ::category]))
+(s/def ::query (s/keys :req-un [::id ::community ::owned-member ::name ::details ::hold-at ::category ::image-url]))
 
 (s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::community-id ::domain.community/id)
-(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category] :opt-un [::id]))
+(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url] :opt-un [::id]))
+
+(def dummy-image-base-url "https://picsum.photos")
 
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])

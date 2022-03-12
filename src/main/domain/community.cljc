@@ -1,15 +1,24 @@
 (ns domain.community
   (:require [clojure.spec.alpha :as s]
             [domain.util]
+            [domain.util.url]
             [domain.user]))
 
 (s/def ::id (s/and string? #(re-matches domain.util/id-regex %)))
 (s/def ::name (s/and string? #(<= 0 (count %) 36)))
 (s/def ::details (s/and string? #(<= 0 (count %) 140)))
 (s/def ::category #{:gurmand :sports :geek :anime})
+(s/def ::image-url ::domain.util.url/url)
 
-(s/def ::query (s/keys :req-un [::id ::name ::details ::category]))
-(s/def ::command (s/keys :req-un [::name ::details ::category] :opt-un [::id]))
+(s/def ::query (s/keys :req-un [::id ::name ::details ::category ::image-url]))
+(s/def ::command (s/keys :req-un [::name ::details ::category ::image-url] :opt-un [::id]))
+
+(def dummy-image-base-url "https://picsum.photos")
+(def dummy-image-id-map
+  {:gurmand []
+   :sports []
+   :geek []
+   :anime []})
 
 (defprotocol ICommunityQueryRepository
   (-list-community [this])

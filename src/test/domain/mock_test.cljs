@@ -1,7 +1,7 @@
-(ns cmd.migrate.core-test
-  (:require [cmd.migrate.core :as sut]
-            [cljs.test :as t]
+(ns domain.mock-test
+  (:require [cljs.test :as t]
             [clojure.spec.alpha :as s]
+            [domain.mock :as sut]
             [domain.user]
             [domain.community]
             [domain.community.member]
