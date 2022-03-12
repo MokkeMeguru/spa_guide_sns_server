@@ -9,46 +9,23 @@ jobs:
     runs-on: macos-11
     steps:
       - uses: actions/checkout@v2
-      - name: Cache npm packages
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.npm
-             **/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-        env:
-          cache-name: "npm-package"
-      - name: Cache clj/cljs packages
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.m2
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/shadow-cljs.edn') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-        env:
-          cache-name: "clj-package"
-      - name: Update Homebrew
-        run: |
-          brew update --preinstall
-      - name: Install java
-        run: |
-          brew install --cask adoptopenjdk
-      - name: install deps
-        run: |
-          npm install
+      - name: init project
+        uses: ./.github/actions/init
       - name: build openapi
         run: |
           npm run openapi
+          npm run start_openapi
       - name: build migrate
         run: |
           npm run migrate
       - name: build release
         run: |
           npm run release
+      - name: check git diff
+        run: |
+          git add .
+          DIFF=`git --no-pager diff --cached | wc -l`
+          if [ $DIFF -gt 0 ]; then
+            echo "need build and push"
+            exit 1
+          fi
