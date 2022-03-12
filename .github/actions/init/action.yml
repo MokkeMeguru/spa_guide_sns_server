@@ -3,7 +3,6 @@ runs:
   using: composite
   steps:
     - name: Cache npm packages
-      shell: bash
       uses: actions/cache@v2
       with:
         path: |
@@ -17,7 +16,6 @@ runs:
       env:
         cache-name: "npm-package"
     - name: Cache clj/cljs packages
-      shell: bash
       uses: actions/cache@v2
       with:
         path: |
