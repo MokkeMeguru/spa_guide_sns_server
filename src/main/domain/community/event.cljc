@@ -19,9 +19,7 @@
 
 (s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::community-id ::domain.community/id)
-(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url] :opt-un [::id]))
-
-(def dummy-image-base-url "https://picsum.photos")
+(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url] :opt-un [::id ::image-url]))
 
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])
@@ -53,3 +51,18 @@
 (defn fetch-community-event [this event-id] (-fetch-community-event this event-id))
 (defn search-community-event-by-community-id [this community-id] (-search-community-event-by-community-id this community-id))
 (defn create-community-event [this event] (-create-community-event this event))
+
+;; dummy-utility
+;; dummy utility
+(s/fdef sample-dummy-image-url
+  :args (s/cat :category ::category)
+  :ret ::domain.util.url/url)
+
+(def dummy-image-base-url "https://picsum.photos")
+(def dummy-image-id-map
+  "サンプル画像の URL. community 作成時に指定されなければこの中からランダムに選ぶ"
+  {:party ["139" "249" "517"]
+   :seminar ["452" "593" "20"]})
+
+(defn sample-dummy-image-url [category]
+  (str dummy-image-base-url "/id/" (rand-nth (get dummy-image-id-map category ["292"])) "/{width}/{height}.jpg"))

@@ -11,14 +11,7 @@
 (s/def ::image-url ::domain.util.url/url)
 
 (s/def ::query (s/keys :req-un [::id ::name ::details ::category ::image-url]))
-(s/def ::command (s/keys :req-un [::name ::details ::category ::image-url] :opt-un [::id]))
-
-(def dummy-image-base-url "https://picsum.photos")
-(def dummy-image-id-map
-  {:gurmand []
-   :sports []
-   :geek []
-   :anime []})
+(s/def ::command (s/keys :req-un [::name ::details ::category] :opt-un [::id ::image-url]))
 
 (defprotocol ICommunityQueryRepository
   (-list-community [this])
@@ -50,3 +43,19 @@
 (defn fetch-community [this community-id] (-fetch-community this community-id))
 (defn search-communities-by-name [this like] (-search-communities-by-name this like))
 (defn create-community [this community] (-create-community this community))
+
+;; dummy utility
+(s/fdef sample-dummy-image-url
+  :args (s/cat :category ::category)
+  :ret ::domain.util.url/url)
+
+(def dummy-image-base-url "https://picsum.photos")
+(def dummy-image-id-map
+  "サンプル画像の URL. community 作成時に指定されなければこの中からランダムに選ぶ"
+  {:gurmand ["292" "999" "1060" "835"]
+   :sports ["1084" "844" "1077"]
+   :geek ["1010" "1082" "1078" "896" "674"]
+   :anime ["452" "998" "82"]})
+
+(defn sample-dummy-image-url [category]
+  (str dummy-image-base-url "/id/" (rand-nth (get dummy-image-id-map category ["292"])) "/{width}/{height}.jpg"))
