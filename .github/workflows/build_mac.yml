@@ -21,6 +21,8 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+        env:
+          cache-name: "npm-package"
       - name: Cache clj/cljs packages
         uses: actions/cache@v2
         with:
@@ -31,6 +33,8 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+        env:
+          cache-name: "clj-package"
       - name: Update Homebrew
         run: |
           brew update --preinstall
