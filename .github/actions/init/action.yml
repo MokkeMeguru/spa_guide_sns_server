@@ -31,10 +31,11 @@ runs:
       shell: bash
       run: |
         brew update --preinstall
-    - name: Install java
+    - name: Install from brew
       shell: bash
       run: |
         brew install --cask adoptopenjdk
+        brew install md5sha1sum
     - name: install deps
       shell: bash
       run: |
