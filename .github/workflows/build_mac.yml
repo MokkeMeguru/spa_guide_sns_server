@@ -11,13 +11,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: init project
         uses: ./.github/actions/init
-      - name: build openapi
+      - name: make build
         run: |
-          npm run openapi
-          npm run start_openapi
-      - name: build migrate
+          make build-all
+      - name: git diff
         run: |
-          npm run migrate
-      - name: build release
-        run: |
-          npm run release
+          git add .
+          DIFF=`git diff --cached --name-only | grep -e src.md5 | wc -l`
+          if [ $DIFF -gt 0 ]; then
+            git diff --cached -- src.md5
+            echo "need make build-all and push diff"
+            exit 1
+          fi
