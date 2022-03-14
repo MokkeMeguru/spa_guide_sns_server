@@ -11,9 +11,9 @@
 (s/def ::user ::domain.user/query)
 (s/def ::query (s/keys :req-un [::id ::community ::user ::role]))
 
-(s/def ::community-id ::domain.community/id)
-(s/def ::user-id ::domain.user/id)
-(s/def ::command (s/keys :req-un [::community-id ::user-id ::role] :opt-un [::id]))
+(s/def ::community_id ::domain.community/id)
+(s/def ::user_id ::domain.user/id)
+(s/def ::command (s/keys :req-un [::community_id ::user_id ::role] :opt-un [::id]))
 
 (defprotocol ICommunityMemberQueryRepository
   (-list-community-member [this])

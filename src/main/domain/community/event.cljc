@@ -9,17 +9,17 @@
 (s/def ::id (s/and string? #(re-matches domain.util/id-regex %)))
 (s/def ::name string?)
 (s/def ::details string?)
-(s/def ::hold-at int?) ;; TODO apply regex YYYY/MM/DD
+(s/def ::hold_at int?) ;; TODO apply regex YYYY/MM/DD
 (s/def ::category #{:party :seminar})
-(s/def ::image-url ::domain.util.url/url)
+(s/def ::image_url ::domain.util.url/url)
 
 (s/def ::community ::domain.community/query)
-(s/def ::owned-member ::domain.community.member/query)
-(s/def ::query (s/keys :req-un [::id ::community ::owned-member ::name ::details ::hold-at ::category ::image-url]))
+(s/def ::owned_member ::domain.community.member/query)
+(s/def ::query (s/keys :req-un [::id ::community ::owned_member ::name ::details ::hold_at ::category ::image_url]))
 
-(s/def ::owned-member-id ::domain.community.member/id)
-(s/def ::community-id ::domain.community/id)
-(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url] :opt-un [::id ::image-url]))
+(s/def ::owned_member_id ::domain.community.member/id)
+(s/def ::community_id ::domain.community/id)
+(s/def ::command (s/keys :req-un [::community_id ::owned_member_id ::name ::details ::hold_at ::category ::image_url] :opt-un [::id ::image_url]))
 
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])

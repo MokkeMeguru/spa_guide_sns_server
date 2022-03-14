@@ -8,7 +8,7 @@
             [domain.community.event]
             [domain.community.event.comment]))
 
-(t/deftest test-sample-command
+(t/deftest test-samples
   (t/testing "user"
     (t/is (s/valid? (s/* ::domain.user/command) (:user sut/samples))))
   (t/testing "community"
