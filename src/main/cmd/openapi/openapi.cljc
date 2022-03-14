@@ -30,9 +30,6 @@
                       :Community infrastructure.api.swagger-spec/community
                       :Error infrastructure.api.swagger-spec/error}})
 
-(openapi/transform (st/spec {:spec int?})
-                   {:minimum 0})
-
 (def paths
   {"/test"
    {:get {:operationId "getTest"
