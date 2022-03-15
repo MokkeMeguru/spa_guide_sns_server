@@ -1,6 +1,7 @@
 (ns infrastructure.api.swagger-spec
   (:require
    [domain.util]
+   [domain.util.url]
    [domain.user]
    [domain.community]
    [domain.community.event]
@@ -20,10 +21,10 @@
                      :name "Error"}))
 
 (def before-size (st/spec {:spec nat-int?
-                           :name "before-size"
+                           :name "beforeSize"
                            :description "レスポンスのリストより前の要素数"}))
 (def total-size (st/spec {:spec nat-int?
-                          :name "total-size"}))
+                          :name "totalSize"}))
 
 (s/def :user/id ::domain.user/id)
 (s/def :user/name ::domain.user/name)
@@ -82,45 +83,47 @@
 (s/def :community-member/communityMember (s/keys :req-un [:community-member/id :user/user
                                                           :community/community :community-member/role]))
 
-;; (def communityMember
-;;   (st/spec
-;;    {:spec :community-member/communityMember
-;;     :name "CommunityMember"
-;;     :description "community member information"}))
+(def communityMember
+  (st/spec
+   {:spec :community-member/communityMember
+    :name "CommunityMember"
+    :description "community member information"}))
 
-;; (s/def :community-event/id ::domain.community.event/id)
-;; (s/def :community-event/name ::domain.community.event/name)
-;; (s/def :community-event/ownedMember ::communityMember)
-;; (s/def :community-event/details ::domain.community.event/details)
-;; (s/def :community-event/holdAt ::domain.community.event/hold-at)
-;; (s/def :community-evnet/category ::domain.community.event/category)
-;; (s/def :community-event/imageURL ::domain.community.event/image-url)
+(s/def :community-event/id ::domain.community.event/id)
+(s/def :community-event/communityId ::domain.community/id)
+(s/def :community-event/name ::domain.community.event/name)
+(s/def :community-event/ownedMemberId ::domain.community.member/id)
+(s/def :community-event/details ::domain.community.event/details)
+(s/def :community-event/holdAt ::domain.community.event/hold-at)
+(s/def :community-event/category ::domain.community.event/category)
+(s/def :community-event/imageURL ::domain.community.event/image-url)
 
-;; (s/def :community-event/communityEvent
-;;   (s/keys :req-un
-;;           [:community-event/id ::community :community-event/ownedMember
-;;            :community-event/name :community-event/details
-;;            :community-event/holdAt :community-event/category :community-event/imageURL]))
+(s/def :community-event/communityEvent
+  (s/keys :req-un
+          [:community-event/id :community-event/communityId :community-event/ownedMemberId
+           :community-event/name :community-event/details
+           :community-event/holdAt :community-event/category :community-event/imageURL]))
 
-;; (def communityEvent
-;;   (st/spec
-;;    {:spec :community-event/communityEvent
-;;     :name "CommunityEvent"
-;;     :description "community event informatoion"}))
+(def communityEvent
+  (st/spec
+   {:spec :community-event/communityEvent
+    :name "CommunityEvent"
+    :description "community event informatoion"}))
 
-;; (s/def :community-event-comment/id ::domain.community.event.comment/id)
-;; (s/def :community-event-comment/eventID :community-event/id)
-;; (s/def :community-event-comment/body ::domain.community.event.comment/body)
-;; (s/def :community-event-comment/commentAt ::domain.community.event.comment/comment-at)
+(s/def :community-event-comment/id ::domain.community.event.comment/id)
+(s/def :community-event-comment/eventId ::domain.community.event/id)
+(s/def :community-event-comment/commentedMemberId ::domain.community.member/id)
+(s/def :community-event-comment/body ::domain.community.event.comment/body)
+(s/def :community-event-comment/commentAt ::domain.community.event.comment/comment-at)
 
-;; (s/def :community-event-comment/communityEventComment (s/keys :req-un
-;;                                                               [:community-event-comment/id
-;;                                                                :community-event-comment/eventID
-;;                                                                :community-member/communityMember
-;;                                                                :community-event-comment/body
-;;                                                                :community-event-comment/commentAt]))
-;; (def communityEventComment
-;;   (st/spec
-;;    {:spec :community-event-comment/communityEventComment
-;;     :name "communityEventComment"
-;;     :description "the comment on the community event"}))
+(s/def :community-event-comment/communityEventComment (s/keys :req-un
+                                                              [:community-event-comment/id
+                                                               :community-event-comment/eventId
+                                                               :community-event-comment/commentedMemberId
+                                                               :community-event-comment/body
+                                                               :community-event-comment/commentAt]))
+(def communityEventComment
+  (st/spec
+   {:spec :community-event-comment/communityEventComment
+    :name "communityEventComment"
+    :description "the comment on the community event"}))

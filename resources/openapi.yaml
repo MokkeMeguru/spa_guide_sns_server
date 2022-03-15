@@ -83,6 +83,80 @@ components:
         membership: 10
         createdAt: 1647307406
         updatedAt: 1647307406
+    CommunityMember:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        community:
+          $ref: "#/components/schemas/Community"
+        role:
+          enum:
+            - member
+            - owner
+          type: string
+      required:
+        - id
+        - user
+        - community
+        - role
+      description: community member information
+    CommunityEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        communityId:
+          type: string
+        ownedMemberId:
+          type: string
+        name:
+          type: string
+        details:
+          type: string
+        holdAt:
+          type: integer
+          format: int64
+        category:
+          enum:
+            - party
+            - seminar
+          type: string
+        imageURL:
+          type: string
+      required:
+        - id
+        - communityId
+        - ownedMemberId
+        - name
+        - details
+        - holdAt
+        - category
+        - imageURL
+      description: community event informatoion
+    CommunityEventComment:
+      type: object
+      properties:
+        id:
+          type: string
+        eventId:
+          type: string
+        commentedMemberId:
+          type: string
+        body:
+          type: string
+        commentAt:
+          type: integer
+          format: int64
+      required:
+        - id
+        - eventId
+        - commentedMemberId
+        - body
+        - commentAt
+      description: the comment on the community event
     Error:
       type: object
       properties:
@@ -137,7 +211,7 @@ paths:
                     type: integer
                     format: int64
                     minimum: 0
-                    title: total-size
+                    title: totalSize
   "/users/{id}":
     get:
       operationId: getUser
@@ -203,12 +277,12 @@ paths:
                     format: int64
                     minimum: 0
                     description: レスポンスのリストより前の要素数
-                    title: before-size
+                    title: beforeSize
                   total_size:
                     type: integer
                     format: int64
                     minimum: 0
-                    title: total-size
+                    title: totalSize
       parameters:
         - name: request_size
           in: query

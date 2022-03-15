@@ -26,12 +26,18 @@
     :description "local server (run with `npm run start_release`)"}])
 
 (def components
-  {::openapi/schemas {:User infrastructure.api.swagger-spec/user
-                      :Community infrastructure.api.swagger-spec/community
-                      ;; :CommunityMember infrastructure.api.swagger-spec/communityMember
-                      ;; :CommunityEvent infrastructure.api.swagger-spec/communityEvent
-                      ;; :CommunityEventComment infrastructure.api.swagger-spec/communityEventComment
-                      :Error infrastructure.api.swagger-spec/error}})
+  (-> {:components {::openapi/schemas {:User infrastructure.api.swagger-spec/user
+                                       :Community infrastructure.api.swagger-spec/community
+                                       :CommunityMember infrastructure.api.swagger-spec/communityMember
+                                       :CommunityEvent infrastructure.api.swagger-spec/communityEvent
+                                       :CommunityEventComment infrastructure.api.swagger-spec/communityEventComment
+                                       :Error infrastructure.api.swagger-spec/error}}}
+      openapi/openapi-spec
+      :components
+      (update-in [:schemas :CommunityMember :properties]
+                 #(-> %
+                      (assoc "community" {"$ref" "#/components/schemas/Community"})
+                      (assoc "user" {"$ref" "#/components/schemas/User"})))))
 
 (def paths
   {"/test"
@@ -110,5 +116,7 @@
                            {key (dissoc value :title)}))
                     (into {})))))
 
+;; (cljs.pprint/pprint
+;;  (generate-openapi))
 ;; Developer Note
 ;; (def operation (get-in paths ["/test" :get]))
