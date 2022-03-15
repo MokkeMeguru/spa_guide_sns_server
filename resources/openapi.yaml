@@ -23,18 +23,17 @@ components:
           type: string
         name:
           type: string
-        icon-url:
+        iconUrl:
           type: string
       required:
         - id
         - name
-        - icon-url
+        - iconUrl
       description: user information
-      title: User
       example:
         id: 6e803bdf-55a7-4a31-849e-8489cc76a457
         name: Meguru Mokke
-        icon-url: https://avatars.githubusercontent.com/u/30849444?v=4
+        iconURL: https://avatars.githubusercontent.com/u/30849444?v=4
     Community:
       type: object
       properties:
@@ -51,22 +50,39 @@ components:
             - gurmand
             - sports
           type: string
-        image-url:
+        imageUrl:
           type: string
+        membership:
+          type: integer
+          format: int64
+          minimum: 1
+        createdAt:
+          type: integer
+          format: int64
+          minimum: 0
+        updatedAt:
+          type: integer
+          format: int64
+          minimum: 0
       required:
         - id
         - name
         - details
         - category
-        - image-url
+        - imageUrl
+        - membership
+        - createdAt
+        - updatedAt
       description: community information
-      title: Community
       example:
         id: f61f5f38-174b-43e1-8873-4f7cdbee1c18
         name: 辛いものの部
         details: 辛いものが好きな人集まれー
         category: gurmand
-        image-url: https://picsum.photos/id/292/{width}/{height}.jpg
+        imageUrl: https://picsum.photos/id/292/{width}/{height}.jpg
+        membership: 10
+        createdAt: 1647307406
+        updatedAt: 1647307406
     Error:
       type: object
       properties:
@@ -78,11 +94,11 @@ components:
       required:
         - code
         - message
-      title: Error
 paths:
   /test:
     get:
       operationId: getTest
+      description: ping pong
       tags:
         - test
       responses:
@@ -99,6 +115,29 @@ paths:
           required: true
           schema:
             type: string
+  /users:
+    get:
+      operationId: listUser
+      description: 全てのユーザのリストを返します (debug)
+      tags:
+        - user
+      responses:
+        "200":
+          description: 全てのユーザ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+                  totalSize:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    title: total-size
   "/users/{id}":
     get:
       operationId: getUser
@@ -106,7 +145,7 @@ paths:
         - user
       responses:
         "200":
-          description: find a user
+          description: id を持つユーザ
           content:
             application/json:
               schema:
@@ -125,5 +164,69 @@ paths:
           in: path
           description: ""
           required: true
+          schema:
+            type: string
+  /communities:
+    get:
+      operationId: listCommunity
+      tags:
+        - community
+      description: |-
+        全てのコミュニティのリストを返します<br/>
+        クエリパラメータは、begin_cursor>last_cursorの順で評価されます<br/>
+        - begin_cursor: 指定された community_id より後のコミュニティリストを返す<br/>
+        - last_cursor : 指定された community_id より前のコミュニティリストを返す<br/>
+        - request_size: 指定されたサイズ以下ののコミュニティリストを返す<br/>
+        (指定なしで全ての要素を返す / 最終ページなどでは request_size 未満のサイズのリストを返す)
+      responses:
+        "200":
+          description: コミュニティのリスト
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  communities:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        community:
+                          $ref: "#/components/schemas/Community"
+                        isJoined:
+                          type: boolean
+                          description: the logined user is joined the community
+                          title: IsJoined
+                          nullable: true
+                  before_size:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    description: レスポンスのリストより前の要素数
+                    title: before-size
+                  total_size:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    title: total-size
+      parameters:
+        - name: request_size
+          in: query
+          description: ""
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: begin_cursor
+          in: query
+          description: ""
+          required: false
+          schema:
+            type: string
+        - name: last_cursor
+          in: query
+          description: ""
+          required: false
           schema:
             type: string

@@ -59,7 +59,8 @@
   (ring/ring-handler
    (ring/router
     [routes]
-    {:data {:middleware [#(cors/wrap-cors % {:allowed-origins [#".*"]
+    {:syntax :bracket
+     :data {:middleware [#(cors/wrap-cors % {:allowed-origins [#".*"]
                                              :allowed-methods [:get :put :post :delete :options]})
                          params/wrap-params
                          #(rf/wrap-restful-format % {:keywordize? true})

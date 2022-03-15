@@ -13,7 +13,7 @@
 (s/def ::member ::domain.community.member/query)
 ;; NOTE I seems to not exist the direction comment -> event
 ;; However, I seems to exist the direction comment -> member -> user to show the user's image or member info
-(s/def ::query (s/keys :req-un [::id ::event_id ::member ::body ::comment-at]))
+(s/def ::query (s/keys :req-un [::id ::event-id ::member ::body ::comment-at]))
 
 (s/def ::member-id ::domain.community.member/id)
 (s/def ::command (s/keys :req-un [::event-id ::member-id ::body] :opt-un [::id]))
