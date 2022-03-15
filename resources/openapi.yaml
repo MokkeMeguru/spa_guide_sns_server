@@ -23,12 +23,12 @@ components:
           type: string
         name:
           type: string
-        iconURL:
+        iconUrl:
           type: string
       required:
         - id
         - name
-        - iconURL
+        - iconUrl
       description: user information
       example:
         id: 6e803bdf-55a7-4a31-849e-8489cc76a457
@@ -50,8 +50,12 @@ components:
             - gurmand
             - sports
           type: string
-        imageURL:
+        imageUrl:
           type: string
+        membership:
+          type: integer
+          format: int64
+          minimum: 1
         createdAt:
           type: integer
           format: int64
@@ -65,7 +69,8 @@ components:
         - name
         - details
         - category
-        - imageURL
+        - imageUrl
+        - membership
         - createdAt
         - updatedAt
       description: community information
@@ -74,7 +79,8 @@ components:
         name: 辛いものの部
         details: 辛いものが好きな人集まれー
         category: gurmand
-        imageURL: https://picsum.photos/id/292/{width}/{height}.jpg
+        imageUrl: https://picsum.photos/id/292/{width}/{height}.jpg
+        membership: 10
         createdAt: 1647307406
         updatedAt: 1647307406
     Error:
@@ -127,7 +133,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/User"
-                  total_size:
+                  totalSize:
                     type: integer
                     format: int64
                     minimum: 0
@@ -183,7 +189,15 @@ paths:
                   communities:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Community"
+                      type: object
+                      properties:
+                        community:
+                          $ref: "#/components/schemas/Community"
+                        isJoined:
+                          type: boolean
+                          description: the logined user is joined the community
+                          title: IsJoined
+                          nullable: true
                   before_size:
                     type: integer
                     format: int64

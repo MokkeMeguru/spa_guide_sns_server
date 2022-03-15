@@ -54,7 +54,7 @@
                             {:schema {:type "object"
                                       :properties {:users {:type "array"
                                                            :items {"$ref" "#/components/schemas/User"}}
-                                                   :total_size (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}}
+                                                   :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}}
    "/users/{id}"
    {:get {:operationId "getUser"
           :tags ["user"]
@@ -84,7 +84,11 @@
                            {"application/json"
                             {:schema {:type "object"
                                       :properties {:communities {:type "array"
-                                                                 :items {"$ref" "#/components/schemas/Community"}}
+                                                                 :items
+                                                                 {:type "object"
+                                                                  :properties {:community {"$ref" "#/components/schemas/Community"}
+                                                                               :isJoined (assoc (openapi/transform infrastructure.api.swagger-spec/community-is-joined)
+                                                                                                :nullable true)}}}
                                                    :before_size (openapi/transform infrastructure.api.swagger-spec/before-size)
                                                    :total_size (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}
     ;; :post {:operationId "createCommunity"
@@ -103,7 +107,6 @@
              (fn [schemas]
                (->> schemas
                     (map (fn [[key value]]
-                           (println key value)
                            {key (dissoc value :title)}))
                     (into {})))))
 
