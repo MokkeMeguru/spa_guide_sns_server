@@ -27,8 +27,8 @@
 
 (s/def :user/id ::domain.user/id)
 (s/def :user/name ::domain.user/name)
-(s/def :user/iconURL ::domain.user/icon-url)
-(s/def :user/user (s/keys :req-un [:user/id :user/name :user/iconURL]))
+(s/def :user/iconUrl ::domain.user/icon-url)
+(s/def :user/user (s/keys :req-un [:user/id :user/name :user/iconUrl]))
 
 (def user
   (st/spec
@@ -45,13 +45,16 @@
 (s/def :community/name ::domain.community/name)
 (s/def :community/details ::domain.community/details)
 (s/def :community/category ::domain.community/category)
-(s/def :community/imageURL ::domain.community/image-url)
+(s/def :community/imageUrl ::domain.community/image-url)
+(s/def :community/membership pos-int?)
 (s/def :community/createdAt ::domain.community/created-at)
 (s/def :community/updatedAt ::domain.community/updated-at)
 (s/def :community/community (s/keys :req-un [:community/id :community/name :community/details
-                                             :community/category :community/imageURL
+                                             :community/category :community/imageUrl
+                                             :community/membership
                                              :community/createdAt
                                              :community/updatedAt]))
+(s/def :community/isJoined boolean?)
 
 (def community
   (st/spec
@@ -63,9 +66,16 @@
      :name "辛いものの部"
      :details "辛いものが好きな人集まれー"
      :category :gurmand
-     :imageURL (str domain.community/dummy-image-base-url "/id/292/{width}/{height}.jpg")
+     :imageUrl (str domain.community/dummy-image-base-url "/id/292/{width}/{height}.jpg")
+     :membership 10
      :createdAt 1647307406
      :updatedAt 1647307406}}))
+
+(def community-is-joined
+  (st/spec
+   {:spec :community/isJoined
+    :name "IsJoined"
+    :description "the logined user is joined the community"}))
 
 (s/def :community-member/id ::domain.community.member/id)
 (s/def :community-member/role ::domain.community.member/role)
