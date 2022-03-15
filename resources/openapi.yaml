@@ -272,19 +272,19 @@ paths:
                           description: the logined user is joined the community
                           title: IsJoined
                           nullable: true
-                  before_size:
+                  beforeSize:
                     type: integer
                     format: int64
                     minimum: 0
                     description: レスポンスのリストより前の要素数
                     title: beforeSize
-                  total_size:
+                  totalSize:
                     type: integer
                     format: int64
                     minimum: 0
                     title: totalSize
       parameters:
-        - name: request_size
+        - name: requestSize
           in: query
           description: ""
           required: true
@@ -292,13 +292,13 @@ paths:
             type: integer
             format: int64
             minimum: 1
-        - name: begin_cursor
+        - name: beginCursor
           in: query
           description: ""
           required: false
           schema:
             type: string
-        - name: last_cursor
+        - name: lastCursor
           in: query
           description: ""
           required: false

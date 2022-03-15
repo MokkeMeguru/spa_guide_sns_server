@@ -83,8 +83,8 @@
                                                        "- last_cursor : 指定された community_id より前のコミュニティリストを返す"
                                                        "- request_size: 指定されたサイズ以下ののコミュニティリストを返す"
                                                        "(指定なしで全ての要素を返す / 最終ページなどでは request_size 未満のサイズのリストを返す)"])
-          ::openapi/parameters {:query (s/keys :req-un [::infrastructure.api.swagger-spec/request_size]
-                                               :opt-un [::infrastructure.api.swagger-spec/begin_cursor ::infrastructure.api.swagger-spec/last_cursor])}
+          ::openapi/parameters {:query (s/keys :req-un [::infrastructure.api.swagger-spec/requestSize]
+                                               :opt-un [::infrastructure.api.swagger-spec/beginCursor ::infrastructure.api.swagger-spec/lastCursor])}
           :responses {200 {:description "コミュニティのリスト"
                            :content
                            {"application/json"
@@ -95,8 +95,8 @@
                                                                   :properties {:community {"$ref" "#/components/schemas/Community"}
                                                                                :isJoined (assoc (openapi/transform infrastructure.api.swagger-spec/community-is-joined)
                                                                                                 :nullable true)}}}
-                                                   :before_size (openapi/transform infrastructure.api.swagger-spec/before-size)
-                                                   :total_size (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}
+                                                   :beforeSize (openapi/transform infrastructure.api.swagger-spec/before-size)
+                                                   :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}
     ;; :post {:operationId "createCommunity"
     ;;        :description "コミュニティを作成します"
     ;;        :requestBody {}}

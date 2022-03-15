@@ -13,9 +13,9 @@
 (s/def ::code int?)
 (s/def ::message string?)
 (s/def ::error (s/keys :req-un [::code ::message]))
-(s/def ::begin_cursor (s/and string? #(re-matches domain.util/id-regex  %)))
-(s/def ::last_cursor (s/and string? #(re-matches domain.util/id-regex  %)))
-(s/def ::request_size pos-int?)
+(s/def ::beginCursor (s/and string? #(re-matches domain.util/id-regex  %)))
+(s/def ::lastCursor (s/and string? #(re-matches domain.util/id-regex  %)))
+(s/def ::requestSize pos-int?)
 (s/def ::total_size nat-int?)
 (def error (st/spec {:spec ::error
                      :name "Error"}))
