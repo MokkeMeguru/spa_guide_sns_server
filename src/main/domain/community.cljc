@@ -8,10 +8,12 @@
 (s/def ::name (s/and string? #(<= 0 (count %) 36)))
 (s/def ::details (s/and string? #(<= 0 (count %) 140)))
 (s/def ::category #{:gurmand :sports :geek :anime})
-(s/def ::image_url ::domain.util.url/url)
+(s/def ::image-url ::domain.util.url/url)
+(s/def ::created-at nat-int?)
+(s/def ::updated-at nat-int?)
 
-(s/def ::query (s/keys :req-un [::id ::name ::details ::category ::image_url]))
-(s/def ::command (s/keys :req-un [::name ::details ::category] :opt-un [::id ::image_url]))
+(s/def ::query (s/keys :req-un [::id ::name ::details ::category ::image-url ::created-at ::updated-at]))
+(s/def ::command (s/keys :req-un [::name ::details ::category] :opt-un [::id ::image-url]))
 
 (defprotocol ICommunityQueryRepository
   (-list-community [this])

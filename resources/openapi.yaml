@@ -23,18 +23,17 @@ components:
           type: string
         name:
           type: string
-        icon_url:
+        iconURL:
           type: string
       required:
         - id
         - name
-        - icon_url
+        - iconURL
       description: user information
-      title: User
       example:
         id: 6e803bdf-55a7-4a31-849e-8489cc76a457
         name: Meguru Mokke
-        icon_url: https://avatars.githubusercontent.com/u/30849444?v=4
+        iconURL: https://avatars.githubusercontent.com/u/30849444?v=4
     Community:
       type: object
       properties:
@@ -51,22 +50,33 @@ components:
             - gurmand
             - sports
           type: string
-        image_url:
+        imageURL:
           type: string
+        createdAt:
+          type: integer
+          format: int64
+          minimum: 0
+        updatedAt:
+          type: integer
+          format: int64
+          minimum: 0
       required:
         - id
         - name
         - details
         - category
-        - image_url
+        - imageURL
+        - createdAt
+        - updatedAt
       description: community information
-      title: Community
       example:
         id: f61f5f38-174b-43e1-8873-4f7cdbee1c18
         name: 辛いものの部
         details: 辛いものが好きな人集まれー
         category: gurmand
-        image_url: https://picsum.photos/id/292/{width}/{height}.jpg
+        imageURL: https://picsum.photos/id/292/{width}/{height}.jpg
+        createdAt: 1647307406
+        updatedAt: 1647307406
     Error:
       type: object
       properties:
@@ -78,7 +88,6 @@ components:
       required:
         - code
         - message
-      title: Error
 paths:
   /test:
     get:

@@ -5,10 +5,10 @@
 
 (s/def ::id (s/and string? #(re-matches domain.util/id-regex  %)))
 (s/def ::name (s/and string? #(<= 5 (count %) 30)))
-(s/def ::icon_url ::domain.util.url/url)
+(s/def ::icon-url ::domain.util.url/url)
 
-(s/def ::query (s/keys :req-un [::id ::name ::icon_url]))
-(s/def ::command (s/keys :req-un [::name ::icon_url] :opt-un [::id]))
+(s/def ::query (s/keys :req-un [::id ::name ::icon-url]))
+(s/def ::command (s/keys :req-un [::name ::icon-url] :opt-un [::id]))
 
 ;; Proposal Note:
 ;; graphql ID like github graphql system

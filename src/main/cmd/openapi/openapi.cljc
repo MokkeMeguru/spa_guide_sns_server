@@ -28,6 +28,9 @@
 (def components
   {::openapi/schemas {:User infrastructure.api.swagger-spec/user
                       :Community infrastructure.api.swagger-spec/community
+                      ;; :CommunityMember infrastructure.api.swagger-spec/communityMember
+                      ;; :CommunityEvent infrastructure.api.swagger-spec/communityEvent
+                      ;; :CommunityEventComment infrastructure.api.swagger-spec/communityEventComment
                       :Error infrastructure.api.swagger-spec/error}})
 
 (def paths
@@ -90,18 +93,19 @@
     }})
 
 (defn generate-openapi []
-  (openapi/openapi-spec
-   {:openapi openapi-version
-    :info info
-    :servers servers
-    :components components
-    :paths paths}))
-
-(generate-openapi)
-
-
-
-
+  (update-in (openapi/openapi-spec
+              {:openapi openapi-version
+               :info info
+               :servers servers
+               :components components
+               :paths paths})
+             [:components :schemas]
+             (fn [schemas]
+               (->> schemas
+                    (map (fn [[key value]]
+                           (println key value)
+                           {key (dissoc value :title)}))
+                    (into {})))))
 
 ;; Developer Note
 ;; (def operation (get-in paths ["/test" :get]))
