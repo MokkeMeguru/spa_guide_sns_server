@@ -13,7 +13,7 @@
 (s/def ::updated-at nat-int?)
 
 (s/def ::query (s/keys :req-un [::id ::name ::details ::category ::image-url ::created-at ::updated-at]))
-(s/def ::command (s/keys :req-un [::name ::details ::category] :opt-un [::id ::image-url]))
+(s/def ::command (s/keys :req-un [::name ::details ::category ::image-url] :opt-un [::id]))
 
 (defprotocol ICommunityQueryRepository
   (-list-community [this])

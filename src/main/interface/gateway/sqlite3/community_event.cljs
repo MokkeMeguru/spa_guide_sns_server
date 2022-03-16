@@ -25,7 +25,8 @@
 
 (defn db->domain [db-model]
   (when db-model
-    (let [{:keys [community_event_id community_event_name community_event_details community_event_category community_event_hold_at community_event_created_at community_event_updated_at
+    (let [{:keys [community_event_id community_event_name community_event_details community_event_category
+                  community_event_image_url community_event_hold_at community_event_created_at community_event_updated_at
                   community_id community_name community_details community_category community_created_at community_updated_at
                   community_member_id community_member_role community_member_created_at community_member_updated_at
                   user_id user_name user_icon_url user_created_at user_updated_at]} (clojure.walk/keywordize-keys db-model)
@@ -33,6 +34,7 @@
                      :name community_name
                      :details community_details
                      :category (get (:db->domain interface.gateway.sqlite3.community/category-map) community_category)
+                     :image_url community_event_image_url
                      :created_at community_created_at
                      :updated_at community_updated_at}
           user {:id user_id
@@ -57,7 +59,7 @@
 
 (defn domain->db [domain-model]
   (when domain-model
-    (let [{:keys [id community-id owned-member-id name details hold-at category]} domain-model]
+    (let [{:keys [id community-id owned-member-id name details hold-at category image-url]} domain-model]
       {:id (if id id (str (random-uuid)))
        :community_id community-id
        :owned_member_id owned-member-id
@@ -65,6 +67,7 @@
        :details details
        :hold_at hold-at
        :category (get (:domain->db category-map) category)
+       :image_url image-url
        :created_at (interface.gateway.sqlite3.util/now)
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
@@ -157,8 +160,8 @@ INNER JOIN users ON community_members.user_id = users.id
 WHERE community_events.community_id = ?"
    :create "
 INSERT INTO community_events
- (id, community_id, owned_member_id, name, details, hold_at, category, created_at, updated_at)
-VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @category, @created_at, @updated_at)"})
+ (id, community_id, owned_member_id, name, details, hold_at, category, image_url, created_at, updated_at)
+VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @category, @image_url, @created_at, @updated_at)"})
 
 (defrecord CommunityEventQueryRepository [db]
   ICommunityEventQueryRepository
