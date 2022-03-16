@@ -21,7 +21,7 @@ src/main/infrastructure/api/handler/test/get.cljs	63f634d39d93793496c6e22d372861
 src/main/infrastructure/api/handler/test/post.cljs	536099efb83b7b82f3a022d6773bb2ca
 src/main/infrastructure/api/handler/user/list.cljs	ef0c2b5c323f8fd3b7dc36b7d0d1a68d
 src/main/infrastructure/api/middleware/cors.cljs	0942a04b6d17b9624ed30368a358fdda
-src/main/infrastructure/api/swagger_spec.cljc	f1c9eae930ec50ef5409deb884b2859a
+src/main/infrastructure/api/swagger_spec.cljc	7a96f155629fa3cd8a85923543be1555
 src/main/infrastructure/api/util.cljs	4575254af146a76945b12429d213502a
 src/main/infrastructure/sqlite3/core.cljs	da3ffbc617dbafbe3c72351977e6ceea
 src/main/infrastructure/sqlite3/up.cljs	b8c4403b1a6bb8b30d8b73968627f62f

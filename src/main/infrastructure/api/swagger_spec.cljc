@@ -40,7 +40,7 @@
     ;; fetch from sample code
     {:id "6e803bdf-55a7-4a31-849e-8489cc76a457"
      :name "Meguru Mokke"
-     :iconURL "https://avatars.githubusercontent.com/u/30849444?v=4"}}))
+     :iconUrl "https://avatars.githubusercontent.com/u/30849444?v=4"}}))
 
 (s/def :community/id ::domain.community/id)
 (s/def :community/name ::domain.community/name)
@@ -96,13 +96,13 @@
 (s/def :community-event/details ::domain.community.event/details)
 (s/def :community-event/holdAt ::domain.community.event/hold-at)
 (s/def :community-event/category ::domain.community.event/category)
-(s/def :community-event/imageURL ::domain.community.event/image-url)
+(s/def :community-event/imageUrl ::domain.community.event/image-url)
 
 (s/def :community-event/communityEvent
   (s/keys :req-un
           [:community-event/id :community-event/communityId :community-event/ownedMemberId
            :community-event/name :community-event/details
-           :community-event/holdAt :community-event/category :community-event/imageURL]))
+           :community-event/holdAt :community-event/category :community-event/imageUrl]))
 
 (def communityEvent
   (st/spec

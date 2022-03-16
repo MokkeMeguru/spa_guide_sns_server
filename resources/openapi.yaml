@@ -33,7 +33,7 @@ components:
       example:
         id: 6e803bdf-55a7-4a31-849e-8489cc76a457
         name: Meguru Mokke
-        iconURL: https://avatars.githubusercontent.com/u/30849444?v=4
+        iconUrl: https://avatars.githubusercontent.com/u/30849444?v=4
     Community:
       type: object
       properties:
@@ -124,7 +124,7 @@ components:
             - party
             - seminar
           type: string
-        imageURL:
+        imageUrl:
           type: string
       required:
         - id
@@ -134,7 +134,7 @@ components:
         - details
         - holdAt
         - category
-        - imageURL
+        - imageUrl
       description: community event informatoion
     CommunityEventComment:
       type: object
