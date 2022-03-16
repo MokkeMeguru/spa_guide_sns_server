@@ -33,7 +33,7 @@ components:
       example:
         id: 6e803bdf-55a7-4a31-849e-8489cc76a457
         name: Meguru Mokke
-        iconURL: https://avatars.githubusercontent.com/u/30849444?v=4
+        iconUrl: https://avatars.githubusercontent.com/u/30849444?v=4
     Community:
       type: object
       properties:
@@ -83,6 +83,80 @@ components:
         membership: 10
         createdAt: 1647307406
         updatedAt: 1647307406
+    CommunityMember:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        community:
+          $ref: "#/components/schemas/Community"
+        role:
+          enum:
+            - member
+            - owner
+          type: string
+      required:
+        - id
+        - user
+        - community
+        - role
+      description: community member information
+    CommunityEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        communityId:
+          type: string
+        ownedMemberId:
+          type: string
+        name:
+          type: string
+        details:
+          type: string
+        holdAt:
+          type: integer
+          format: int64
+        category:
+          enum:
+            - party
+            - seminar
+          type: string
+        imageUrl:
+          type: string
+      required:
+        - id
+        - communityId
+        - ownedMemberId
+        - name
+        - details
+        - holdAt
+        - category
+        - imageUrl
+      description: community event informatoion
+    CommunityEventComment:
+      type: object
+      properties:
+        id:
+          type: string
+        eventId:
+          type: string
+        commentedMemberId:
+          type: string
+        body:
+          type: string
+        commentAt:
+          type: integer
+          format: int64
+      required:
+        - id
+        - eventId
+        - commentedMemberId
+        - body
+        - commentAt
+      description: the comment on the community event
     Error:
       type: object
       properties:
@@ -137,7 +211,7 @@ paths:
                     type: integer
                     format: int64
                     minimum: 0
-                    title: total-size
+                    title: totalSize
   "/users/{id}":
     get:
       operationId: getUser
@@ -198,19 +272,19 @@ paths:
                           description: the logined user is joined the community
                           title: IsJoined
                           nullable: true
-                  before_size:
+                  beforeSize:
                     type: integer
                     format: int64
                     minimum: 0
                     description: レスポンスのリストより前の要素数
-                    title: before-size
-                  total_size:
+                    title: beforeSize
+                  totalSize:
                     type: integer
                     format: int64
                     minimum: 0
-                    title: total-size
+                    title: totalSize
       parameters:
-        - name: request_size
+        - name: requestSize
           in: query
           description: ""
           required: true
@@ -218,13 +292,13 @@ paths:
             type: integer
             format: int64
             minimum: 1
-        - name: begin_cursor
+        - name: beginCursor
           in: query
           description: ""
           required: false
           schema:
             type: string
-        - name: last_cursor
+        - name: lastCursor
           in: query
           description: ""
           required: false

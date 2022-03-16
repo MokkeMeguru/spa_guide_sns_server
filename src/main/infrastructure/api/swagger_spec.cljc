@@ -1,6 +1,7 @@
 (ns infrastructure.api.swagger-spec
   (:require
    [domain.util]
+   [domain.util.url]
    [domain.user]
    [domain.community]
    [domain.community.event]
@@ -12,18 +13,18 @@
 (s/def ::code int?)
 (s/def ::message string?)
 (s/def ::error (s/keys :req-un [::code ::message]))
-(s/def ::begin_cursor (s/and string? #(re-matches domain.util/id-regex  %)))
-(s/def ::last_cursor (s/and string? #(re-matches domain.util/id-regex  %)))
-(s/def ::request_size pos-int?)
+(s/def ::beginCursor (s/and string? #(re-matches domain.util/id-regex  %)))
+(s/def ::lastCursor (s/and string? #(re-matches domain.util/id-regex  %)))
+(s/def ::requestSize pos-int?)
 (s/def ::total_size nat-int?)
 (def error (st/spec {:spec ::error
                      :name "Error"}))
 
 (def before-size (st/spec {:spec nat-int?
-                           :name "before-size"
+                           :name "beforeSize"
                            :description "レスポンスのリストより前の要素数"}))
 (def total-size (st/spec {:spec nat-int?
-                          :name "total-size"}))
+                          :name "totalSize"}))
 
 (s/def :user/id ::domain.user/id)
 (s/def :user/name ::domain.user/name)
@@ -39,7 +40,7 @@
     ;; fetch from sample code
     {:id "6e803bdf-55a7-4a31-849e-8489cc76a457"
      :name "Meguru Mokke"
-     :iconURL "https://avatars.githubusercontent.com/u/30849444?v=4"}}))
+     :iconUrl "https://avatars.githubusercontent.com/u/30849444?v=4"}}))
 
 (s/def :community/id ::domain.community/id)
 (s/def :community/name ::domain.community/name)
@@ -82,45 +83,47 @@
 (s/def :community-member/communityMember (s/keys :req-un [:community-member/id :user/user
                                                           :community/community :community-member/role]))
 
-;; (def communityMember
-;;   (st/spec
-;;    {:spec :community-member/communityMember
-;;     :name "CommunityMember"
-;;     :description "community member information"}))
+(def communityMember
+  (st/spec
+   {:spec :community-member/communityMember
+    :name "CommunityMember"
+    :description "community member information"}))
 
-;; (s/def :community-event/id ::domain.community.event/id)
-;; (s/def :community-event/name ::domain.community.event/name)
-;; (s/def :community-event/ownedMember ::communityMember)
-;; (s/def :community-event/details ::domain.community.event/details)
-;; (s/def :community-event/holdAt ::domain.community.event/hold-at)
-;; (s/def :community-evnet/category ::domain.community.event/category)
-;; (s/def :community-event/imageURL ::domain.community.event/image-url)
+(s/def :community-event/id ::domain.community.event/id)
+(s/def :community-event/communityId ::domain.community/id)
+(s/def :community-event/name ::domain.community.event/name)
+(s/def :community-event/ownedMemberId ::domain.community.member/id)
+(s/def :community-event/details ::domain.community.event/details)
+(s/def :community-event/holdAt ::domain.community.event/hold-at)
+(s/def :community-event/category ::domain.community.event/category)
+(s/def :community-event/imageUrl ::domain.community.event/image-url)
 
-;; (s/def :community-event/communityEvent
-;;   (s/keys :req-un
-;;           [:community-event/id ::community :community-event/ownedMember
-;;            :community-event/name :community-event/details
-;;            :community-event/holdAt :community-event/category :community-event/imageURL]))
+(s/def :community-event/communityEvent
+  (s/keys :req-un
+          [:community-event/id :community-event/communityId :community-event/ownedMemberId
+           :community-event/name :community-event/details
+           :community-event/holdAt :community-event/category :community-event/imageUrl]))
 
-;; (def communityEvent
-;;   (st/spec
-;;    {:spec :community-event/communityEvent
-;;     :name "CommunityEvent"
-;;     :description "community event informatoion"}))
+(def communityEvent
+  (st/spec
+   {:spec :community-event/communityEvent
+    :name "CommunityEvent"
+    :description "community event informatoion"}))
 
-;; (s/def :community-event-comment/id ::domain.community.event.comment/id)
-;; (s/def :community-event-comment/eventID :community-event/id)
-;; (s/def :community-event-comment/body ::domain.community.event.comment/body)
-;; (s/def :community-event-comment/commentAt ::domain.community.event.comment/comment-at)
+(s/def :community-event-comment/id ::domain.community.event.comment/id)
+(s/def :community-event-comment/eventId ::domain.community.event/id)
+(s/def :community-event-comment/commentedMemberId ::domain.community.member/id)
+(s/def :community-event-comment/body ::domain.community.event.comment/body)
+(s/def :community-event-comment/commentAt ::domain.community.event.comment/comment-at)
 
-;; (s/def :community-event-comment/communityEventComment (s/keys :req-un
-;;                                                               [:community-event-comment/id
-;;                                                                :community-event-comment/eventID
-;;                                                                :community-member/communityMember
-;;                                                                :community-event-comment/body
-;;                                                                :community-event-comment/commentAt]))
-;; (def communityEventComment
-;;   (st/spec
-;;    {:spec :community-event-comment/communityEventComment
-;;     :name "communityEventComment"
-;;     :description "the comment on the community event"}))
+(s/def :community-event-comment/communityEventComment (s/keys :req-un
+                                                              [:community-event-comment/id
+                                                               :community-event-comment/eventId
+                                                               :community-event-comment/commentedMemberId
+                                                               :community-event-comment/body
+                                                               :community-event-comment/commentAt]))
+(def communityEventComment
+  (st/spec
+   {:spec :community-event-comment/communityEventComment
+    :name "communityEventComment"
+    :description "the comment on the community event"}))
