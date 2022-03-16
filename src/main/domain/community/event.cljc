@@ -19,7 +19,7 @@
 
 (s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::community-id ::domain.community/id)
-(s/def ::command (s/keys :req-un [::community-id ::owned-gmember_id ::name ::details ::hold_at ::category ::image_url] :opt-un [::id ::image-url]))
+(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url] :opt-un [::id]))
 
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])

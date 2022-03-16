@@ -1,5 +1,6 @@
 (ns infrastructure.sqlite3.util
-  (:require ["better-sqlite3" :as better-sqlite3]))
+  (:require ["better-sqlite3" :as better-sqlite3]
+            [clojure.string]))
 
 (def activate-foreign-key
   "PRAGMA foreign_keys = ON;")
@@ -8,7 +9,7 @@
   (better-sqlite3.
    path
    ;; TODO in production, we don't need below logging right?
-   #js{"verbose" (fn [query] (js/console.log (.toISOString (js/Date.)) "INFO" "execute query:" query))}))
+   #js{"verbose" (fn [query] (js/console.log (.toISOString (js/Date.)) "INFO" "execute query:" (str query)))}))
 
 ;; REPL
 ;; users
