@@ -22,7 +22,8 @@
   {:operationId "listCommunity"
    :parameters {:query (s/keys :req-un [::infrastructure.api.swagger-spec/requestSize]
                                :opt-un [::infrastructure.api.swagger-spec/beginCursor
-                                        ::infrastructure.api.swagger-spec/lastCursor])}
+                                        ::infrastructure.api.swagger-spec/lastCursor
+                                        :community/keyword])}
    :responses {200 {:body
                     {:communities (s/* (s/keys :req-un [::infrastructure.api.swagger-spec/community ::infrastructure.api.swagger-spec/isJoined]))
                      :beforeSize  ::infrastructure.api.swagger-spec/before-size

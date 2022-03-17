@@ -37,9 +37,12 @@
 ;; (let [repo (interface.gateway.sqlite3.community/make-community-query-repository
 ;;             (db! "./db.sqlite3"))]
 ;;   ;; (domain.community/list-community repo)
-;;   ;; (domain.community/fetch-community repo "f95bd742-86f9-48f7-b848-7d562f4c5010")
+;;   ;; (domain.community/fetch-community repo
+;;   ;;                                   "2fbbc61f-b6b2-4711-bf05-d920f42de9be")
+
 ;;   ;; (domain.community/search-communities-by-name repo "sample")
-;;   (count (domain.community/list-part-community repo 5 nil :created-at-desc)))
+;;   (cljs.pprint/pprint
+;;    (sort :created-at (domain.community/list-part-community repo 5 "f53386da-fd0f-42a8-8c1a-cfc7bc31da5a" :updated-at-desc nil))))
 
 ;; (let [repo (interface.gateway.sqlite3.community/make-community-command-repository
 ;;             (db! "./db.sqlite3"))]
