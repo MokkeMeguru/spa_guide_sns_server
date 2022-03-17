@@ -40,7 +40,13 @@
     ;; fetch from sample code
     {:id "6e803bdf-55a7-4a31-849e-8489cc76a457"
      :name "Meguru Mokke"
-     :iconUrl "https://avatars.githubusercontent.com/u/30849444?v=4"}}))
+     :iconURL "https://avatars.githubusercontent.com/u/30849444?v=4"}}))
+
+(defn user->http [user]
+  (let [{:keys [id name icon-url]} user]
+    {:id id
+     :name name
+     :iconUrl icon-url}))
 
 (s/def :community/id ::domain.community/id)
 (s/def :community/name ::domain.community/name)
@@ -56,6 +62,7 @@
                                              :community/createdAt
                                              :community/updatedAt]))
 (s/def :community/isJoined boolean?)
+(s/def :community/keyword string?)
 
 (def community
   (st/spec
@@ -96,13 +103,13 @@
 (s/def :community-event/details ::domain.community.event/details)
 (s/def :community-event/holdAt ::domain.community.event/hold-at)
 (s/def :community-event/category ::domain.community.event/category)
-(s/def :community-event/imageUrl ::domain.community.event/image-url)
+(s/def :community-event/imageURL ::domain.community.event/image-url)
 
 (s/def :community-event/communityEvent
   (s/keys :req-un
           [:community-event/id :community-event/communityId :community-event/ownedMemberId
            :community-event/name :community-event/details
-           :community-event/holdAt :community-event/category :community-event/imageUrl]))
+           :community-event/holdAt :community-event/category :community-event/imageURL]))
 
 (def communityEvent
   (st/spec

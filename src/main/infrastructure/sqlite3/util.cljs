@@ -38,7 +38,8 @@
 ;;             (db! "./db.sqlite3"))]
 ;;   ;; (domain.community/list-community repo)
 ;;   ;; (domain.community/fetch-community repo "f95bd742-86f9-48f7-b848-7d562f4c5010")
-;;   (domain.community/search-communities-by-name repo "sample"))
+;;   ;; (domain.community/search-communities-by-name repo "sample")
+;;   (count (domain.community/list-part-community repo 5 nil :created-at-desc)))
 
 ;; (let [repo (interface.gateway.sqlite3.community/make-community-command-repository
 ;;             (db! "./db.sqlite3"))]

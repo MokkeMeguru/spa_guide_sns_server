@@ -1,5 +1,5 @@
 (ns cmd.openapi.openapi
-  (:require [infrastructure.api.swagger-spec]
+  (:require [infrastructure.api.swagger-spec :refer [community]]
             [spec-tools.openapi.core :as openapi]
             [spec-tools.core :as st]
             [domain.user]
@@ -57,6 +57,7 @@
           :responses {200 {:description "全てのユーザ"
                            :content
                            {"application/json"
+                            ;; TODO 後から replace する仕組みを作る
                             {:schema {:type "object"
                                       :required [:users :totalSize]
                                       :properties {:users {:type "array"
@@ -84,9 +85,11 @@
                                                        "- begin_cursor: 指定された community_id より後のコミュニティリストを返す"
                                                        "- last_cursor : 指定された community_id より前のコミュニティリストを返す"
                                                        "- request_size: 指定されたサイズ以下ののコミュニティリストを返す"
-                                                       "(指定なしで全ての要素を返す / 最終ページなどでは request_size 未満のサイズのリストを返す)"])
+                                                       "- keyword: 指定されたキーワードに部分一致するコミュニティリストを返す"])
           ::openapi/parameters {:query (s/keys :req-un [::infrastructure.api.swagger-spec/requestSize]
-                                               :opt-un [::infrastructure.api.swagger-spec/beginCursor ::infrastructure.api.swagger-spec/lastCursor])}
+                                               :opt-un [::infrastructure.api.swagger-spec/beginCursor
+                                                        ::infrastructure.api.swagger-spec/lastCursor
+                                                        :community/keyword])}
           :responses {200 {:description "コミュニティのリスト"
                            :content
                            {"application/json"

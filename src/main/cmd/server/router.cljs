@@ -1,5 +1,6 @@
 (ns cmd.server.router
   (:require [taoensso.timbre :refer [info]]
+            [domain.user]
             [reitit.ring :as ring]
             [reitit.coercion.spec :as c]
             [macchiato.middleware.params :as params]
@@ -12,13 +13,18 @@
             [infrastructure.api.handler.test.get]
             [infrastructure.api.handler.test.post]
             [infrastructure.api.handler.user.list]
-            [infrastructure.api.handler.community.list]))
+            [infrastructure.api.handler.user.get]
+            [infrastructure.api.handler.community.list]
+            [infrastructure.api.swagger-spec]
+            [clojure.spec.alpha :as s]
+            [macchiato.util.response :as r]))
 
 (def swagger-info
   {:title       "SPA Guide: SNS API Server"
    :version     "1.0.0"
    :description "the sample of SNS API Server (TOY)"})
 
+;; TODO get some infomation from cmd/openapi/openapi.cljc
 (def routes
   [""
    {:swagger  {:info swagger-info}
@@ -26,34 +32,14 @@
    ["/swagger.json" {:get infrastructure.api.handler.swagger/operation}]
    ["/api-docs" {:get infrastructure.api.handler.swagger-ui/operation}]
    ["/test"
-    {:swagger {:tags ["test"]}
-     :get infrastructure.api.handler.test.get/operation
+    {:get infrastructure.api.handler.test.get/operation
      :post infrastructure.api.handler.test.post/operation}]
    ["/users"
-    {:tags ["user"]}
-    ["" {:get infrastructure.api.handler.user.list/operation}]]
+    {:get infrastructure.api.handler.user.list/operation}]
+   ["/users/{id}"
+    {:get infrastructure.api.handler.user.get/operation}]
    ["/communities"
-    {:tags ["community"]}
-    ["" {:get infrastructure.api.handler.community.list/operation}]]
-   ;; ["/communities"
-   ;;  {:swagger {:tags ["community"]}}
-   ;;  [""
-   ;;   {:get {}
-   ;;    :post {}}]
-   ;;  ["/:communities-id"
-   ;;   ["/"
-   ;;    {:get {}}]
-   ;;   ["/events"
-   ;;    {:get {}
-   ;;     :post {}}]
-   ;;   ["/members"
-   ;;    {:get {}
-   ;;     :post {}}]]]
-   ;; ["/users"
-   ;;  {:tags ["user"]}
-   ;;  ["/:user-id"
-   ;;   {:get {}}]]
-   ])
+    {:get infrastructure.api.handler.community.list/operation}]])
 
 (defn app [config repository]
   (ring/ring-handler
@@ -72,3 +58,6 @@
                          rrc/coerce-request-middleware
                          rrc/coerce-response-middleware]}})
    (ring/create-default-handler)))
+
+(let [router (reitit.core/router routes)]
+  (:path-params (reitit.core/match-by-path router "/users/6e803bdf-55a7-4a31-849e-8489cc76a457")))

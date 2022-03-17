@@ -21,4 +21,9 @@ debug-migrate: src
 	touch db.sqlite3
 	npm run migrate
 	npm run start_migrate
+
+.PHONY: debug-release
+debug-release: src
+	npm run release
+	npm run start_release
 # end
