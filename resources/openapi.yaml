@@ -202,6 +202,9 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - users
+                  - totalSize
                 properties:
                   users:
                     type: array
@@ -224,6 +227,8 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - user
                 properties:
                   user:
                     $ref: "#/components/schemas/User"
@@ -259,6 +264,10 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - communities
+                  - beforeSize
+                  - totalSize
                 properties:
                   communities:
                     type: array
