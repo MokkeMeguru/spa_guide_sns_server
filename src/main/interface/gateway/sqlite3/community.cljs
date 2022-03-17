@@ -7,6 +7,14 @@
             [taoensso.timbre :refer [warn]]
             ["better-sqlite3" :as better-sqlite3]))
 
+(def sql-map
+  {:list "SELECT * FROM communities"
+   :list-part-community
+   {:head "SELECT * FROM communities ORDER BY updated_at DESC LIMIT ?"
+    :tail "SELECT * FROM communities ORDER BY updated_at ASC LIMIT ?"
+    :next "SELECT * FROM communities WHERE id > ? ORDER BY updated_at DESC LIMIT ?"
+    :previous "SELECT * FROM communities WHERE id > ? ORDER BY updated_at ASC LIMIT ?"}})
+
 (s/fdef db->domain
   :args map?
   :ret ::domain.community/query)
@@ -51,12 +59,22 @@
   (-list-community [this]
     (let [^js/better-sqlite3 db (:db this)]
       (map db->domain (-> db (.prepare "SELECT * FROM communities") (.all) (js->clj)))))
+  (-list-part-community [this request-size from-cursor sort-order]
+    (let [^js/better-sqlite3 db (:db this)]
+      (cond
+        (nil? from-cursor)
+        (cond (= sort-order :updated-at-asc) (map db->domain (-> db (.prepare (-> sql-map :list-part-community :tail)) (.all request-size) (js->clj)))
+              :else (map db->domain (-> db (.prepare (-> sql-map :list-part-community :head)) (.all request-size) (js->clj))))
+        :else (map db->domain (-> db (.prepare (-> sql-map :list-part-community :tail)) (.all request-size) (js->clj))))))
+
   (-fetch-community [this community-id]
     (let [^js/better-sqlite3 db (:db this)]
       (-> db (.prepare "SELECT * FROM communities WHERE id = ?") (.get community-id) (js->clj) (db->domain))))
   (-search-communities-by-name [this like]
     (let [^js/better-sqlite3 db (:db this)]
-      (map db->domain (-> db (.prepare "SELECT * FROM communities WHERE name like ?") (.all (str "%" like "%")) (js->clj))))))
+      (map db->domain (-> db (.prepare "SELECT * FROM communities WHERE name like ?") (.all (str "%" like "%")) (js->clj)))))
+  (-size-community [this] nil)
+  (-before-size-community [this before-cursor] nil))
 
 (defrecord CommunityCommandRepository [db]
   ICommunityCommandRepository

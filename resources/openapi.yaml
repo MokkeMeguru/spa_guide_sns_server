@@ -256,7 +256,7 @@ paths:
         - begin_cursor: 指定された community_id より後のコミュニティリストを返す<br/>
         - last_cursor : 指定された community_id より前のコミュニティリストを返す<br/>
         - request_size: 指定されたサイズ以下ののコミュニティリストを返す<br/>
-        (指定なしで全ての要素を返す / 最終ページなどでは request_size 未満のサイズのリストを返す)
+        - keyword: 指定されたキーワードに部分一致するコミュニティリストを返す
       responses:
         "200":
           description: コミュニティのリスト
@@ -308,6 +308,12 @@ paths:
           schema:
             type: string
         - name: lastCursor
+          in: query
+          description: ""
+          required: false
+          schema:
+            type: string
+        - name: keyword
           in: query
           description: ""
           required: false

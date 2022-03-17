@@ -42,6 +42,12 @@
      :name "Meguru Mokke"
      :iconUrl "https://avatars.githubusercontent.com/u/30849444?v=4"}}))
 
+(defn user->http [user]
+  (let [{:keys [id name icon-url]} user]
+    {:id id
+     :name name
+     :iconUrl icon-url}))
+
 (s/def :community/id ::domain.community/id)
 (s/def :community/name ::domain.community/name)
 (s/def :community/details ::domain.community/details)
@@ -56,6 +62,7 @@
                                              :community/createdAt
                                              :community/updatedAt]))
 (s/def :community/isJoined boolean?)
+(s/def :community/keyword string?)
 
 (def community
   (st/spec
