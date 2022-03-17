@@ -1,7 +1,7 @@
 src/main/cmd/migrate/config.cljs	96e058879e6ebf83fc8bb2d67b43e5d6
 src/main/cmd/migrate/core.cljs	a475acfbdfa1bc257cd7e7b5455e2402
 src/main/cmd/openapi/core.cljs	1102680e95de835b90931b13fe16fe28
-src/main/cmd/openapi/openapi.cljc	5644160078fe8e765ae20e9d517e1372
+src/main/cmd/openapi/openapi.cljc	0e4b43c869a94962e37b2d7545081c67
 src/main/cmd/server/config.cljs	3db65a024f0c30361b6910ca9f4aabea
 src/main/cmd/server/core.cljs	a74a7da390fb5c996768fced6be5bb19
 src/main/cmd/server/router.cljs	69b90c16c19dff43c72139e8ab11cd8e

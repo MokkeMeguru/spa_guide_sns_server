@@ -58,6 +58,7 @@
                            :content
                            {"application/json"
                             {:schema {:type "object"
+                                      :required [:users :totalSize]
                                       :properties {:users {:type "array"
                                                            :items {"$ref" "#/components/schemas/User"}}
                                                    :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}}
@@ -69,6 +70,7 @@
                            :content
                            {"application/json"
                             {:schema {:type "object"
+                                      :required [:user]
                                       :properties {:user {"$ref" "#/components/schemas/User"}}}}}}
                       404 {:description "user is not found"
                            :content
@@ -89,6 +91,7 @@
                            :content
                            {"application/json"
                             {:schema {:type "object"
+                                      :required [:communities :beforeSize :totalSize]
                                       :properties {:communities {:type "array"
                                                                  :items
                                                                  {:type "object"
