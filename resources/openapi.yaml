@@ -273,6 +273,8 @@ paths:
                     type: array
                     items:
                       type: object
+                      required:
+                        - community
                       properties:
                         community:
                           $ref: "#/components/schemas/Community"

@@ -3,6 +3,7 @@
             [clojure.spec.alpha :as s]
             [clojure.set]
             [clojure.walk]
+            [clojure.string]
             [interface.gateway.sqlite3.util]
             [taoensso.timbre :refer [warn]]
             ["better-sqlite3" :as better-sqlite3]))
@@ -10,10 +11,28 @@
 (def sql-map
   {:list "SELECT * FROM communities"
    :list-part-community
-   {:head "SELECT * FROM communities ORDER BY updated_at DESC LIMIT ?"
-    :tail "SELECT * FROM communities ORDER BY updated_at ASC LIMIT ?"
-    :next "SELECT * FROM communities WHERE id > ? ORDER BY updated_at DESC LIMIT ?"
-    :previous "SELECT * FROM communities WHERE id > ? ORDER BY updated_at ASC LIMIT ?"}})
+   {:limit "LIMIT ?"
+    :order {:updated-at-desc "ORDER BY updated_at DESC"
+            :updated-at-asc "ORDER BY updated_at ASC"}
+    :where {:cursor {:updated-at-desc "updated_at < ?"
+                     :updated-at-asc "updated_at > ?"}
+            :keyword "(name LIKE ? OR details LIKE ?)"}}})
+
+(defn build-sql-list-part-community [request-size from-cursor-updated-at sort-order keyword]
+  (clojure.string/join
+   " "
+   (cond-> []
+     true (conj (-> sql-map :list))
+     (or (some? from-cursor-updated-at) (some? keyword))
+     (conj (str "WHERE "
+                (clojure.string/join
+                 " AND "
+                 (cond-> []
+                   (some? from-cursor-updated-at) (conj (-> sql-map :list-part-community :where :cursor sort-order))
+                   (some? keyword) (conj (-> sql-map :list-part-community :where :keyword))))))
+     (= :updated-at-asc sort-order) (conj (-> sql-map :list-part-community :order :updated-at-asc))
+     (not= :updated-at-asc sort-order) (conj (-> sql-map :list-part-community :order :updated-at-desc))
+     (some? request-size) (conj (-> sql-map :list-part-community :limit)))))
 
 (s/fdef db->domain
   :args map?
@@ -59,14 +78,20 @@
   (-list-community [this]
     (let [^js/better-sqlite3 db (:db this)]
       (map db->domain (-> db (.prepare "SELECT * FROM communities") (.all) (js->clj)))))
-  (-list-part-community [this request-size from-cursor sort-order]
-    (let [^js/better-sqlite3 db (:db this)]
-      (cond
-        (nil? from-cursor)
-        (cond (= sort-order :updated-at-asc) (map db->domain (-> db (.prepare (-> sql-map :list-part-community :tail)) (.all request-size) (js->clj)))
-              :else (map db->domain (-> db (.prepare (-> sql-map :list-part-community :head)) (.all request-size) (js->clj))))
-        :else (map db->domain (-> db (.prepare (-> sql-map :list-part-community :tail)) (.all request-size) (js->clj))))))
-
+  (-list-part-community [this request-size from-cursor sort-order keyword]
+    (let [^js/better-sqlite3 db (:db this)
+          from-cursor-community (domain.community/fetch-community this from-cursor)
+          keyword (when keyword (str "%" keyword "%"))
+          query (build-sql-list-part-community request-size (:updated-at from-cursor-community) sort-order keyword)
+          prepare (.prepare db query)]
+      (map db->domain
+           (js->clj
+            ;; TODO 何故か apply で解決できなかったので原因を調べる
+            (cond
+              (and (some? from-cursor) (some? keyword)) (-> prepare (.all (:updated-at from-cursor-community) keyword keyword request-size))
+              (some? from-cursor) (-> prepare (.all (:updated-at from-cursor-community) request-size))
+              (some? keyword) (-> prepare (.all keyword keyword request-size))
+              :else (-> prepare (.all request-size)))))))
   (-fetch-community [this community-id]
     (let [^js/better-sqlite3 db (:db this)]
       (-> db (.prepare "SELECT * FROM communities WHERE id = ?") (.get community-id) (js->clj) (db->domain))))

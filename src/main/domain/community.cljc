@@ -16,11 +16,12 @@
 (s/def ::command (s/keys :req-un [::name ::details ::category ::image-url] :opt-un [::id]))
 
 ;; NOTE asc: 新しい順 / desc: 古い順
-(s/def ::sort-order #{:created-at-asc :created-at-desc})
+(s/def ::sort-order #{:updated-at-asc :updated-at-desc})
+(s/def ::keyword (s/and string? #(<= 0 (count %) 36)))
 
 (defprotocol ICommunityQueryRepository
   (-list-community [this])
-  (-list-part-community [this request-size from-cursor sort-order])
+  (-list-part-community [this request-size from-cursor sort-order keyword])
   (-fetch-community [this community-id])
   (-search-communities-by-name [this like])
   (-size-community [this])
@@ -34,7 +35,7 @@
   :ret (s/* ::query))
 
 (s/fdef list-part-community
-  :args (s/cat :this any? :request-size pos-int? :from-cursor (s/nilable ::id) :sort-order ::sort-order)
+  :args (s/cat :this any? :request-size pos-int? :from-cursor (s/nilable ::id) :sort-order ::sort-order :keyword (s/nilable ::keyword))
   :ret (s/* ::query))
 
 (s/fdef fetch-community
@@ -60,7 +61,7 @@
              :failed nil?))
 
 (defn list-community [this] (-list-community this))
-(defn list-part-community [this request-size from-cursor sort-order] (-list-part-community this request-size from-cursor sort-order))
+(defn list-part-community [this request-size from-cursor sort-order keyword] (-list-part-community this request-size from-cursor sort-order keyword))
 (defn fetch-community [this community-id] (-fetch-community this community-id))
 (defn search-communities-by-name [this like] (-search-communities-by-name this like))
 (defn size-community [this] (-size-community this))
