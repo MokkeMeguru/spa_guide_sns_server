@@ -28,10 +28,25 @@
 ;;    repo
 ;;    {:name "sample2" :icon-url "https://yt3.ggpht.com/yti/APfAmoHFNGlL4ldSWi1PG-sceFVNObm3_qCAYrLu6SUl1g=s108-c-k-c0x00ffffff-no-rj"}))
 
-
 ;; communities
 ;; (-> (db! "./db.sqlite3")
-;;     (.prepare "SELECT * FROM communities")
+;;     (.prepare
+;;      "
+;; SELECT
+;;   communities.id AS id,
+;;   communities.name AS name,
+;;   communities.details AS details,
+;;   communities.category AS category,
+;;   communities.image_url AS image_url,
+;;   communities.created_at AS created_at,
+;;   communities.updated_at AS updated_at,
+;;   COUNT(*) AS membership
+;; FROM communities
+;; LEFT JOIN community_members
+;; ON communities.id=community_members.community_id
+;; WHERE communities.id='f61f5f38-174b-43e1-8873-4f7cdbee1c18'
+;; GROUP BY communities.id
+;; ")
 ;;     (.all))
 
 ;; (let [repo (interface.gateway.sqlite3.community/make-community-query-repository
@@ -41,8 +56,12 @@
 ;;   ;;                                   "2fbbc61f-b6b2-4711-bf05-d920f42de9be")
 
 ;;   ;; (domain.community/search-communities-by-name repo "sample")
-;;   (cljs.pprint/pprint
-;;    (sort :created-at (domain.community/list-part-community repo 5 "f53386da-fd0f-42a8-8c1a-cfc7bc31da5a" :updated-at-desc nil))))
+;;   ;; (cljs.pprint/pprint
+;;   ;;  (sort :created-at (domain.community/list-part-community repo 5 "f53386da-fd0f-42a8-8c1a-cfc7bc31da5a" :updated-at-desc "ン")))
+;;   ;; (cljs.pprint/pprint
+;;   ;;  (sort :created-at (domain.community/list-part-community repo 5 nil :updated-at-desc nil)))
+;;   ;; (domain.community/size-community repo)
+;;   (domain.community/before-size-community repo {:updated-at 0} "辛いものの部"))
 
 ;; (let [repo (interface.gateway.sqlite3.community/make-community-command-repository
 ;;             (db! "./db.sqlite3"))]
@@ -51,12 +70,19 @@
 ;; community-members
 ;; (-> (db! "./db.sqlite3")
 ;;     (.prepare "SELECT * FROM community_members")
-;;     (.all))
+;;     (.all)
+;;     js->clj
+;;     (cljs.pprint/pprint))
 
 ;; (let [repo (interface.gateway.sqlite3.community-member/make-community-member-query-repository (db! "./db.sqlite3"))]
-;;   (domain.community.member/list-community-member repo)
-;;   (domain.community.member/fetch-community-member repo "eb86ddc9-6446-44d3-8afa-5def58bbe340")
-;;   (domain.community.member/search-community-member-by-community-id repo "f61f5f38-174b-43e1-8873-4f7cdbee1c18"))
+;;   ;; (domain.community.member/list-community-member repo)
+;;   ;; (domain.community.member/fetch-community-member repo "eb86ddc9-6446-44d3-8afa-5def58bbe340")
+;;   ;; (domain.community.member/search-community-member-by-community-id repo "f61f5f38-174b-43e1-8873-4f7cdbee1c18")
+;;   (domain.community.member/check-joined
+;;    repo "82bbb43c-5564-487c-9a21-7416fc6ed357"
+;;    ["f61f5f38-174b-43e1-8873-4f7cdbee1c18"
+;;     "9ec955a0-a016-4939-b64d-69d514ac4e55"
+;;     "1f12489c-2135-4a6a-b49b-83fe3f240d64"]))
 
 ;; community-events
 ;; (-> (db! "./db.sqlite3")

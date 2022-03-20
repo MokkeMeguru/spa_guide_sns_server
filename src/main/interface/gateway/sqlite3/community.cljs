@@ -8,32 +8,7 @@
             [taoensso.timbre :refer [warn]]
             ["better-sqlite3" :as better-sqlite3]))
 
-(def sql-map
-  {:list "SELECT * FROM communities"
-   :list-part-community
-   {:limit "LIMIT ?"
-    :order {:updated-at-desc "ORDER BY updated_at DESC"
-            :updated-at-asc "ORDER BY updated_at ASC"}
-    :where {:cursor {:updated-at-desc "updated_at < ?"
-                     :updated-at-asc "updated_at > ?"}
-            :keyword "(name LIKE ? OR details LIKE ?)"}}})
-
-(defn build-sql-list-part-community [request-size from-cursor-updated-at sort-order keyword]
-  (clojure.string/join
-   " "
-   (cond-> []
-     true (conj (-> sql-map :list))
-     (or (some? from-cursor-updated-at) (some? keyword))
-     (conj (str "WHERE "
-                (clojure.string/join
-                 " AND "
-                 (cond-> []
-                   (some? from-cursor-updated-at) (conj (-> sql-map :list-part-community :where :cursor sort-order))
-                   (some? keyword) (conj (-> sql-map :list-part-community :where :keyword))))))
-     (= :updated-at-asc sort-order) (conj (-> sql-map :list-part-community :order :updated-at-asc))
-     (not= :updated-at-asc sort-order) (conj (-> sql-map :list-part-community :order :updated-at-desc))
-     (some? request-size) (conj (-> sql-map :list-part-community :limit)))))
-
+;; domain mapping
 (s/fdef db->domain
   :args map?
   :ret ::domain.community/query)
@@ -53,14 +28,16 @@
 
 (defn db->domain [db-model]
   (when db-model
-    (let [{:keys [id name details category image_url created_at updated_at]} (clojure.walk/keywordize-keys db-model)]
+    (let [{:keys [id name details category image_url created_at updated_at membership]}
+          (clojure.walk/keywordize-keys db-model)]
       {:id id
        :name name
        :details details
        :category (get (:db->domain category-map) category)
        :image-url image_url
        :created-at created_at
-       :updated-at updated_at})))
+       :updated-at updated_at
+       :membership membership})))
 
 (defn domain->db [domain-model]
   (when domain-model
@@ -73,33 +50,101 @@
        :created_at (interface.gateway.sqlite3.util/now)
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
+;; build sql query
+(def sql-map
+  (let [base-select
+        "\nSELECT
+  communities.id AS id,
+  communities.name AS name,
+  communities.details AS details,
+  communities.category AS category,
+  communities.image_url AS image_url,
+  communities.created_at AS created_at,
+  communities.updated_at AS updated_at,
+  COUNT(*) AS membership
+FROM communities
+LEFT JOIN community_members
+ON communities.id=community_members.community_id"
+        base-group  "GROUP BY communities.id"]
+    {:base {:select base-select
+            :group base-group}
+     :list (clojure.string/join "\n" [base-select base-group])
+     :list-part
+     {:limit "LIMIT ?"
+      :order {:updated-at-desc "ORDER BY communities.updated_at DESC"
+              :updated-at-asc "ORDER BY communities.updated_at ASC"}
+      :where {:cursor {:updated-at-desc "communities.updated_at <= ?"
+                       :updated-at-asc "communities.updated_at >= ?"}
+              :keyword "(communities.name LIKE ? OR communities.details LIKE ?)"}}
+     :fetch (clojure.string/join "\n" [base-select "WHERE communities.id = ?" base-group])
+     :size {:base "SELECT COUNT(*) AS total_size from communities"
+            :keyword "WHERE (communities.name LIKE ? OR communities.details LIKE ?)"}
+     :before-size {:basic "SELECT COUNT(*) AS before_size, (SELECT COUNT(*) FROM communities) AS total_size from communities WHERE updated_at > ?"
+                   :with-keyword "\nSELECT
+COUNT(*) AS before_size,
+(SELECT COUNT(*) FROM communities WHERE (communities.name LIKE ? OR communities.details LIKE ?)) AS total_size
+FROM communities WHERE updated_at > ?
+AND (communities.name LIKE ? OR communities.details LIKE ?)"}
+     :create "INSERT INTO communities (id, name, details, category, image_url, created_at, updated_at) VALUES (@id, @name, @details, @category, @image_url, @created_at, @updated_at)"}))
+
+(defn build-sql-list-part-community [request-size from-cursor-updated-at sort-order keyword]
+  (clojure.string/join
+   "\n"
+   (cond-> []
+     true (conj (-> sql-map :base :select))
+     (or (some? from-cursor-updated-at) (some? keyword))
+     (conj (str "WHERE "
+                (clojure.string/join
+                 " AND "
+                 (cond-> []
+                   (some? from-cursor-updated-at) (conj (-> sql-map :list-part :where :cursor sort-order))
+                   (some? keyword) (conj (-> sql-map :list-part :where :keyword))))))
+     true (conj (-> sql-map :base :group))
+     (= :updated-at-asc sort-order) (conj (-> sql-map :list-part :order :updated-at-asc))
+     (not= :updated-at-asc sort-order) (conj (-> sql-map :list-part :order :updated-at-desc))
+     (some? request-size) (conj (-> sql-map :list-part :limit)))))
+
+;; impl
 (defrecord CommunityQueryRepository [db]
   ICommunityQueryRepository
   (-list-community [this]
     (let [^js/better-sqlite3 db (:db this)]
-      (map db->domain (-> db (.prepare "SELECT * FROM communities") (.all) (js->clj)))))
+      (map db->domain (-> db (.prepare (-> sql-map :list)) (.all) (js->clj)))))
   (-list-part-community [this request-size from-cursor sort-order keyword]
     (let [^js/better-sqlite3 db (:db this)
           from-cursor-community (domain.community/fetch-community this from-cursor)
-          keyword (when keyword (str "%" keyword "%"))
-          query (build-sql-list-part-community request-size (:updated-at from-cursor-community) sort-order keyword)
-          prepare (.prepare db query)]
-      (map db->domain
-           (js->clj
-            ;; TODO 何故か apply で解決できなかったので原因を調べる
-            (cond
-              (and (some? from-cursor) (some? keyword)) (-> prepare (.all (:updated-at from-cursor-community) keyword keyword request-size))
-              (some? from-cursor) (-> prepare (.all (:updated-at from-cursor-community) request-size))
-              (some? keyword) (-> prepare (.all keyword keyword request-size))
-              :else (-> prepare (.all request-size)))))))
+          query-keyword (when keyword (str "%" keyword "%"))
+          query (build-sql-list-part-community request-size (:updated-at from-cursor-community) sort-order query-keyword)
+          args (filter some? [(:updated-at from-cursor-community) query-keyword query-keyword request-size])]
+      (map db->domain (js->clj (interface.gateway.sqlite3.util/apply-all (.prepare db query) args)))))
   (-fetch-community [this community-id]
     (let [^js/better-sqlite3 db (:db this)]
-      (-> db (.prepare "SELECT * FROM communities WHERE id = ?") (.get community-id) (js->clj) (db->domain))))
-  (-search-communities-by-name [this like]
+      (-> db (.prepare (-> sql-map :fetch)) (.get community-id) (js->clj) (db->domain))))
+  (-size-community [this keyword]
     (let [^js/better-sqlite3 db (:db this)]
-      (map db->domain (-> db (.prepare "SELECT * FROM communities WHERE name like ?") (.all (str "%" like "%")) (js->clj)))))
-  (-size-community [this] nil)
-  (-before-size-community [this before-cursor] nil))
+      (if keyword
+        (-> db (.prepare (clojure.string/join " " [(-> sql-map :size :base) (-> sql-map :size :keyword)])) (.get (str "%" keyword "%")  (str "%" keyword "%")) (js->clj) (get "total_size" 0))
+        (-> db (.prepare (-> sql-map :size :base)) (.get) (js->clj) (get "total_size" 0)))))
+  (-before-size-community [this community keyword]
+    (let [^js/better-sqlite3 db (:db this)
+          partial-match-keyword (str "%" keyword "%")
+          db->domain (fn [{:keys [before_size total_size]}] {:before-size before_size :total-size total_size})]
+      (cond
+        (nil? keyword) (-> db (.prepare (-> sql-map :before-size :basic))
+                           (.get (:updated-at community))
+                           (js->clj)
+                           clojure.walk/keywordize-keys
+                           db->domain)
+        :else (-> db (.prepare (-> sql-map :before-size :with-keyword))
+                  (.get
+                   partial-match-keyword
+                   partial-match-keyword
+                   (:updated-at community)
+                   partial-match-keyword
+                   partial-match-keyword)
+                  (js->clj)
+                  clojure.walk/keywordize-keys
+                  db->domain)))))
 
 (defrecord CommunityCommandRepository [db]
   ICommunityCommandRepository
@@ -107,8 +152,8 @@
     (let [^js/better-sqlite3 db (:db this)
           db-model (domain->db community)]
       (try
-        (-> db (.prepare "INSERT INTO communities (id, name, details, category, image_url, created_at, updated_at) VALUES (@id, @name, @details, @category, @image_url, @created_at, @updated_at)") (.run (clj->js db-model)))
-        (try (-> db (.prepare "SELECT * FROM communities WHERE id = ?") (.get (:id db-model)) (js->clj) (db->domain))
+        (-> db (.prepare (-> sql-map :create)) (.run (clj->js db-model)))
+        (try (-> db (.prepare (-> sql-map :fetch)) (.get (:id db-model)) (js->clj) (db->domain))
              (catch js/Error e
                (warn "insert result cannot fetched" e)
                (db->domain db-model)))

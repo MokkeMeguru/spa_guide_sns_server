@@ -58,6 +58,3 @@
                          rrc/coerce-request-middleware
                          rrc/coerce-response-middleware]}})
    (ring/create-default-handler)))
-
-(let [router (reitit.core/router routes)]
-  (:path-params (reitit.core/match-by-path router "/users/6e803bdf-55a7-4a31-849e-8489cc76a457")))

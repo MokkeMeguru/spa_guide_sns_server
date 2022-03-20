@@ -13,13 +13,16 @@
 (s/def ::category #{:party :seminar})
 (s/def ::image-url ::domain.util.url/url)
 
-(s/def ::community ::domain.community/query)
-(s/def ::owned-member ::domain.community.member/query)
-(s/def ::query (s/keys :req-un [::id ::community ::owned-member ::name ::details ::hold-at ::category ::image-url]))
-
-(s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::community-id ::domain.community/id)
-(s/def ::command (s/keys :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url] :opt-un [::id]))
+(s/def ::owned-member-id ::domain.community.member/id)
+(s/def ::query
+  (s/keys
+   :req-un [::id ::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url]))
+
+(s/def ::command
+  (s/keys
+   :req-un [::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url]
+   :opt-un [::id]))
 
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])
@@ -52,7 +55,6 @@
 (defn search-community-event-by-community-id [this community-id] (-search-community-event-by-community-id this community-id))
 (defn create-community-event [this event] (-create-community-event this event))
 
-;; dummy-utility
 ;; dummy utility
 (s/fdef sample-dummy-image-url
   :args (s/cat :category ::category)

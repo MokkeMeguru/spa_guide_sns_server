@@ -18,14 +18,15 @@
 ;; NOTE asc: 新しい順 / desc: 古い順
 (s/def ::sort-order #{:updated-at-asc :updated-at-desc})
 (s/def ::keyword (s/and string? #(<= 0 (count %) 36)))
+(s/def ::before-size number?)
+(s/def ::total-size nat-int?)
 
 (defprotocol ICommunityQueryRepository
   (-list-community [this])
   (-list-part-community [this request-size from-cursor sort-order keyword])
   (-fetch-community [this community-id])
-  (-search-communities-by-name [this like])
-  (-size-community [this])
-  (-before-size-community [this from-cursor]))
+  (-size-community [this keyword])
+  (-before-size-community [this community keyword]))
 
 (defprotocol ICommunityCommandRepository
   (-create-community [this community]))
@@ -42,31 +43,72 @@
   :args (s/cat :this any? :community-id ::id)
   :ret (s/or :exist ::query
              :not-exist nil?))
-
-(s/fdef search-communities-by-name
-  :args (s/cat :this any? :like ::name)
-  :ret (s/* ::query))
-
 (s/fdef size-community
-  :args (s/cat :this any?)
+  :args (s/cat :this any? :keyword (s/nilable ::keyword))
   :ret nat-int?)
 
 (s/fdef before-size-community
-  :args (s/cat :this any? :from-cursor ::id)
-  :ret nat-int?)
+  :args (s/cat :this any? :community ::query :keyword (s/nilable ::keyword))
+  :ret (s/keys :req-un [::before-size ::total-size]))
 
 (s/fdef create-community
   :args (s/cat :this any? :community ::command)
   :ret (s/or :succeed ::query
              :failed nil?))
 
-(defn list-community [this] (-list-community this))
-(defn list-part-community [this request-size from-cursor sort-order keyword] (-list-part-community this request-size from-cursor sort-order keyword))
-(defn fetch-community [this community-id] (-fetch-community this community-id))
-(defn search-communities-by-name [this like] (-search-communities-by-name this like))
-(defn size-community [this] (-size-community this))
-(defn before-size-community [this from-cursor] (-before-size-community this from-cursor))
-(defn create-community [this community] (-create-community this community))
+(defn list-community
+  "community を全件取得します"
+  [this]
+  (-list-community this))
+
+(defn list-part-community
+  "community の検索を行います
+
+  - request-size: 返しうる community の最大数
+  - keyword: name, details について keyword に部分一致する community を検索します
+  - from-cursor: from-cursor をもつ communtity_id より `sort-order` 的に *後* のコミュニティを検索します
+     from-cursor が存在しないときには from-cursor に `nil` を指定したときと同じ挙動をします
+  - sort-order:
+    - :updated-at-desc: 更新日時についてより新しい順
+    - :updated-at-asc: 更新日時についてより古い順
+
+  Example:
+
+     (list-part-community repo 5 nil :updated-at-desc nil) ;; 最新 5 件を取得
+
+     (list-part-community repo 5 \"47ace9f8-55a4-4bd5-8d64-63f4d432c59e\" :updated-at-desc nil) ;; 47ace... より古い community の最新5件を取得
+  "
+  [this request-size from-cursor sort-order keyword]
+  (-list-part-community this request-size from-cursor sort-order keyword))
+
+(defn fetch-community
+  "community-id を持つ community を検索します。
+  存在しないときには nil を返します"
+  [this community-id]
+  (-fetch-community this community-id))
+
+(defn size-community
+  "現在存在する community の数を返します
+  keyword が指定されたときには、 keyword を含む community のリストの中で検索します
+  "
+  [this keyword]
+  (-size-community this keyword))
+
+(defn before-size-community
+  "community よりも前の community の数と現在存在する community の数を返します
+  keyword が指定されたときには、 keyword を含む community のリストの中で検索します
+
+  Example:
+
+    (before-size-community repo nil nil) ;; {:before-size 0 :total-size 10}
+  "
+  [this community keyword]
+  (-before-size-community this community keyword))
+
+(defn create-community
+  "community を作成します"
+  [this community]
+  (-create-community this community))
 
 ;; dummy utility
 (s/fdef sample-dummy-image-url
