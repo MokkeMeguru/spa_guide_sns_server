@@ -7,6 +7,7 @@
             [taoensso.timbre :refer [warn]]
             ["better-sqlite3" :as better-sqlite3]))
 
+;; domain mapping
 (s/fdef db->domain
   :args (s/cat :db-model map?)
   :ret ::domain.user/query)
@@ -33,18 +34,32 @@
        :created_at (interface.gateway.sqlite3.util/now)
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
+;; build sql query
+(def sql-map
+  {:list "SELECT * FROM users"
+   :fetch "SELECT * FROM users WHERE id = ?"
+   :create "INSERT INTO users (id, name, icon_url, created_at, updated_at) VALUES (@id, @name, @icon_url, @created_at, @updated_at)"})
+
+(defn build-sql-fetch-users [user-ids]
+  (let [params (str (clojure.string/join ", " (repeat (count user-ids)  "?")))]
+    (clojure.string/join
+     "\n"
+     [""
+      (-> sql-map :list)
+      (str "WHERE id IN " "(" params ")")])))
+
+;; impl
 (defrecord UserQueryRepository [db]
   IUserQueryRepository
   (-list-user [this]
     (let [^js/better-sqlite3 db (:db this)]
-      (map db->domain (-> db (.prepare "SELECT * FROM users") (.all) (js->clj)))))
+      (map db->domain (-> db (.prepare (-> sql-map :list)) (.all) (js->clj)))))
   (-fetch-user [this user-id]
     (let [^js/better-sqlite3 db (:db this)]
-      (-> db (.prepare "SELECT * FROM users WHERE id = ?") (.get user-id) (js->clj) (db->domain))))
+      (-> db (.prepare (-> sql-map :fetch)) (.get user-id) (js->clj) (db->domain))))
   (-fetch-users [this user-ids] []
-    (let [^js/better-sqlite3 db (:db this)
-          params (str (clojure.string/join ", " (repeat (count user-ids)  "?")))]
-      (map db->domain (-> db (.prepare (str "SELECT * FROM users WHERE id IN (" params ")")) (.all (clj->js user-ids)) (js->clj))))))
+    (let [^js/better-sqlite3 db (:db this)]
+      (map db->domain (-> db (.prepare (build-sql-fetch-users user-ids)) (.all (clj->js user-ids)) (js->clj))))))
 
 (defrecord UserCommandRepository [db]
   IUserCommandRepository
@@ -53,8 +68,8 @@
       (let [^js/better-sqlite3 db (:db this)
             db-model (domain->db user)]
         (try
-          (-> db (.prepare "INSERT INTO users (id, name, icon_url, created_at, updated_at) VALUES (@id, @name, @icon_url, @created_at, @updated_at)") (.run (clj->js db-model)))
-          (try (-> db (.prepare "SELECT * FROM users WHERE id = ?") (.get (:id db-model)) (js->clj) (db->domain))
+          (-> db (.prepare (-> sql-map :create)) (.run (clj->js db-model)))
+          (try (-> db (.prepare (-> sql-map :fetch)) (.get (:id db-model)) (js->clj) (db->domain))
                (catch js/Error e
                  (warn "insert result cannot fetched" e)
                  (db->domain db-model)))

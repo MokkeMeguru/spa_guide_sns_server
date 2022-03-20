@@ -47,8 +47,30 @@
   :ret (s/or :succeed ::query
              :failed nil?))
 
-(defn list-community-member [this] (-list-community-member this))
-(defn fetch-community-member [this member-id] (-fetch-community-member this member-id))
-(defn check-joined [this user-id community-ids] (-check-joined this user-id community-ids))
-(defn search-community-member-by-community-id [this community-id] (-search-community-member-by-community-id this community-id))
-(defn create-community-member [this member] (-create-community-member this member))
+(defn list-community-member
+  "community member を全件取得します"
+  [this]
+  (-list-community-member this))
+
+(defn fetch-community-member
+  "member-id を持つ community member を検索します
+  存在しないときには nil を返します"
+  [this member-id]
+  (-fetch-community-member this member-id))
+
+(defn check-joined
+  "user-id を持つ user が、community-ids のうちの所属する community-id を返します
+  community-ids - (返ってきた communtiy-id のリスト) = そのユーザが所属していない community です"
+  [this user-id community-ids]
+  (-check-joined this user-id community-ids))
+
+(defn search-community-member-by-community-id
+  "community-id を持つ community の member 一覧を返します
+  community が存在しないとき / member がいない場合には 空リスト が返ります"
+  [this community-id]
+  (-search-community-member-by-community-id this community-id))
+
+(defn create-community-member
+  "community member を作成します"
+  [this member]
+  (-create-community-member this member))

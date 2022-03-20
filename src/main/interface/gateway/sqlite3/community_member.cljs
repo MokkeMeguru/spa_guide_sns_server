@@ -3,6 +3,7 @@
             [clojure.spec.alpha :as s]
             [clojure.walk]
             [clojure.set]
+            [clojure.string]
             [taoensso.timbre :refer [warn]]
             [interface.gateway.sqlite3.util]
             [interface.gateway.sqlite3.community]
@@ -54,8 +55,7 @@
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
 (def sql-map
-  {:list "
-SELECT
+  (let [base-select "\nSELECT
  community_members.id AS community_member_id,
  community_members.role AS community_member_role,
  community_members.created_at AS community_member_created_at,
@@ -73,52 +73,28 @@ SELECT
  users.updated_at AS user_updated_at
 FROM community_members
 INNER JOIN communities ON community_members.community_id = communities.id
-INNER JOIN users ON community_members.user_id = users.id"
-   :fetch "
-SELECT
- community_members.id AS community_member_id,
- community_members.role AS community_member_role,
- community_members.created_at AS community_member_created_at,
- community_members.updated_at AS community_member_updated_at,
- communities.id AS community_id,
- communities.name AS community_name,
- communities.details AS community_details,
- communities.category AS community_category,
- communities.created_at AS community_created_at,
- communities.updated_at AS community_updated_at,
- users.id AS user_id,
- users.name AS user_name,
- users.icon_url AS user_icon_url,
- users.created_at AS user_created_at,
- users.updated_at AS user_updated_at
-FROM community_members
-INNER JOIN communities ON community_members.community_id = communities.id
-INNER JOIN users ON community_members.user_id = users.id
-WHERE community_members.id= ?"
-   :search-by-community-id "
-SELECT
- community_members.id AS community_member_id,
- community_members.role AS community_member_role,
- community_members.created_at AS community_member_created_at,
- community_members.updated_at AS community_member_updated_at,
- communities.id AS community_id,
- communities.name AS community_name,
- communities.details AS community_details,
- communities.category AS community_category,
- communities.created_at AS community_created_at,
- communities.updated_at AS community_updated_at,
- users.id AS user_id,
- users.name AS user_name,
- users.icon_url AS user_icon_url,
- users.created_at AS user_created_at,
- users.updated_at AS user_updated_at
-FROM community_members
-INNER JOIN communities ON community_members.community_id = communities.id
-INNER JOIN users ON community_members.user_id = users.id
-WHERE community_members.community_id = ?"
-   :create "INSERT INTO community_members (id, community_id, user_id, role, created_at, updated_at)
-VALUES (@id, @community_id, @user_id, @role, @created_at, @updated_at)"})
+INNER JOIN users ON community_members.user_id = users.id"]
+    {:list base-select
+     :fetch (clojure.string/join
+             "\n"
+             [base-select "WHERE community_members.id= ?"])
+     :search-by-community-id (clojure.string/join
+                              "\n"
+                              [base-select "WHERE community_members.community_id = ?"])
+     :create "INSERT INTO community_members (id, community_id, user_id, role, created_at, updated_at)
+VALUES (@id, @community_id, @user_id, @role, @created_at, @updated_at)"}))
 
+(defn build-sql-check-joined [community_ids]
+  (let [params (str (clojure.string/join ", " (repeat (count community_ids)  "?")))]
+    (clojure.string/join
+     "\n"
+     ["\nSELECT
+community_id
+FROM community_members
+WHERE user_id = ?"
+      (str "  AND community_id IN " "(" params ")")])))
+
+;; impl
 (defrecord CommunityMemberQueryRepository [db]
   ICommunityMemberQueryRepository
   (-list-community-member [this]
@@ -127,6 +103,10 @@ VALUES (@id, @community_id, @user_id, @role, @created_at, @updated_at)"})
   (-fetch-community-member [this member-id]
     (let [^js/better-sqlite3 db (:db this)]
       (-> db (.prepare (:fetch sql-map)) (.get member-id) (js->clj) (db->domain))))
+  (-check-joined [this user-id community-ids]
+    (let [^js/better-sqlite3 db (:db this)]
+      (->> (-> db (.prepare (build-sql-check-joined community-ids)) (.all user-id (clj->js community-ids)) (js->clj))
+           (map (comp :community_id clojure.walk/keywordize-keys)))))
   (-search-community-member-by-community-id [this community-id]
     (let [^js/better-sqlite3 db (:db this)]
       (map db->domain (-> db (.prepare (:search-by-community-id sql-map)) (.all community-id) (js->clj))))))

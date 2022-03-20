@@ -41,10 +41,27 @@
   :ret (s/or :succeed ::query
              :failed nil?))
 
-(defn list-user [this] (-list-user this))
-(defn fetch-user [this user-id] (-fetch-user this user-id))
-(defn fetch-users [this user-ids] (-fetch-users this user-ids))
-(defn create-user [this user] (-create-user this user))
+(defn list-user
+  "user を全件取得します"
+  [this]
+  (-list-user this))
+
+(defn fetch-user
+  "user-id を持つ user を検索します
+  存在しないときには nil を返します"
+  [this user-id]
+  (-fetch-user this user-id))
+
+(defn fetch-users
+  "user-ids を持つ user のリストを検索します
+  user-ids - (返ってきた users のリスト) = 存在しない user のリストです"
+  [this user-ids]
+  (-fetch-users this user-ids))
+
+(defn create-user
+  "user を作成します"
+  [this user]
+  (-create-user this user))
 
 ;; Developer's Note:
 ;; We cannot apply clojure.spec into defprotocol directory
