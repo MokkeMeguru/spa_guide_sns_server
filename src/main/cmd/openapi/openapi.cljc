@@ -1,5 +1,5 @@
 (ns cmd.openapi.openapi
-  (:require [infrastructure.api.swagger-spec :refer [community]]
+  (:require [infrastructure.api.swagger-spec :refer [community path]]
             [spec-tools.openapi.core :as openapi]
             [spec-tools.core :as st]
             [domain.user]
@@ -35,9 +35,9 @@
       openapi/openapi-spec
       :components
       (update-in [:schemas :CommunityMember :properties]
-                 #(-> %
-                      (assoc "community" {"$ref" "#/components/schemas/Community"})
-                      (assoc "user" {"$ref" "#/components/schemas/User"})))))
+                 #(cond-> %
+                    (get % "community") (assoc "community" {"$ref" "#/components/schemas/Community"})
+                    (get % "user") (assoc "user" {"$ref" "#/components/schemas/User"})))))
 
 (def paths
   {"/test"
@@ -50,6 +50,16 @@
                            {"application/json"
                             (st/spec {:spec {:message string?}
                                       :openapi/example "Hello : User"})}}}}}
+   "/my/profile"
+   {:get {:operationId "getMyProfile"
+          :description "ユーザ情報を返します"
+          :tags ["my"]
+          :responses  {200 {:description "ログインユーザ"
+                            :content
+                            {"application/json"
+                             {:schema {:type "object"
+                                       :required [:user]
+                                       :properties {:user {"$ref" "#/components/schemas/User"}}}}}}}}}
    "/users"
    {:get {:operationId "listUser"
           :description "全てのユーザのリストを返します (debug)"
@@ -103,11 +113,65 @@
                                                                                :isJoined (assoc (openapi/transform infrastructure.api.swagger-spec/community-is-joined)
                                                                                                 :nullable true)}}}
                                                    :beforeSize (openapi/transform infrastructure.api.swagger-spec/before-size)
-                                                   :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}
-    ;; :post {:operationId "createCommunity"
-    ;;        :description "コミュニティを作成します"
-    ;;        :requestBody {}}
-    }})
+                                                   :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}}
+   "/communities/{communityId}"
+   {:get {:operationId "getCommunity"
+          :tags ["community"]
+          :description (clojure.string/join "<br/>\n" ["コミュニティの情報を返します"])
+          ::openapi/parameters {:path (s/keys :req-un [:path/communityId])}
+          :responses {200 {:description "コミュニティと所属メンバー一覧"
+                           :content
+                           {"application/json"
+                            {:schema {:type "object"
+                                      :required [:community :members]
+                                      :properties {:community {"$ref" "#/components/schemas/Community"}
+                                                   :isJoined (assoc (openapi/transform infrastructure.api.swagger-spec/community-is-joined)
+                                                                    :nullable true)
+                                                   :members {:type "array"
+                                                             :items {"$ref" "#/components/schemas/CommunityMember"}}}}}}}}}}
+   "/communities/{communityId}/events"
+   {:get {:operationId "listCommunityEvent"
+          :tags ["communityEvent"]
+          :description (clojure.string/join "<br/>\n" ["コミュニティの全てのイベントを返します"
+                                                       "includes の設計は Twitter と同じで、重複しうる参照をまとめて返します (簡単のために required にしています)"
+                                                       "see.  https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets-id#Optional"])
+          ::openapi/parameters {:path (s/keys :req-un [:path/communityId])}
+          :responses {200 {:description "コミュニティの全てのイベント"
+                           :content {"application/json"
+                                     {:schema {:type "object"
+                                               :required [:events :beforeSize :totalSize :includes]
+                                               :properties {:events {:type "array"
+                                                                     :items
+                                                                     {:type "object"
+                                                                      :required [:communityEvent]
+                                                                      :properties {:communityEvent {"$ref" "#/components/schemas/CommunityEvent"}
+                                                                                   :representativeComment {:type "array"
+                                                                                                           :items {"$ref" "#/components/schemas/CommunityEventComment"}}}}}
+                                                            :includes {:type "object"
+                                                                       :required [:communityMembers]
+                                                                       :properties
+                                                                       {:communityMembers {:type "array"
+                                                                                           :items {"$ref" "#/components/schemas/CommunityMember"}}}}
+                                                            :beforeSize (openapi/transform infrastructure.api.swagger-spec/before-size)
+                                                            :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}}
+
+   "/communityes/{communityId}/events/{eventId}/comments"
+   {:get {:operationId "listCommunityEventComment"
+          :tags ["communityEventComment"]
+          ::openapi/parameters {:path (s/keys :req-un [:path/communityId :path/eventId])}
+          :description (clojure.string/join "<br/>\n" ["コミュニティイベントについた全てのコメントを返します"])
+          :responses {200 {:description "コミュニティイベントについたコメント"
+                           :content {"application/json"
+                                     {:schema {:type "object"
+                                               :required [:comments :includes]
+                                               :properties
+                                               {:comments {:type "array"
+                                                           :items {"$ref" "#/components/schemas/CommunityEventComment"}}
+                                                :includes {:type "object"
+                                                           :required [:communityMembers]
+                                                           :properties
+                                                           {:communityMembers {:type "array"
+                                                                               :items {"$ref" "#/components/schemas/CommunityMember"}}}}}}}}}}}}})
 
 (defn generate-openapi []
   (update-in (openapi/openapi-spec

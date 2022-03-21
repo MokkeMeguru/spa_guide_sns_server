@@ -90,8 +90,8 @@ components:
           type: string
         user:
           $ref: "#/components/schemas/User"
-        community:
-          $ref: "#/components/schemas/Community"
+        communityId:
+          type: string
         role:
           enum:
             - member
@@ -100,7 +100,7 @@ components:
       required:
         - id
         - user
-        - community
+        - communityId
         - role
       description: community member information
     CommunityEvent:
@@ -189,6 +189,24 @@ paths:
           required: true
           schema:
             type: string
+  /my/profile:
+    get:
+      operationId: getMyProfile
+      description: ユーザ情報を返します
+      tags:
+        - my
+      responses:
+        "200":
+          description: ログインユーザ
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
   /users:
     get:
       operationId: listUser
@@ -319,5 +337,147 @@ paths:
           in: query
           description: ""
           required: false
+          schema:
+            type: string
+  "/communities/{communityId}":
+    get:
+      operationId: getCommunity
+      tags:
+        - community
+      description: コミュニティの情報を返します
+      responses:
+        "200":
+          description: コミュニティと所属メンバー一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - community
+                  - members
+                properties:
+                  community:
+                    $ref: "#/components/schemas/Community"
+                  isJoined:
+                    type: boolean
+                    description: the logined user is joined the community
+                    title: IsJoined
+                    nullable: true
+                  members:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CommunityMember"
+      parameters:
+        - name: communityId
+          in: path
+          description: ""
+          required: true
+          schema:
+            type: string
+  "/communities/{communityId}/events":
+    get:
+      operationId: listCommunityEvent
+      tags:
+        - communityEvent
+      description: >-
+        コミュニティの全てのイベントを返します<br/>
+
+        includes の設計は Twitter と同じで、重複しうる参照をまとめて返します (簡単のために required にしています)<br/>
+
+        see.  https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets-id#Optional
+      responses:
+        "200":
+          description: コミュニティの全てのイベント
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - events
+                  - beforeSize
+                  - totalSize
+                  - includes
+                properties:
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - communityEvent
+                      properties:
+                        communityEvent:
+                          $ref: "#/components/schemas/CommunityEvent"
+                        representativeComment:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/CommunityEventComment"
+                  includes:
+                    type: object
+                    required:
+                      - communityMembers
+                    properties:
+                      communityMembers:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/CommunityMember"
+                  beforeSize:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    description: レスポンスのリストより前の要素数
+                    title: beforeSize
+                  totalSize:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    title: totalSize
+      parameters:
+        - name: communityId
+          in: path
+          description: ""
+          required: true
+          schema:
+            type: string
+  "/communityes/{communityId}/events/{eventId}/comments":
+    get:
+      operationId: listCommunityEventComment
+      tags:
+        - communityEventComment
+      description: コミュニティイベントについた全てのコメントを返します
+      responses:
+        "200":
+          description: コミュニティイベントについたコメント
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - comments
+                  - includes
+                properties:
+                  comments:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CommunityEventComment"
+                  includes:
+                    type: object
+                    required:
+                      - communityMembers
+                    properties:
+                      communityMembers:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/CommunityMember"
+      parameters:
+        - name: communityId
+          in: path
+          description: ""
+          required: true
+          schema:
+            type: string
+        - name: eventId
+          in: path
+          description: ""
+          required: true
           schema:
             type: string

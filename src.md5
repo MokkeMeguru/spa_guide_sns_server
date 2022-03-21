@@ -1,7 +1,7 @@
 src/main/cmd/migrate/config.cljs	96e058879e6ebf83fc8bb2d67b43e5d6
 src/main/cmd/migrate/core.cljs	a475acfbdfa1bc257cd7e7b5455e2402
 src/main/cmd/openapi/core.cljs	1102680e95de835b90931b13fe16fe28
-src/main/cmd/openapi/openapi.cljc	14868144bde0bb766235cc74fe4fe34e
+src/main/cmd/openapi/openapi.cljc	1394c99a804520ce1aed088765503c10
 src/main/cmd/server/config.cljs	3db65a024f0c30361b6910ca9f4aabea
 src/main/cmd/server/core.cljs	a74a7da390fb5c996768fced6be5bb19
 src/main/cmd/server/router.cljs	72b6f0831133a82a9e82f0a092fa9d45
@@ -18,7 +18,7 @@ src/main/infrastructure/api/handler/community/core.cljc	e6733212e077a5d2841c2c01
 src/main/infrastructure/api/handler/community/event/comment/list.cljs	7d28e8498d06a330e7a2f8a810533ec9
 src/main/infrastructure/api/handler/community/event/get.cljs	16c9bda24c4dfd2a47a7959606fb18b9
 src/main/infrastructure/api/handler/community/event/list.cljs	9d7f3aafcf997f9b52e6202a80787c7d
-src/main/infrastructure/api/handler/community/list.cljs	8aa09d29bfb123287b77e8afbbea6618
+src/main/infrastructure/api/handler/community/list.cljs	f79212b32bfd5dfcb53219ea92030b40
 src/main/infrastructure/api/handler/debug.cljs	cd910c5588e82c15f415b3ecfe957322
 src/main/infrastructure/api/handler/swagger.cljs	2fbf9b383c6b3b6e9027e0a72144a3c9
 src/main/infrastructure/api/handler/swagger_ui.cljs	da788b38d83471fb8c5cb047af21e05f
@@ -27,7 +27,7 @@ src/main/infrastructure/api/handler/test/post.cljs	b240c3e1b02544887d2624293652f
 src/main/infrastructure/api/handler/user/get.cljs	b06273cd7874da8d45e90a2a4941746c
 src/main/infrastructure/api/handler/user/list.cljs	d81cbf6da656c180248c096d8acfcf85
 src/main/infrastructure/api/middleware/cors.cljs	0942a04b6d17b9624ed30368a358fdda
-src/main/infrastructure/api/swagger_spec.cljc	51dbedbaae1f55f64ed2aeb11800db1a
+src/main/infrastructure/api/swagger_spec.cljc	7eb1af2a0155edcff5cec070092bb8b3
 src/main/infrastructure/api/util.cljs	4575254af146a76945b12429d213502a
 src/main/infrastructure/sqlite3/core.cljs	da3ffbc617dbafbe3c72351977e6ceea
 src/main/infrastructure/sqlite3/up.cljs	54e21ebb70dc36afbe38c71b558b52d2

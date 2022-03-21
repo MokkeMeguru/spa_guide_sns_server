@@ -26,4 +26,9 @@ debug-migrate: src
 debug-release: src
 	npm run release
 	npm run start_release
+
+.PHONY: debug-openapi
+debug-openapi: src
+	npm run openapi
+	npm run start_openapi
 # end
