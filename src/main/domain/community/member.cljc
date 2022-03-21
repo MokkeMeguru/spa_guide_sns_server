@@ -9,7 +9,9 @@
 
 (s/def ::community ::domain.community/query)
 (s/def ::user ::domain.user/query)
-(s/def ::query (s/keys :req-un [::id ::community ::user ::role]))
+(s/def ::query any?
+  ;; (s/keys :req-un [::id ::community ::user ::role])
+  )
 
 (s/def ::community-id ::domain.community/id)
 (s/def ::user-id ::domain.user/id)

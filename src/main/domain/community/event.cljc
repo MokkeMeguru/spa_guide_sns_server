@@ -16,8 +16,9 @@
 (s/def ::community-id ::domain.community/id)
 (s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::query
-  (s/keys
-   :req-un [::id ::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url]))
+  ;; (s/keys
+  ;;  :req-un [::id ::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url])
+  any?)
 
 (s/def ::command
   (s/keys

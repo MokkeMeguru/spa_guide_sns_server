@@ -180,7 +180,6 @@ VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @catego
   (-create-community-event [this event]
     (let [^js/better-sqlite3 db (:db this)
           db-model (domain->db event)]
-      (println db-model)
       (try
         (-> db (.prepare (:create sql-map)) (.run (clj->js db-model)))
         (try (-> db (.prepare (:fetch sql-map)) (.get (:id db-model)) (js->clj) (db->domain))

@@ -10,12 +10,12 @@
 
 ;; domain mapping
 (s/fdef db->domain
-  :args map?
+  :args (s/cat :db-model any?)
   :ret ::domain.community/query)
 
 (s/fdef domain->db
-  :args ::domain.community/query
-  :ret map?)
+  :args (s/cat :domain-model ::domain.community/command)
+  :ret any?)
 
 (def category-map
   (let [domain->db {:gurmand 1
