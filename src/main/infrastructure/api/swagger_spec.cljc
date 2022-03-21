@@ -125,6 +125,7 @@
 (s/def :community-event/holdAt ::domain.community.event/hold-at)
 (s/def :community-event/category ::domain.community.event/category)
 (s/def :community-event/imageUrl ::domain.community.event/image-url)
+(s/def :community-event/keyword string?)
 
 (s/def :community-event/communityEvent
   (s/keys :req-un
@@ -132,6 +133,7 @@
            :community-event/name :community-event/details
            :community-event/holdAt :community-event/category :community-event/imageUrl]))
 
+(def community-event {})
 (def communityEvent
   (st/spec
    {:spec :community-event/communityEvent

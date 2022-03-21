@@ -384,7 +384,15 @@ paths:
 
         includes の設計は Twitter と同じで、重複しうる参照をまとめて返します (簡単のために required にしています)<br/>
 
-        see.  https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets-id#Optional
+        see.  https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets-id#Optional<br/>
+
+        - begin_cursor: 指定された community_id より後のコミュニティリストを返す<br/>
+
+        - last_cursor : 指定された community_id より前のコミュニティリストを返す<br/>
+
+        - request_size: 指定されたサイズ以下ののコミュニティリストを返す<br/>
+
+        - keyword: 指定されたキーワードに部分一致するコミュニティリストを返す
       responses:
         "200":
           description: コミュニティの全てのイベント
@@ -437,6 +445,32 @@ paths:
           in: path
           description: ""
           required: true
+          schema:
+            type: string
+        - name: requestSize
+          in: query
+          description: ""
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: beginCursor
+          in: query
+          description: ""
+          required: false
+          schema:
+            type: string
+        - name: lastCursor
+          in: query
+          description: ""
+          required: false
+          schema:
+            type: string
+        - name: keyword
+          in: query
+          description: ""
+          required: false
           schema:
             type: string
   "/communityes/{communityId}/events/{eventId}/comments":
