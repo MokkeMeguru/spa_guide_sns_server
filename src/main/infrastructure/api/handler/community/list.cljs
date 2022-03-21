@@ -4,7 +4,6 @@
             [usecase.community]
             [infrastructure.api.swagger-spec :refer [community]]
             [clojure.spec.alpha :as s]
-            [infrastructure.api.handler.community.core]
             [infrastructure.api.swagger-spec]
             [infrastructure.api.handler.debug]))
 
@@ -16,7 +15,9 @@
 
 (defn- ->http [[{:keys [communities before-size total-size]} err]]
   (if (nil? err)
-    {:status 200 :body {:communities (map (fn [{:keys [community is-joined]}] {:community (infrastructure.api.handler.community.core/community->http community) :isJoined is-joined}) communities)
+    {:status 200 :body {:communities
+                        (map (fn [{:keys [community is-joined]}]
+                               {:community (infrastructure.api.swagger-spec/community->http community) :isJoined is-joined}) communities)
                         :beforeSize before-size
                         :totalSize total-size}}
     {:status 500 :body err}))

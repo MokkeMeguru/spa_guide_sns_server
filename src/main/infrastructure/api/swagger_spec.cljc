@@ -26,6 +26,12 @@
 (def total-size (st/spec {:spec nat-int?
                           :name "totalSize"}))
 
+(s/def :path/communityId ::domain.community/id)
+(s/def :path/eventId ::domain.community.event/id)
+
+(def path {})
+
+;; user
 (s/def :user/id ::domain.user/id)
 (s/def :user/name ::domain.user/name)
 (s/def :user/iconUrl ::domain.user/icon-url)
@@ -48,6 +54,7 @@
      :name name
      :iconUrl icon-url}))
 
+;; community
 (s/def :community/id ::domain.community/id)
 (s/def :community/name ::domain.community/name)
 (s/def :community/details ::domain.community/details)
@@ -79,16 +86,30 @@
      :createdAt 1647307406
      :updatedAt 1647307406}}))
 
+(defn community->http [community]
+  (let [{:keys [id name details category image-url created-at updated-at membership]} community]
+    {:id id
+     :name name
+     :details details
+     :category category
+     :imageUrl image-url
+     :membership membership
+     :createdAt created-at
+     :updatedAt updated-at}))
+
 (def community-is-joined
   (st/spec
    {:spec :community/isJoined
     :name "IsJoined"
     :description "the logined user is joined the community"}))
 
+;; member
 (s/def :community-member/id ::domain.community.member/id)
 (s/def :community-member/role ::domain.community.member/role)
-(s/def :community-member/communityMember (s/keys :req-un [:community-member/id :user/user
-                                                          :community/community :community-member/role]))
+(s/def :community-member/communityId ::domain.community/id)
+(s/def :community-member/communityMember
+  (s/keys :req-un [:community-member/id :user/user
+                   :community-member/communityId :community-member/role]))
 
 (def communityMember
   (st/spec
