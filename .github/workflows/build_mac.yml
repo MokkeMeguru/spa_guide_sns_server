@@ -1,5 +1,9 @@
 name: build_mac
-on: push
+on:
+  push:
+    branches:
+      - main
+      - "hotfix/**"
 concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
@@ -13,7 +17,7 @@ jobs:
         uses: ./.github/actions/init
       - name: make build
         run: |
-          make build-all
+          make build-check
       - name: git diff
         run: |
           git add .

@@ -8,11 +8,13 @@
 clear:
 	rm -f src.md5
 
-build-all: src clear
+build-check: src
 	npm run release
 	npm run migrate
 	npm run openapi
 	npm run start_openapi
+
+build-all: clear build-check
 	find src -type f -exec md5sum {} \; | awk '{ print $$2 "\t" $$1 }' | sort > src.md5
 
 .PHONY: debug-migrate

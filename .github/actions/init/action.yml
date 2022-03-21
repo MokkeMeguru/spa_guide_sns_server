@@ -35,7 +35,7 @@ runs:
       shell: bash
       run: |
         brew install --cask adoptopenjdk
-        brew install md5sha1sum
+        # brew install md5sha1sum  # build 高速化の観点から削除
     - name: install deps
       shell: bash
       run: |
