@@ -43,13 +43,7 @@ components:
           type: string
         details:
           type: string
-        category:
-          enum:
-            - anime
-            - geek
-            - gurmand
-            - sports
-          type: string
+        category: {}
         imageUrl:
           type: string
         membership:

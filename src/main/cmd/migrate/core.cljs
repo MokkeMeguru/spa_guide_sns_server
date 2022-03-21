@@ -11,9 +11,11 @@
             ["better-sqlite3" :as better-sqlite3]
             [infrastructure.sqlite3.core]))
 
-(defn migrate! [^string db-path]
+(def db-path "db.sqlite3")
+
+(defn migrate! [^string db-path ^boolean verbose-log?]
   (try
-    (let [db (infrastructure.sqlite3.util/db! db-path)]
+    (let [db (infrastructure.sqlite3.util/db! db-path verbose-log?)]
       (.exec db infrastructure.sqlite3.up/users-table)
       (.exec db infrastructure.sqlite3.up/communities-table)
       (.exec db infrastructure.sqlite3.up/community-members-table)
@@ -66,10 +68,11 @@
        community-event-comment))
     (:community-event-comment samples))))
 
-(defn migrate []
-  (let [db-path  "db.sqlite3"]
-    (when (migrate! db-path)
-      (let [repository (infrastructure.sqlite3.core/make-repository (infrastructure.sqlite3.util/db! db-path))]
-        (inject-samples domain.mock/samples repository)))))
-
-;; (migrate)
+(defn migrate
+  ([]
+   (migrate db-path true))
+  ([^string db-path ^boolean verbose-log?]
+   (when-let [db (migrate! db-path verbose-log?)]
+     (let [repository (infrastructure.sqlite3.core/make-repository db)]
+       (inject-samples domain.mock/samples repository)
+       repository))))

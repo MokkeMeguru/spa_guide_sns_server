@@ -5,11 +5,15 @@
 (def activate-foreign-key
   "PRAGMA foreign_keys = ON;")
 
-(defn db! [^string path]
-  (better-sqlite3.
-   path
-   ;; TODO in production, we don't need below logging right?
-   #js{"verbose" (fn [query] (js/console.log (.toISOString (js/Date.)) "INFO" "execute query:" (str query)))}))
+(defn db!
+  ([^string path]
+   (db! path false))
+  ([^string path ^boolean verbose?]
+   (better-sqlite3.
+    path
+    (if verbose?
+      #js{"verbose" (fn [query] (js/console.log (.toISOString (js/Date.)) "INFO" "execute query:" (str query)))}
+      #js{}))))
 
 ;; REPL
 ;; users

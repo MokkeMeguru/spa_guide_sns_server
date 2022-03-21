@@ -15,6 +15,7 @@
             [infrastructure.api.handler.user.list]
             [infrastructure.api.handler.user.get]
             [infrastructure.api.handler.community.list]
+            [infrastructure.api.handler.my.profile.get]
             [infrastructure.api.swagger-spec]
             [clojure.spec.alpha :as s]
             [macchiato.util.response :as r]))
@@ -34,6 +35,8 @@
    ["/test"
     {:get infrastructure.api.handler.test.get/operation
      :post infrastructure.api.handler.test.post/operation}]
+   ["/my/profile"
+    {:get infrastructure.api.handler.my.profile.get/operation}]
    ["/users"
     {:get infrastructure.api.handler.user.list/operation}]
    ["/users/{id}"

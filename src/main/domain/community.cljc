@@ -4,10 +4,12 @@
             [domain.util.url]
             [domain.user]))
 
+(def category #{:gurmand :sports :geek :anime})
+
 (s/def ::id (s/and string? #(re-matches domain.util/id-regex %)))
 (s/def ::name (s/and string? #(<= 0 (count %) 36)))
 (s/def ::details (s/and string? #(<= 0 (count %) 140)))
-(s/def ::category #{:gurmand :sports :geek :anime})
+(s/def ::category category)
 (s/def ::image-url ::domain.util.url/url)
 (s/def ::created-at nat-int?)
 (s/def ::updated-at nat-int?)

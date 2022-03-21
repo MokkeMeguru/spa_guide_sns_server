@@ -11,7 +11,9 @@
 
 (s/fdef db->domain
   :args (s/cat :db-model map?)
-  :ret ::domain.community.member/query)
+  :ret any?
+  ;; ::domain.community.member/query
+  )
 
 (s/fdef domain->db
   :args (s/cat :domain-model ::domain.community.member/command)

@@ -8,7 +8,8 @@
  [[macchiato/core "0.2.16"]
   [com.taoensso/timbre "5.1.2"]
   [metosin/reitit "0.5.16"]
-  [metosin/spec-tools "0.10.5"]]
+  [metosin/spec-tools "0.10.5"]
+  ^:dev [orchestra "2021.01.01-1"]]
 
  :builds
  {:node-test
