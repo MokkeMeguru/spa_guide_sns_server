@@ -358,6 +358,11 @@ paths:
                 properties:
                   community:
                     $ref: "#/components/schemas/Community"
+                  isJoined:
+                    type: boolean
+                    description: the logined user is joined the community
+                    title: IsJoined
+                    nullable: true
                   members:
                     type: array
                     items:

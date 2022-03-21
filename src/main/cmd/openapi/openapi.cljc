@@ -125,6 +125,8 @@
                             {:schema {:type "object"
                                       :required [:community :members]
                                       :properties {:community {"$ref" "#/components/schemas/Community"}
+                                                   :isJoined (assoc (openapi/transform infrastructure.api.swagger-spec/community-is-joined)
+                                                                    :nullable true)
                                                    :members {:type "array"
                                                              :items {"$ref" "#/components/schemas/CommunityMember"}}}}}}}}}}
    "/communities/{communityId}/events"
