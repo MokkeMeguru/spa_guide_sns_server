@@ -1,0 +1,51 @@
+name: build_ubuntu
+on: push
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache npm packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+        env:
+          cache-name: "ubuntu-npm-package"
+      - name: Cache clj/cljs packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/shadow-cljs.edn') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+        env:
+          cache-name: "ubuntu-clj-package"
+      - name: install deps
+        run: |
+          npm install
+      - name: make build
+        run: |
+          make build-all
+      - name: git diff
+        run: |
+          git add .
+          DIFF=`git diff --cached --name-only | grep -e src.md5 | wc -l`
+          if [ $DIFF -gt 0 ]; then
+            git diff --cached -- src.md5
+            echo "need make build-all and push diff"
+            exit 1
+          fi
