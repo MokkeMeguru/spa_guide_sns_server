@@ -34,6 +34,9 @@ jobs:
             ${{ runner.os }}-
         env:
           cache-name: "ubuntu-clj-package"
+      - name: install deps
+        run: |
+          npm install
       - name: make build
         run: |
           make build-all
