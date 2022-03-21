@@ -404,6 +404,7 @@ paths:
                       type: object
                       required:
                         - communityEvent
+                        - representativeComment
                       properties:
                         communityEvent:
                           $ref: "#/components/schemas/CommunityEvent"

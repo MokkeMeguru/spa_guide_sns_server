@@ -143,7 +143,7 @@
                                                :properties {:events {:type "array"
                                                                      :items
                                                                      {:type "object"
-                                                                      :required [:communityEvent]
+                                                                      :required [:communityEvent :representativeComment]
                                                                       :properties {:communityEvent {"$ref" "#/components/schemas/CommunityEvent"}
                                                                                    :representativeComment {:type "array"
                                                                                                            :items {"$ref" "#/components/schemas/CommunityEventComment"}}}}}
