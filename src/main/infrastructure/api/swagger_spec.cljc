@@ -69,7 +69,7 @@
                                              :community/createdAt
                                              :community/updatedAt]))
 (s/def :community/isJoined boolean?)
-(s/def :community/keyword string?)
+(s/def :community/keyword (s/and string? #(<= 0 (count %) 140)))
 
 (def community
   (st/spec
@@ -125,7 +125,7 @@
 (s/def :community-event/holdAt ::domain.community.event/hold-at)
 (s/def :community-event/category ::domain.community.event/category)
 (s/def :community-event/imageUrl ::domain.community.event/image-url)
-(s/def :community-event/keyword string?)
+(s/def :community-event/keyword (s/and string? #(<= 0 (count %) 140)))
 
 (s/def :community-event/communityEvent
   (s/keys :req-un
