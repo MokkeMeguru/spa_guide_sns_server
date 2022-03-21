@@ -1,7 +1,7 @@
 src/main/cmd/migrate/config.cljs	96e058879e6ebf83fc8bb2d67b43e5d6
 src/main/cmd/migrate/core.cljs	a475acfbdfa1bc257cd7e7b5455e2402
 src/main/cmd/openapi/core.cljs	1102680e95de835b90931b13fe16fe28
-src/main/cmd/openapi/openapi.cljc	1394c99a804520ce1aed088765503c10
+src/main/cmd/openapi/openapi.cljc	ec090d10e5b1f3a8dd55509827a0747b
 src/main/cmd/server/config.cljs	3db65a024f0c30361b6910ca9f4aabea
 src/main/cmd/server/core.cljs	a74a7da390fb5c996768fced6be5bb19
 src/main/cmd/server/router.cljs	72b6f0831133a82a9e82f0a092fa9d45
@@ -27,7 +27,7 @@ src/main/infrastructure/api/handler/test/post.cljs	b240c3e1b02544887d2624293652f
 src/main/infrastructure/api/handler/user/get.cljs	b06273cd7874da8d45e90a2a4941746c
 src/main/infrastructure/api/handler/user/list.cljs	d81cbf6da656c180248c096d8acfcf85
 src/main/infrastructure/api/middleware/cors.cljs	0942a04b6d17b9624ed30368a358fdda
-src/main/infrastructure/api/swagger_spec.cljc	7eb1af2a0155edcff5cec070092bb8b3
+src/main/infrastructure/api/swagger_spec.cljc	c6d395700360b85e2d7b5db5efbfd01d
 src/main/infrastructure/api/util.cljs	4575254af146a76945b12429d213502a
 src/main/infrastructure/sqlite3/core.cljs	da3ffbc617dbafbe3c72351977e6ceea
 src/main/infrastructure/sqlite3/up.cljs	54e21ebb70dc36afbe38c71b558b52d2

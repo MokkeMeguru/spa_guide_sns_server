@@ -1,5 +1,5 @@
 (ns cmd.openapi.openapi
-  (:require [infrastructure.api.swagger-spec :refer [community path]]
+  (:require [infrastructure.api.swagger-spec :refer [community path community-event]]
             [spec-tools.openapi.core :as openapi]
             [spec-tools.core :as st]
             [domain.user]
@@ -134,8 +134,16 @@
           :tags ["communityEvent"]
           :description (clojure.string/join "<br/>\n" ["コミュニティの全てのイベントを返します"
                                                        "includes の設計は Twitter と同じで、重複しうる参照をまとめて返します (簡単のために required にしています)"
-                                                       "see.  https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets-id#Optional"])
-          ::openapi/parameters {:path (s/keys :req-un [:path/communityId])}
+                                                       "see.  https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets-id#Optional"
+                                                       "- begin_cursor: 指定された community_id より後のコミュニティリストを返す"
+                                                       "- last_cursor : 指定された community_id より前のコミュニティリストを返す"
+                                                       "- request_size: 指定されたサイズ以下ののコミュニティリストを返す"
+                                                       "- keyword: 指定されたキーワードに部分一致するコミュニティリストを返す"])
+          ::openapi/parameters {:path (s/keys :req-un [:path/communityId])
+                                :query (s/keys :req-un [::infrastructure.api.swagger-spec/requestSize]
+                                               :opt-un [::infrastructure.api.swagger-spec/beginCursor
+                                                        ::infrastructure.api.swagger-spec/lastCursor
+                                                        :community-event/keyword])}
           :responses {200 {:description "コミュニティの全てのイベント"
                            :content {"application/json"
                                      {:schema {:type "object"
@@ -143,7 +151,7 @@
                                                :properties {:events {:type "array"
                                                                      :items
                                                                      {:type "object"
-                                                                      :required [:communityEvent]
+                                                                      :required [:communityEvent :representativeComment]
                                                                       :properties {:communityEvent {"$ref" "#/components/schemas/CommunityEvent"}
                                                                                    :representativeComment {:type "array"
                                                                                                            :items {"$ref" "#/components/schemas/CommunityEventComment"}}}}}
