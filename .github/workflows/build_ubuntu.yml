@@ -21,7 +21,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
         env:
-          cache-name: "npm-package"
+          cache-name: "ubuntu-npm-package"
       - name: Cache clj/cljs packages
         uses: actions/cache@v2
         with:
@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
         env:
-          cache-name: "clj-package"
+          cache-name: "ubuntu-clj-package"
       - name: make build
         run: |
           make build-all
