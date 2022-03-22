@@ -11,9 +11,7 @@
 
 (s/fdef db->domain
   :args (s/cat :db-model map?)
-  :ret any?
-  ;; ::domain.community.member/query
-  )
+  :ret ::domain.community.member/query)
 
 (s/fdef domain->db
   :args (s/cat :domain-model ::domain.community.member/command)
@@ -27,16 +25,10 @@
      :domain->db domain->db}))
 
 (defn db->domain [db-model]
-  (let [{:keys [community_member_id community_member_role community_member_created_at community_member_updated_at
-                community_id community_name community_details community_category community_created_at community_updated_at
+  (let [{:keys [community_member_id community_id community_member_role community_member_created_at community_member_updated_at
                 user_id user_name user_icon_url user_created_at user_updated_at]} (clojure.walk/keywordize-keys db-model)]
     {:id community_member_id
-     :community {:id community_id
-                 :name community_name
-                 :details community_details
-                 :category (get (:db->domain interface.gateway.sqlite3.community/category-map) community_category)
-                 :created_at community_created_at
-                 :updated_at community_updated_at}
+     :community-id community_id
      :user {:id user_id
             :name user_name
             :icon-url user_icon_url
@@ -57,24 +49,19 @@
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
 (def sql-map
-  (let [base-select "\nSELECT
+  (let [base-select "
+SELECT
  community_members.id AS community_member_id,
+ community_members.community_id AS community_id,
  community_members.role AS community_member_role,
  community_members.created_at AS community_member_created_at,
  community_members.updated_at AS community_member_updated_at,
- communities.id AS community_id,
- communities.name AS community_name,
- communities.details AS community_details,
- communities.category AS community_category,
- communities.created_at AS community_created_at,
- communities.updated_at AS community_updated_at,
  users.id AS user_id,
  users.name AS user_name,
  users.icon_url AS user_icon_url,
  users.created_at AS user_created_at,
  users.updated_at AS user_updated_at
 FROM community_members
-INNER JOIN communities ON community_members.community_id = communities.id
 INNER JOIN users ON community_members.user_id = users.id"]
     {:list base-select
      :fetch (clojure.string/join
@@ -90,11 +77,12 @@ VALUES (@id, @community_id, @user_id, @role, @created_at, @updated_at)"}))
   (let [params (str (clojure.string/join ", " (repeat (count community_ids)  "?")))]
     (clojure.string/join
      "\n"
-     ["\nSELECT
-community_id
+     ["
+SELECT
+ community_id
 FROM community_members
 WHERE user_id = ?"
-      (str "  AND community_id IN " "(" params ")")])))
+      (str " AND community_id IN " "(" params ")")])))
 
 ;; impl
 (defrecord CommunityMemberQueryRepository [db]
