@@ -16,9 +16,8 @@
 (s/def ::community-id ::domain.community/id)
 (s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::query
-  ;; (s/keys
-  ;;  :req-un [::id ::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url])
-  any?)
+  (s/keys
+   :req-un [::id ::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url]))
 
 (s/def ::command
   (s/keys
@@ -51,10 +50,26 @@
   :ret (s/or :succeed ::query
              :failed nil?))
 
-(defn list-community-event [this] (-list-community-event this))
-(defn fetch-community-event [this event-id] (-fetch-community-event this event-id))
-(defn search-community-event-by-community-id [this community-id] (-search-community-event-by-community-id this community-id))
-(defn create-community-event [this event] (-create-community-event this event))
+(defn list-community-event
+  "community-event を全件取得します"
+  [this]
+  (-list-community-event this))
+
+(defn fetch-community-event
+  "event-id を持つ community-event を検索します
+  存在しないときには nil を返します"
+  [this event-id]
+  (-fetch-community-event this event-id))
+
+(defn search-community-event-by-community-id
+  "community-id に紐付けられた event を全件返します"
+  [this community-id]
+  (-search-community-event-by-community-id this community-id))
+
+(defn create-community-event
+  "community-event を作成します"
+  [this event]
+  (-create-community-event this event))
 
 ;; dummy utility
 (s/fdef sample-dummy-image-url

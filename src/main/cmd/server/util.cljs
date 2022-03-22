@@ -17,6 +17,12 @@
   (fn [request respond _]
     (handler (assoc request :repository repository) respond _)))
 
+(defn wrap-cache
+  "clojure.core.atom を使った cache"
+  [handler cache]
+  (fn [request respond _]
+    (handler (assoc request :cache cache) respond _)))
+
 (defn wrap-coercion-exception
   "Catches potential synchronous coercion exception in middleware chain"
   [handler]

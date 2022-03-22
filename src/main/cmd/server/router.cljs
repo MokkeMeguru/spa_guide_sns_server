@@ -47,20 +47,24 @@
    ["/communities/{communityId}"
     {:get infrastructure.api.handler.community.get/operation}]])
 
-(defn app [config repository]
-  (ring/ring-handler
-   (ring/router
-    [routes]
-    {:syntax :bracket
-     :data {:middleware [#(cors/wrap-cors % {:allowed-origins [#".*"]
-                                             :allowed-methods [:get :put :post :delete :options]})
-                         params/wrap-params
-                         #(rf/wrap-restful-format % {:keywordize? true})
-                         cmd.server.util/wrap-body-to-params
-                         #(cmd.server.util/wrap-config % config)
-                         #(cmd.server.util/wrap-repository % repository)
-                         cmd.server.util/wrap-coercion-exception
-                         cmd.server.util/wrap-log
-                         rrc/coerce-request-middleware
-                         rrc/coerce-response-middleware]}})
-   (ring/create-default-handler)))
+(defn app
+  ([config repository]
+   (app config repository (atom {})))
+  ([config repository cache]
+   (ring/ring-handler
+    (ring/router
+     [routes]
+     {:syntax :bracket
+      :data {:middleware [#(cors/wrap-cors % {:allowed-origins [#".*"]
+                                              :allowed-methods [:get :put :post :delete :options]})
+                          params/wrap-params
+                          #(rf/wrap-restful-format % {:keywordize? true})
+                          cmd.server.util/wrap-body-to-params
+                          #(cmd.server.util/wrap-config % config)
+                          #(cmd.server.util/wrap-repository % repository)
+                          #(cmd.server.util/wrap-cache % cache)
+                          cmd.server.util/wrap-coercion-exception
+                          cmd.server.util/wrap-log
+                          rrc/coerce-request-middleware
+                          rrc/coerce-response-middleware]}})
+    (ring/create-default-handler))))
