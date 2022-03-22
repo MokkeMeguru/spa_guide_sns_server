@@ -15,6 +15,7 @@
             [infrastructure.api.handler.user.list]
             [infrastructure.api.handler.user.get]
             [infrastructure.api.handler.community.list]
+            [infrastructure.api.handler.community.get]
             [infrastructure.api.handler.my.profile.get]
             [infrastructure.api.swagger-spec]
             [clojure.spec.alpha :as s]
@@ -42,7 +43,9 @@
    ["/users/{id}"
     {:get infrastructure.api.handler.user.get/operation}]
    ["/communities"
-    {:get infrastructure.api.handler.community.list/operation}]])
+    {:get infrastructure.api.handler.community.list/operation}]
+   ["/communities/{communityId}"
+    {:get infrastructure.api.handler.community.get/operation}]])
 
 (defn app [config repository]
   (ring/ring-handler

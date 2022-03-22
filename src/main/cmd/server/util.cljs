@@ -28,14 +28,14 @@
           (cond
             (= exception-type :reitit.coercion/request-coercion)
             (respond {:status 400
-                      :body   {:message "Bad Request"}})
+                      :body   {:message "Bad Request" :details (-> e ex-data :problems :cljs.spec.alpha/problems)}})
 
             (= exception-type :reitit.coercion/response-coercion)
             (respond {:status 500
-                      :body   {:message "Bad Response"}})
+                      :body   {:message "Bad Response" :details (-> e ex-data :problems :cljs.spec.alpha/problems)}})
             :else
             (respond {:status 500
-                      :body   {:message "Truly internal server error"}})))))))
+                      :body   {:message "Truly internal server error" :details (str e)}})))))))
 
 (defn wrap-body-to-params
   [handler]

@@ -7,14 +7,12 @@
 (s/def ::id (s/and string? #(re-matches domain.util/id-regex %)))
 (s/def ::role #{:owner :member})
 
-(s/def ::community ::domain.community/query)
 (s/def ::user ::domain.user/query)
-(s/def ::query any?
-  ;; (s/keys :req-un [::id ::community ::user ::role])
-  )
-
 (s/def ::community-id ::domain.community/id)
 (s/def ::user-id ::domain.user/id)
+
+(s/def ::query
+  (s/keys :req-un [::id ::community-id ::user ::role]))
 (s/def ::command (s/keys :req-un [::community-id ::user-id ::role] :opt-un [::id]))
 
 (defprotocol ICommunityMemberQueryRepository

@@ -117,6 +117,13 @@
     :name "CommunityMember"
     :description "community member information"}))
 
+(defn community-member->http [community-member]
+  (let [{:keys [id community-id user role]} community-member]
+    {:id id
+     :communityId community-id
+     :user (user->http user)
+     :role role}))
+
 (s/def :community-event/id ::domain.community.event/id)
 (s/def :community-event/communityId ::domain.community/id)
 (s/def :community-event/name ::domain.community.event/name)
