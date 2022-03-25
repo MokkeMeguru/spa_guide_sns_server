@@ -137,13 +137,11 @@
                                                        "see.  https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets-id#Optional"
                                                        "- begin_cursor: 指定された community_id より後のコミュニティリストを返す"
                                                        "- last_cursor : 指定された community_id より前のコミュニティリストを返す"
-                                                       "- request_size: 指定されたサイズ以下ののコミュニティリストを返す"
-                                                       "- keyword: 指定されたキーワードに部分一致するコミュニティリストを返す"])
+                                                       "- request_size: 指定されたサイズ以下ののコミュニティリストを返す"])
           ::openapi/parameters {:path (s/keys :req-un [:path/communityId])
                                 :query (s/keys :req-un [::infrastructure.api.swagger-spec/requestSize]
                                                :opt-un [::infrastructure.api.swagger-spec/beginCursor
-                                                        ::infrastructure.api.swagger-spec/lastCursor
-                                                        :community-event/keyword])}
+                                                        ::infrastructure.api.swagger-spec/lastCursor])}
           :responses {200 {:description "コミュニティの全てのイベント"
                            :content {"application/json"
                                      {:schema {:type "object"

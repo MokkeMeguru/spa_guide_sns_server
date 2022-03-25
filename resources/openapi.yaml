@@ -384,9 +384,7 @@ paths:
 
         - last_cursor : 指定された community_id より前のコミュニティリストを返す<br/>
 
-        - request_size: 指定されたサイズ以下ののコミュニティリストを返す<br/>
-
-        - keyword: 指定されたキーワードに部分一致するコミュニティリストを返す
+        - request_size: 指定されたサイズ以下ののコミュニティリストを返す
       responses:
         "200":
           description: コミュニティの全てのイベント
@@ -456,12 +454,6 @@ paths:
           schema:
             type: string
         - name: lastCursor
-          in: query
-          description: ""
-          required: false
-          schema:
-            type: string
-        - name: keyword
           in: query
           description: ""
           required: false
