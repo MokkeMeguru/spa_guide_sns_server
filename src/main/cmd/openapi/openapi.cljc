@@ -142,8 +142,7 @@
           ::openapi/parameters {:path (s/keys :req-un [:path/communityId])
                                 :query (s/keys :req-un [::infrastructure.api.swagger-spec/requestSize]
                                                :opt-un [::infrastructure.api.swagger-spec/beginCursor
-                                                        ::infrastructure.api.swagger-spec/lastCursor
-                                                        :community-event/keyword])}
+                                                        ::infrastructure.api.swagger-spec/lastCursor])}
           :responses {200 {:description "コミュニティの全てのイベント"
                            :content {"application/json"
                                      {:schema {:type "object"

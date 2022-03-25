@@ -461,12 +461,6 @@ paths:
           required: false
           schema:
             type: string
-        - name: keyword
-          in: query
-          description: ""
-          required: false
-          schema:
-            type: string
   "/communityes/{communityId}/events/{eventId}/comments":
     get:
       operationId: listCommunityEventComment
