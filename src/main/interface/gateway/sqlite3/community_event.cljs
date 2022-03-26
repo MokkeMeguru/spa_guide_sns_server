@@ -1,5 +1,6 @@
 (ns interface.gateway.sqlite3.community-event
   (:require ["better-sqlite3" :as better-sqlite3]
+            [clojure.string]
             [clojure.set]
             [clojure.walk]
             [clojure.spec.alpha :as s]
@@ -25,37 +26,19 @@
 
 (defn db->domain [db-model]
   (when db-model
-    (let [{:keys [community_event_id community_event_name community_event_details community_event_category
-                  community_event_image_url community_event_hold_at community_event_created_at community_event_updated_at
-                  community_id community_name community_details community_category community_created_at community_updated_at
-                  community_member_id community_member_role community_member_created_at community_member_updated_at
-                  user_id user_name user_icon_url user_created_at user_updated_at]} (clojure.walk/keywordize-keys db-model)
-          community {:id community_id
-                     :name community_name
-                     :details community_details
-                     :category (get (:db->domain interface.gateway.sqlite3.community/category-map) community_category)
-                     :image_url community_event_image_url
-                     :created_at community_created_at
-                     :updated_at community_updated_at}
-          user {:id user_id
-                :name user_name
-                :icon_url user_icon_url
-                :created_at user_created_at
-                :updated_at user_updated_at}]
-      {:id community_event_id
-       :community community
-       :owned-member {:id community_member_id
-                      :community community ;; Note: logical equal
-                      :user user
-                      :role (get (:db->domain interface.gateway.sqlite3.community-member/role-map) community_member_role)
-                      :created_at community_member_created_at
-                      :updated_at community_member_updated_at}
-       :name community_event_name
-       :details community_event_details
-       :hold-at community_event_hold_at
-       :category (get (:db->domain category-map) community_event_category)
-       :created-at community_event_created_at
-       :updated-at community_event_updated_at})))
+    (let [{:keys [id community_id owned_member_id name details
+                  hold_at category image_url created_at updated_at]}
+          (clojure.walk/keywordize-keys db-model)]
+      {:id id
+       :community-id community_id
+       :owned-member-id owned_member_id
+       :name name
+       :details details
+       :hold-at hold_at
+       :category (get (:db->domain category-map) category)
+       :image-url image_url
+       :created-at created_at
+       :updated-at updated_at})))
 
 (defn domain->db [domain-model]
   (when domain-model
@@ -72,96 +55,31 @@
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
 (def sql-map
-  {:list "
-SELECT
- community_events.id AS community_event_id,
- community_events.name AS community_event_name,
- community_events.details AS community_event_details,
- community_events.hold_at AS community_event_hold_id,
- community_events.category AS community_event_category,
- community_events.created_at AS community_event_created_at,
- community_events.updated_at AS community_event_updated_at,
- communities.id AS community_id,
- communities.name AS community_name,
- communities.details AS community_details,
- communities.category AS community_category,
- communities.created_at AS community_created_at,
- communities.updated_at AS community_updated_at,
- community_members.id AS community_member_id,
- community_members.role AS community_member_role,
- community_members.created_at AS community_member_created_at,
- community_members.updated_at AS community_member_updated_at,
- users.id AS user_id,
- users.name AS user_name,
- users.icon_url AS user_icon_url,
- users.created_at AS user_created_at,
- users.updated_at AS user_updated_at
-FROM community_events
-INNER JOIN communities ON community_events.community_id = communities.id
-INNER JOIN community_members ON community_events.owned_member_id = community_members.id
-INNER JOIN users ON community_members.user_id = users.id"
-   :fetch "
-SELECT
- community_events.id AS community_event_id,
- community_events.name AS community_event_name,
- community_events.details AS community_event_details,
- community_events.hold_at AS community_event_hold_id,
- community_events.category AS community_event_category,
- community_events.created_at AS community_event_created_at,
- community_events.updated_at AS community_event_updated_at,
- communities.id AS community_id,
- communities.name AS community_name,
- communities.details AS community_details,
- communities.category AS community_category,
- communities.created_at AS community_created_at,
- communities.updated_at AS community_updated_at,
- community_members.id AS community_member_id,
- community_members.role AS community_member_role,
- community_members.created_at AS community_member_created_at,
- community_members.updated_at AS community_member_updated_at,
- users.id AS user_id,
- users.name AS user_name,
- users.icon_url AS user_icon_url,
- users.created_at AS user_created_at,
- users.updated_at AS user_updated_at
-FROM community_events
-INNER JOIN communities ON community_events.community_id = communities.id
-INNER JOIN community_members ON community_events.owned_member_id = community_members.id
-INNER JOIN users ON community_members.user_id = users.id
-WHERE community_events.id = ?"
-   :search-by-community-id "
-SELECT
- community_events.id AS community_event_id,
- community_events.name AS community_event_name,
- community_events.details AS community_event_details,
- community_events.hold_at AS community_event_hold_id,
- community_events.category AS community_event_category,
- community_events.created_at AS community_event_created_at,
- community_events.updated_at AS community_event_updated_at,
- communities.id AS community_id,
- communities.name AS community_name,
- communities.details AS community_details,
- communities.category AS community_category,
- communities.created_at AS community_created_at,
- communities.updated_at AS community_updated_at,
- community_members.id AS community_member_id,
- community_members.role AS community_member_role,
- community_members.created_at AS community_member_created_at,
- community_members.updated_at AS community_member_updated_at,
- users.id AS user_id,
- users.name AS user_name,
- users.icon_url AS user_icon_url,
- users.created_at AS user_created_at,
- users.updated_at AS user_updated_at
-FROM community_events
-INNER JOIN communities ON community_events.community_id = communities.id
-INNER JOIN community_members ON community_events.owned_member_id = community_members.id
-INNER JOIN users ON community_members.user_id = users.id
-WHERE community_events.community_id = ?"
-   :create "
+  (let [base "\nSELECT * FROM community_events"]
+    {:list base
+     :fetch (clojure.string/join "\n" [base "WHERE id = ?"])
+     :search-by-community-id (clojure.string/join "\n" [base "WHERE community_id = ?"])
+     :search-part-by-community-id
+     {:limit "LIMIT ?"
+      :order {:updated-at-desc "ORDER BY updated_at DESC"
+              :updated-at-asc "ORDER BY updated_at ASC"}
+      :where {:cursor {:updated-at-desc "updated_at <= ?"
+                       :updated-at-asc "updated_at >= ?"}}}
+     :create "
 INSERT INTO community_events
  (id, community_id, owned_member_id, name, details, hold_at, category, image_url, created_at, updated_at)
-VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @category, @image_url, @created_at, @updated_at)"})
+VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @category, @image_url, @created_at, @updated_at)"}))
+
+(defn build-sql-list-part-community-event-by-community-id [request-size from-cursor-updated-at sort-order]
+  (clojure.string/join
+   "\n"
+   (cond-> []
+     true (conj (-> sql-map :list))
+     (some? from-cursor-updated-at)
+     (conj (str "WHERE " (-> sql-map :search-part-by-community-id :where :cursor sort-order)))
+     (= :updated-at-asc sort-order) (conj (-> sql-map :search-part-by-community-id :order :updated-at-asc))
+     (not= :updated-at-asc sort-order) (conj (-> sql-map :search-part-by-community-id :order :updated-at-desc))
+     (some? request-size) (conj (-> sql-map :search-part-by-community-id :limit)))))
 
 (defrecord CommunityEventQueryRepository [db]
   ICommunityEventQueryRepository
@@ -173,7 +91,10 @@ VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @catego
       (-> db (.prepare (:fetch sql-map)) (.get event-id) (js->clj) (db->domain))))
   (-search-community-event-by-community-id [this community-id]
     (let [^js/better-sqlite3 db (:db this)]
-      (map db->domain (-> db (.prepare (:search-by-community-id sql-map)) (.all community-id) (js->clj))))))
+      (map db->domain (-> db (.prepare (:search-by-community-id sql-map)) (.all community-id) (js->clj)))))
+  (-search-part-community-event-by-community-id [this community-id request-size from-cursor sort-order]
+    (let [^js/better-sqlite3 db (:db this)]
+      [])))
 
 (defrecord CommunityEventCommandRepository [db]
   ICommunityEventCommandRepository

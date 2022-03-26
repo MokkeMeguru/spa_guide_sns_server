@@ -13,7 +13,7 @@
 
 ;; domain mapping
 (t/deftest category-map
-  (t/testing "gurmand"
+  (t/testing "all"
     (doall
      (map
       #(t/testing (str %)

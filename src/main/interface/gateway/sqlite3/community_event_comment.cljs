@@ -58,7 +58,6 @@
        :created_at (interface.gateway.sqlite3.util/now)
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
-;; TODO think which is better 1) use summarization of repeated code 2) flat data
 (def sql-map
   (let [list "
 SELECT

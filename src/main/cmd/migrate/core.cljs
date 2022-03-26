@@ -34,7 +34,7 @@
       (domain.user/create-user
        (:user-command-repository repository)
        user))
-    (:user samples)))
+    (reverse (:user samples))))
   (info "inject samples: community")
   (doall
    (map
@@ -42,7 +42,7 @@
       (domain.community/create-community
        (:community-command-repository repository)
        community))
-    (:community samples)))
+    (reverse (:community samples))))
   (info "inject samples: member")
   (doall
    (map
@@ -50,7 +50,7 @@
       (domain.community.member/create-community-member
        (:community-member-command-repository repository)
        community-member))
-    (:community-member samples)))
+    (reverse (:community-member samples))))
   (info "inject samples: event")
   (doall
    (map
@@ -58,7 +58,7 @@
       (domain.community.event/create-community-event
        (:community-event-command-repository repository)
        community-event))
-    (:community-event samples)))
+    (reverse (:community-event samples))))
   (info "inject samples: comment")
   (doall
    (map
@@ -66,7 +66,7 @@
       (domain.community.event.comment/create-community-event-comment
        (:community-event-comment-command-repository repository)
        community-event-comment))
-    (:community-event-comment samples))))
+    (reverse (:community-event-comment samples)))))
 
 (defn migrate
   ([]

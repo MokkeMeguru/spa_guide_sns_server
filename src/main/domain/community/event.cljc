@@ -6,19 +6,21 @@
             [domain.community]
             [domain.community.member]))
 
+(def category #{:party :seminar})
+
 (s/def ::id (s/and string? #(re-matches domain.util/id-regex %)))
 (s/def ::name string?)
 (s/def ::details string?)
 (s/def ::hold-at int?) ;; TODO apply regex YYYY/MM/DD
-(s/def ::category #{:party :seminar})
+(s/def ::category category)
 (s/def ::image-url ::domain.util.url/url)
 
+(s/def ::sort-order #{:updated-at-asc :updated-at-desc})
 (s/def ::community-id ::domain.community/id)
 (s/def ::owned-member-id ::domain.community.member/id)
 (s/def ::query
-  ;; (s/keys
-  ;;  :req-un [::id ::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url])
-  any?)
+  (s/keys
+   :req-un [::id ::community-id ::owned-member-id ::name ::details ::hold-at ::category ::image-url]))
 
 (s/def ::command
   (s/keys
@@ -28,7 +30,8 @@
 (defprotocol ICommunityEventQueryRepository
   (-list-community-event [this])
   (-fetch-community-event [this event-id])
-  (-search-community-event-by-community-id [this community-id]))
+  (-search-community-event-by-community-id [this community-id])
+  (-search-part-community-event-by-community-id [this community-id request-size from-cursor sort-order]))
 
 (defprotocol ICommunityEventCommandRepository
   (-create-community-event [this event]))
@@ -46,6 +49,10 @@
   :args (s/cat :this any? :community-id ::domain.community/id)
   :ret (s/* ::query))
 
+(s/fdef search-part-community-event-by-community-id
+  :args (s/cat :this any? :community-id ::domain.community/id :request-size pos-int? :from-cursor (s/nilable ::id) :sort-order ::sort-order)
+  :ret (s/* ::query))
+
 (s/fdef create-community-event
   :args (s/cat :this any? :event ::command)
   :ret (s/or :succeed ::query
@@ -54,6 +61,7 @@
 (defn list-community-event [this] (-list-community-event this))
 (defn fetch-community-event [this event-id] (-fetch-community-event this event-id))
 (defn search-community-event-by-community-id [this community-id] (-search-community-event-by-community-id this community-id))
+(defn search-part-community-event-by-community-id [this community-id request-size from-cursor sort-order] (-search-part-community-event-by-community-id this community-id request-size from-cursor sort-order))
 (defn create-community-event [this event] (-create-community-event this event))
 
 ;; dummy utility

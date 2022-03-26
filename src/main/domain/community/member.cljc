@@ -44,7 +44,8 @@
 
 (s/fdef create-community-member
   :args (s/cat :this any? :member ::command)
-  :ret (s/or :succeed ::query
+  :ret (s/or :succeed  any?
+             ;; ::query
              :failed nil?))
 
 (defn list-community-member
