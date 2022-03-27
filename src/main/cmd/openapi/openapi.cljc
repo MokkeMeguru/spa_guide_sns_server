@@ -183,18 +183,25 @@
                                                                                :items {"$ref" "#/components/schemas/CommunityMember"}}}}}}}}}}}}})
 
 (defn generate-openapi []
-  (update-in (openapi/openapi-spec
-              {:openapi openapi-version
-               :info info
-               :servers servers
-               :components components
-               :paths paths})
-             [:components :schemas]
-             (fn [schemas]
-               (->> schemas
-                    (map (fn [[key value]]
-                           {key (dissoc value :title)}))
-                    (into {})))))
+  (-> (openapi/openapi-spec
+       {:openapi openapi-version
+        :info info
+        :servers servers
+        :components components
+        :paths paths})
+      (update-in
+       [:components :schemas]
+       (fn [schemas]
+         (->> schemas
+              (map (fn [[key value]]
+                     {key (dissoc value :title)}))
+              (into {}))))
+      (update-in
+       [:paths]
+       (fn [paths] (into (sorted-map) (sort-by #(-> % first str) paths))))
+      (update-in
+       [:components]
+       (fn [components] (into (sorted-map) (sort-by #(-> % first str) components))))))
 
 ;; (cljs.pprint/pprint
 ;;  (generate-openapi))

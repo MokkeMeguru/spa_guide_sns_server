@@ -169,100 +169,6 @@ components:
         - code
         - message
 paths:
-  /test:
-    get:
-      operationId: getTest
-      description: ping pong
-      tags:
-        - test
-      responses:
-        "200":
-          description: pong
-          content:
-            application/json:
-              schema:
-                example: "Hello : User"
-      parameters:
-        - name: name
-          in: query
-          description: ""
-          required: true
-          schema:
-            type: string
-  /my/profile:
-    get:
-      operationId: getMyProfile
-      description: ユーザ情報を返します
-      tags:
-        - my
-      responses:
-        "200":
-          description: ログインユーザ
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - user
-                properties:
-                  user:
-                    $ref: "#/components/schemas/User"
-  /users:
-    get:
-      operationId: listUser
-      description: 全てのユーザのリストを返します (debug)
-      tags:
-        - user
-      responses:
-        "200":
-          description: 全てのユーザ
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - users
-                  - totalSize
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/User"
-                  totalSize:
-                    type: integer
-                    format: int64
-                    minimum: 0
-                    title: totalSize
-  "/users/{id}":
-    get:
-      operationId: getUser
-      tags:
-        - user
-      responses:
-        "200":
-          description: id を持つユーザ
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - user
-                properties:
-                  user:
-                    $ref: "#/components/schemas/User"
-        "404":
-          description: user is not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-      parameters:
-        - name: id
-          in: path
-          description: ""
-          required: true
-          schema:
-            type: string
   /communities:
     get:
       operationId: listCommunity
@@ -508,6 +414,100 @@ paths:
           schema:
             type: string
         - name: eventId
+          in: path
+          description: ""
+          required: true
+          schema:
+            type: string
+  /my/profile:
+    get:
+      operationId: getMyProfile
+      description: ユーザ情報を返します
+      tags:
+        - my
+      responses:
+        "200":
+          description: ログインユーザ
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+  /test:
+    get:
+      operationId: getTest
+      description: ping pong
+      tags:
+        - test
+      responses:
+        "200":
+          description: pong
+          content:
+            application/json:
+              schema:
+                example: "Hello : User"
+      parameters:
+        - name: name
+          in: query
+          description: ""
+          required: true
+          schema:
+            type: string
+  /users:
+    get:
+      operationId: listUser
+      description: 全てのユーザのリストを返します (debug)
+      tags:
+        - user
+      responses:
+        "200":
+          description: 全てのユーザ
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - users
+                  - totalSize
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+                  totalSize:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    title: totalSize
+  "/users/{id}":
+    get:
+      operationId: getUser
+      tags:
+        - user
+      responses:
+        "200":
+          description: id を持つユーザ
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+        "404":
+          description: user is not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      parameters:
+        - name: id
           in: path
           description: ""
           required: true
