@@ -13,7 +13,7 @@
 
 ;; domain mapping
 (t/deftest category-map
-  (t/testing "gurmand"
+  (t/testing "all"
     (doall
      (map
       #(t/testing (str %)
@@ -108,7 +108,7 @@ SELECT
 FROM communities
 LEFT JOIN community_members
 ON communities.id=community_members.community_id
-WHERE communities.updated_at <= ?
+WHERE communities.updated_at < ?
 GROUP BY communities.id
 ORDER BY communities.updated_at DESC
 LIMIT ?")))
@@ -128,7 +128,7 @@ SELECT
 FROM communities
 LEFT JOIN community_members
 ON communities.id=community_members.community_id
-WHERE communities.updated_at >= ?
+WHERE communities.updated_at > ?
 GROUP BY communities.id
 ORDER BY communities.updated_at ASC
 LIMIT ?")))

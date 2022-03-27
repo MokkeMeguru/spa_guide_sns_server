@@ -38,7 +38,7 @@
 
 (s/fdef create-user
   :args (s/cat :this any? :user ::command)
-  :ret (s/or :succeed ::query
+  :ret (s/or :succeed ::id
              :failed nil?))
 
 (defn list-user
@@ -66,3 +66,7 @@
 ;; Developer's Note:
 ;; We cannot apply clojure.spec into defprotocol directory
 ;; https://clojure.atlassian.net/browse/CLJ-2109
+
+;; Developer Note
+;; grpahql の mutation の返り値は query と同値ではない (CQRS的に command / query で扱うデータが一致するほうが変)
+;; client がどのように command response を扱うのかは考えたほうが良さそう

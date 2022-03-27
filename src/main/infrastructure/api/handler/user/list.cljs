@@ -1,7 +1,7 @@
 (ns infrastructure.api.handler.user.list
   (:require [spec-tools.core :as st]
             [domain.user]
-            [usecase.user]
+            [usecase.list-user]
             [infrastructure.api.swagger-spec]))
 
 (defn- http-> [_] nil)
@@ -22,6 +22,6 @@
    :handler (fn [request respond _]
               (-> request
                   http->
-                  (usecase.user/list-user (:repository request))
+                  (usecase.list-user/execute (:repository request))
                   ->http
                   respond))})

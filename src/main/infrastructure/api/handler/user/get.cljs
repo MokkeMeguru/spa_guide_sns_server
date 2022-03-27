@@ -2,7 +2,7 @@
   (:require
    [domain.user]
    [infrastructure.api.swagger-spec]
-   [usecase.user]
+   [usecase.get-user]
    [clojure.spec.alpha :as s]))
 
 ;; reitit spec によって request の内容は domain.model でバリデーションされている
@@ -25,6 +25,6 @@
    :handler (fn [request respond _]
               (-> request
                   http->
-                  (usecase.user/get-user (:repository request))
+                  (usecase.get-user/execute (:repository request))
                   ->http
                   respond))})

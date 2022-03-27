@@ -1,6 +1,6 @@
 (ns infrastructure.api.handler.community.get
   (:require [domain.community]
-            [usecase.community]
+            [usecase.get-community]
             [infrastructure.api.swagger-spec]
             [clojure.spec.alpha :as s]
             [infrastructure.api.handler.debug]))
@@ -29,6 +29,6 @@
               (->  request
                    http->
                    infrastructure.api.handler.debug/insert-dummy-user
-                   (usecase.community/get-community (:repository request))
+                   (usecase.get-community/execute (:repository request))
                    ->http
                    respond))})

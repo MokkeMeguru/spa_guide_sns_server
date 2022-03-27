@@ -43,7 +43,13 @@ components:
           type: string
         details:
           type: string
-        category: {}
+        category:
+          enum:
+            - anime
+            - geek
+            - gurmand
+            - sports
+          type: string
         imageUrl:
           type: string
         membership:
@@ -265,9 +271,10 @@ paths:
       description: |-
         全てのコミュニティのリストを返します<br/>
         クエリパラメータは、begin_cursor>last_cursorの順で評価されます<br/>
-        - begin_cursor: 指定された community_id より後のコミュニティリストを返す<br/>
-        - last_cursor : 指定された community_id より前のコミュニティリストを返す<br/>
-        - request_size: 指定されたサイズ以下ののコミュニティリストを返す<br/>
+        cursor に存在しない communityId が指定されたときには cursor が指定されなかったときと同じ挙動をします<br/>
+        - beginCursor: 指定された communityId より後のコミュニティリストを返す<br/>
+        - lastCursor : 指定された communityId より前のコミュニティリストを返す<br/>
+        - requestSize: 指定されたサイズ以下ののコミュニティリストを返す<br/>
         - keyword: 指定されたキーワードに部分一致するコミュニティリストを返す
       responses:
         "200":
@@ -380,11 +387,13 @@ paths:
 
         see.  https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets-id#Optional<br/>
 
-        - begin_cursor: 指定された community_id より後のコミュニティリストを返す<br/>
+        cursor に存在しない eventId が指定されたときには cursor が指定されなかったときと同じ挙動をします<br/>
 
-        - last_cursor : 指定された community_id より前のコミュニティリストを返す<br/>
+        - beginCursor: 指定された communityId より後のコミュニティリストを返す<br/>
 
-        - request_size: 指定されたサイズ以下ののコミュニティリストを返す<br/>
+        - lastCursor : 指定された communityId より前のコミュニティリストを返す<br/>
+
+        - requestSize: 指定されたサイズ以下ののコミュニティリストを返す<br/>
 
         - keyword: 指定されたキーワードに部分一致するコミュニティリストを返す
       responses:
@@ -456,12 +465,6 @@ paths:
           schema:
             type: string
         - name: lastCursor
-          in: query
-          description: ""
-          required: false
-          schema:
-            type: string
-        - name: keyword
           in: query
           description: ""
           required: false

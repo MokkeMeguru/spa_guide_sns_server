@@ -73,8 +73,8 @@ ON communities.id=community_members.community_id"
      {:limit "LIMIT ?"
       :order {:updated-at-desc "ORDER BY communities.updated_at DESC"
               :updated-at-asc "ORDER BY communities.updated_at ASC"}
-      :where {:cursor {:updated-at-desc "communities.updated_at <= ?"
-                       :updated-at-asc "communities.updated_at >= ?"}
+      :where {:cursor {:updated-at-desc "communities.updated_at < ?"
+                       :updated-at-asc "communities.updated_at > ?"}
               :keyword "(communities.name LIKE ? OR communities.details LIKE ?)"}}
      :fetch (clojure.string/join "\n" [base-select "WHERE communities.id = ?" base-group])
      :size {:base "SELECT COUNT(*) AS total_size from communities"
@@ -112,10 +112,9 @@ AND (communities.name LIKE ? OR communities.details LIKE ?)"}
       (map db->domain (-> db (.prepare (-> sql-map :list)) (.all) (js->clj)))))
   (-list-part-community [this request-size from-cursor sort-order keyword]
     (let [^js/better-sqlite3 db (:db this)
-          from-cursor-community (domain.community/fetch-community this from-cursor)
           query-keyword (when keyword (str "%" keyword "%"))
-          query (build-sql-list-part-community request-size (:updated-at from-cursor-community) sort-order query-keyword)
-          args (filter some? [(:updated-at from-cursor-community) query-keyword query-keyword request-size])]
+          query (build-sql-list-part-community request-size (:updated-at from-cursor) sort-order query-keyword)
+          args (filter some? [(:updated-at from-cursor) query-keyword query-keyword request-size])]
       (map db->domain (js->clj (interface.gateway.sqlite3.util/apply-all (.prepare db query) args)))))
   (-fetch-community [this community-id]
     (let [^js/better-sqlite3 db (:db this)]
@@ -153,12 +152,9 @@ AND (communities.name LIKE ? OR communities.details LIKE ?)"}
           db-model (domain->db community)]
       (try
         (-> db (.prepare (-> sql-map :create)) (.run (clj->js db-model)))
-        (try (-> db (.prepare (-> sql-map :fetch)) (.get (:id db-model)) (js->clj) (db->domain))
-             (catch js/Error e
-               (warn "insert result cannot fetched" e)
-               (db->domain db-model)))
+        (:id db-model)
         (catch js/Error e
-          (warn "insert failed" e))))))
+          (warn "insert failed" e) nil)))))
 
 (defn make-community-query-repository [^js/better-sqlite3 db]
   (->CommunityQueryRepository db))

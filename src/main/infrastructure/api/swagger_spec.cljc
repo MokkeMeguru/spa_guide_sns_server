@@ -147,6 +147,17 @@
     :name "CommunityEvent"
     :description "community event informatoion"}))
 
+(defn community-event->http [community-event]
+  (let [{:keys [id community-id owned-member-id name details hold-at category image-url]} community-event]
+    {:id id
+     :communityId community-id
+     :ownedMemberId owned-member-id
+     :name name
+     :details details
+     :holdAt hold-at
+     :category category
+     :imageUrl image-url}))
+
 (s/def :community-event-comment/id ::domain.community.event.comment/id)
 (s/def :community-event-comment/eventId ::domain.community.event/id)
 (s/def :community-event-comment/commentedMemberId ::domain.community.member/id)
@@ -164,3 +175,11 @@
    {:spec :community-event-comment/communityEventComment
     :name "communityEventComment"
     :description "the comment on the community event"}))
+
+(defn community-event-comment->http [community-event-comment]
+  (let [{:keys [id event-id member-id body comment-at]} community-event-comment]
+    {:id id
+     :eventId event-id
+     :commentedMemberId member-id
+     :body body
+     :commentAt comment-at}))

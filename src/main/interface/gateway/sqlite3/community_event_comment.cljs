@@ -20,32 +20,15 @@
 
 (defn db->domain [db-model]
   (when db-model
-    (let [{:keys [community_event_comment_id  community_event_comment_event_id community_event_comment_body community_event_comment_comment_at community_event_comment_created_at community_event_comment_updated_at
-                  community_member_id community_member_role community_member_created_at community_member_updated_at
-                  community_id community_name community_details community_category community_created_at community_updated_at
-                  user_id user_name user_icon_url user_created_at user_updated_at]}
+    (let [{:keys [id event_id member_id body comment_at created_at updated_at]}
           (clojure.walk/keywordize-keys db-model)]
-      {:id community_event_comment_id
-       :event-id community_event_comment_event_id
-       :member {:id community_member_id
-                :community {:id community_id
-                            :name community_name
-                            :details community_details
-                            :category (get (:db->domain interface.gateway.sqlite3.community/category-map) community_category)
-                            :created_at community_created_at
-                            :updated_at community_updated_at}
-                :user {:id user_id
-                       :name user_name
-                       :icon-url user_icon_url
-                       :created-at user_created_at
-                       :updated-at user_updated_at}
-                :role (get (:db->domain interface.gateway.sqlite3.community-member/role-map) community_member_role)
-                :created-at community_member_created_at
-                :updated-at community_member_updated_at}
-       :body community_event_comment_body
-       :comment-at community_event_comment_comment_at
-       :created-at community_event_comment_created_at
-       :updated-at community_event_comment_updated_at})))
+      {:id id
+       :event-id event_id
+       :member-id member_id
+       :body body
+       :comment_at comment_at
+       :created_at created_at
+       :updated_at updated_at})))
 
 (defn domain->db [domain-model]
   (when domain-model
@@ -58,38 +41,17 @@
        :created_at (interface.gateway.sqlite3.util/now)
        :updated_at (interface.gateway.sqlite3.util/now)})))
 
-;; TODO think which is better 1) use summarization of repeated code 2) flat data
 (def sql-map
   (let [list "
 SELECT
- community_event_comments.id AS community_event_comment_id,
- community_event_comments.event_id AS community_event_comment_event_id,
- community_event_comments.body AS community_event_comment_body,
- community_event_comments.comment_at AS community_event_comment_comment_at,
- community_event_comments.created_at AS community_event_comment_created_at,
- community_event_comments.updated_at AS community_event_comment_updated_at,
- community_members.id AS community_member_id,
- community_members.role AS community_member_role,
- community_members.created_at AS community_member_created_at,
- community_members.updated_at AS community_member_updated_at,
- communities.id AS community_id,
- communities.details AS community_details,
- communities.created_at AS community_created_at,
- communities.updated_at AS community_updated_at,
- users.id AS user_id,
- users.name AS user_name,
- users.icon_url AS user_icon_url,
- users.created_at AS user_created_at,
- users.updated_at AS user_updated_at
-FROM community_event_comments
-INNER JOIN community_members ON community_event_comments.member_id = community_members.id
-INNER JOIN communities ON community_members.community_id = communities.id
-INNER JOIN users ON community_members.user_id = users.id"]
+ *
+FROM community_event_comments"]
     {:list list
-     :fetch (str list " WHERE community_event_comments.id = ?")
-     :fetch-by-event-id (str list " WHERE community_event_comments.event_id = ?")
-     :fetch-by-event-ids (fn [event-ids] (let [params (str (clojure.string/join ", " (repeat (count event-ids)  "?")))]
-                                           (str list " WHERE community_event_comments.event_id IN (" params ")")))
+     :fetch (str list " WHERE id = ?")
+     :fetch-by-event-id (str list " WHERE event_id = ?")
+     :fetch-by-event-ids
+     (fn [event-ids] (let [params (str (clojure.string/join ", " (repeat (count event-ids)  "?")))]
+                       (str list " WHERE event_id IN (" params ")")))
      :create "
 INSERT INTO community_event_comments
  (id, event_id, member_id, body, comment_at, created_at, updated_at)
@@ -118,14 +80,9 @@ VALUES (@id, @event_id, @member_id, @body, @comment_at, @created_at, @updated_at
           db-model (domain->db command)]
       (try
         (-> db (.prepare (:create sql-map)) (.run (clj->js db-model)))
-        (try
-          (-> db (.prepare (:fetch sql-map)) (.get (:id db-model)) (js->clj) (db->domain))
-          (catch js/Error e
-            (warn "insert result cannot fetched" e)
-            {:id (:id db-model)}))
+        (:id db-model)
         (catch js/Error e
-          (warn "insert failed" e)
-          nil)))))
+          (warn "insert failed" e) nil)))))
 
 (defn make-community-event-comment-query-repository [db]
   (->CommunityEventCommentQueryRepository db))

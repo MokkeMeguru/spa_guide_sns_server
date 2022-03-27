@@ -10,12 +10,9 @@
 (s/def ::comment-at int?)
 
 (s/def ::event-id ::domain.community.event/id)
-(s/def ::member ::domain.community.member/query)
-;; NOTE I seems to not exist the direction comment -> event
-;; However, I seems to exist the direction comment -> member -> user to show the user's image or member info
-(s/def ::query (s/keys :req-un [::id ::event-id ::member ::body ::comment-at]))
-
 (s/def ::member-id ::domain.community.member/id)
+
+(s/def ::query (s/keys :req-un [::id ::event-id ::member-id ::body ::comment-at]))
 (s/def ::command (s/keys :req-un [::event-id ::member-id ::body] :opt-un [::id]))
 
 (defprotocol ICommunityEventCommentQueryRepository
@@ -45,7 +42,7 @@
 
 (s/fdef create-community-event-comment
   :args (s/cat :this any? :command ::command)
-  :ret (s/or :succeed ::query
+  :ret (s/or :succeed ::id
              :failed nil?))
 
 (defn list-community-event-comment [this] (-list-community-event-comment this))

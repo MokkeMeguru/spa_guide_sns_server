@@ -69,13 +69,9 @@
             db-model (domain->db user)]
         (try
           (-> db (.prepare (-> sql-map :create)) (.run (clj->js db-model)))
-          (try (-> db (.prepare (-> sql-map :fetch)) (.get (:id db-model)) (js->clj) (db->domain))
-               (catch js/Error e
-                 (warn "insert result cannot fetched" e)
-                 (db->domain db-model)))
+          (:id db-model)
           (catch js/Error e
-            (warn "insert failed" e)
-            nil))))))
+            (warn "insert failed" e) nil))))))
 
 (defn make-user-query-repository [db]
   (->UserQueryRepository db))

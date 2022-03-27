@@ -2,7 +2,7 @@
   (:require
    [domain.user]
    [infrastructure.api.swagger-spec]
-   [usecase.my.profile]
+   [usecase.get-my-profile]
    [infrastructure.api.handler.debug]))
 
 (defn- http-> [request]
@@ -24,6 +24,6 @@
               (-> request
                   http->
                   infrastructure.api.handler.debug/insert-dummy-user
-                  (usecase.my.profile/get-profile (:repository request))
+                  (usecase.get-my-profile/execute (:repository request))
                   ->http
                   respond))})
