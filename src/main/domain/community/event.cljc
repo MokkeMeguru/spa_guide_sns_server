@@ -12,7 +12,7 @@
 (s/def ::name string?)
 (s/def ::details string?)
 (s/def ::hold-at int?) ;; TODO apply regex YYYY/MM/DD
-(s/def ::category category)
+(s/def ::category #{:party :seminar})
 (s/def ::image-url ::domain.util.url/url)
 
 (s/def ::community-id ::domain.community/id)

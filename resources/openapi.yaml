@@ -43,7 +43,13 @@ components:
           type: string
         details:
           type: string
-        category: {}
+        category:
+          enum:
+            - anime
+            - geek
+            - gurmand
+            - sports
+          type: string
         imageUrl:
           type: string
         membership:
@@ -113,7 +119,11 @@ components:
         holdAt:
           type: integer
           format: int64
-        category: {}
+        category:
+          enum:
+            - party
+            - seminar
+          type: string
         imageUrl:
           type: string
       required:

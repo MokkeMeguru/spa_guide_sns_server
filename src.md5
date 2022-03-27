@@ -8,8 +8,8 @@ src/main/cmd/server/config.cljs	3db65a024f0c30361b6910ca9f4aabea
 src/main/cmd/server/core.cljs	f614aeef6e7aaee59961db56c0069ec7
 src/main/cmd/server/router.cljs	ef603696c80771bd9b91035229549543
 src/main/cmd/server/util.cljs	3e6f4babdad09d8bac4ac91548903b5c
-src/main/domain/community.cljc	b4a090b98ee231a922d1c190681f0086
-src/main/domain/community/event.cljc	79cd00205ec9423d38e9c64616a0b401
+src/main/domain/community.cljc	0ffa3b926d1703def9d1d70c13c3878b
+src/main/domain/community/event.cljc	350f41e0e7a9171c0610d5ea2e1a6f88
 src/main/domain/community/event/comment.cljc	314a66016e8d715b99b6c7dd0609fe0a
 src/main/domain/community/member.cljc	a3e8b6500f382cce68b092f32757f592
 src/main/domain/mock.cljs	52e034d52e77a1138050e288a98c818a
