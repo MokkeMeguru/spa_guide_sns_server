@@ -18,6 +18,7 @@
 (defprotocol ICommunityMemberQueryRepository
   (-list-community-member [this])
   (-fetch-community-member [this member-id])
+  (-fetch-community-members [this member-ids])
   (-check-joined [this user-id community-ids])
   (-search-community-member-by-community-id [this community-id]))
 
@@ -33,6 +34,11 @@
   :ret (s/or :exist ::query
              :not-exist nil?))
 
+(s/fdef fetch-community-members
+  :args (s/cat :this any? :member-ids (s/* ::id))
+  :ret (s/or :exist (s/* ::query)
+             :not-exist nil?))
+
 (s/fdef check-joined
   :args (s/cat :this any? :user-id ::domain.user/id
                :community-ids (s/+ ::domain.community/id))
@@ -44,8 +50,7 @@
 
 (s/fdef create-community-member
   :args (s/cat :this any? :member ::command)
-  :ret (s/or :succeed  any?
-             ;; ::query
+  :ret (s/or :succeed ::id
              :failed nil?))
 
 (defn list-community-member
@@ -58,6 +63,11 @@
   存在しないときには nil を返します"
   [this member-id]
   (-fetch-community-member this member-id))
+
+(defn fetch-community-members
+  "member-ids を持つ community member を検索します"
+  [this member-ids]
+  (-fetch-community-members this member-ids))
 
 (defn check-joined
   "user-id を持つ user が、community-ids のうちの所属する community-id を返します

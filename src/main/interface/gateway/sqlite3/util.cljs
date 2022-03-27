@@ -14,7 +14,6 @@
 
   "
   [statement args]
-  (println args)
   (condp = (count args)
     0 (.all statement)
     1 (.all statement (nth args 0))

@@ -73,8 +73,8 @@ INNER JOIN users ON community_members.user_id = users.id"]
      :create "INSERT INTO community_members (id, community_id, user_id, role, created_at, updated_at)
 VALUES (@id, @community_id, @user_id, @role, @created_at, @updated_at)"}))
 
-(defn build-sql-check-joined [community_ids]
-  (let [params (str (clojure.string/join ", " (repeat (count community_ids)  "?")))]
+(defn build-sql-check-joined [community-ids]
+  (let [params (str (clojure.string/join ", " (repeat (count community-ids) "?")))]
     (clojure.string/join
      "\n"
      ["
@@ -84,7 +84,16 @@ FROM community_members
 WHERE user_id = ?"
       (str " AND community_id IN " "(" params ")")])))
 
+(defn build-sql-fecth-community-members [member-ids]
+  (let [params (str (clojure.string/join "," (repeat (count member-ids) "?")))]
+    (clojure.string/join
+     "\n"
+     [(-> sql-map :list)
+      (str "WHERE community_members.id IN " "(" params ")")])))
+
 ;; impl
+
+
 (defrecord CommunityMemberQueryRepository [db]
   ICommunityMemberQueryRepository
   (-list-community-member [this]
@@ -93,6 +102,9 @@ WHERE user_id = ?"
   (-fetch-community-member [this member-id]
     (let [^js/better-sqlite3 db (:db this)]
       (-> db (.prepare (:fetch sql-map)) (.get member-id) (js->clj) (db->domain))))
+  (-fetch-community-members [this member-ids]
+    (let [^js/better-sqlite3 db (:db this)]
+      (map db->domain (-> db (.prepare (build-sql-fecth-community-members member-ids)) (.all (clj->js member-ids)) (js->clj)))))
   (-check-joined [this user-id community-ids]
     (let [^js/better-sqlite3 db (:db this)]
       (->> (-> db (.prepare (build-sql-check-joined community-ids)) (.all user-id (clj->js community-ids)) (js->clj))
@@ -108,15 +120,9 @@ WHERE user_id = ?"
           db-model (domain->db member)]
       (try
         (-> db (.prepare (:create sql-map)) (.run (clj->js db-model)))
-        ;; TODO F**King ANSISQL
-        (try (-> db (.prepare (:fetch sql-map)) (.get (:id db-model)) (js->clj))
-             (catch js/Error e
-               (warn "insert result cannot fetched" e)
-               ;; TODO below cannot join with other model, so we need the response includes err like tuple[query, err]
-               {:id (:id db-model)}))
+        (:id db-model)
         (catch js/Error e
-          (warn "insert failed" e)
-          nil)))))
+          (warn "insert failed" e) nil)))))
 
 (defn make-community-member-query-repository [db]
   (->CommunityMemberQueryRepository db))

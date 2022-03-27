@@ -61,24 +61,27 @@
      :search-by-community-id (clojure.string/join "\n" [base "WHERE community_id = ?"])
      :search-part-by-community-id
      {:limit "LIMIT ?"
-      :order {:updated-at-desc "ORDER BY updated_at DESC"
-              :updated-at-asc "ORDER BY updated_at ASC"}
-      :where {:cursor {:updated-at-desc "updated_at <= ?"
-                       :updated-at-asc "updated_at >= ?"}}}
+      :order {:hold-at-desc "ORDER BY hold_at DESC"
+              :hold-at-asc "ORDER BY hold_at ASC"}
+      :where {:cursor {:hold-at-desc "hold_at < ?"
+                       :hold-at-asc "hold_at > ?"}}}
+     :size "\nSELECT COUNT(*) AS total_size FROM community_events WHERE community_id = ?"
+     :before-size "\nSELECT COUNT(*) AS before_size, (SELECT COUNT(*) FROM community_events WHERE community_id = ?) AS total_size FROM community_events WHERE community_id = ? AND hold_at > ?"
      :create "
 INSERT INTO community_events
  (id, community_id, owned_member_id, name, details, hold_at, category, image_url, created_at, updated_at)
 VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @category, @image_url, @created_at, @updated_at)"}))
 
-(defn build-sql-list-part-community-event-by-community-id [request-size from-cursor-updated-at sort-order]
+(defn build-sql-search-part-community-event-by-community-id [request-size from-cursor-updated-at sort-order]
   (clojure.string/join
    "\n"
    (cond-> []
      true (conj (-> sql-map :list))
+     true (conj (str "WHERE " "community_id = ?"))
      (some? from-cursor-updated-at)
-     (conj (str "WHERE " (-> sql-map :search-part-by-community-id :where :cursor sort-order)))
-     (= :updated-at-asc sort-order) (conj (-> sql-map :search-part-by-community-id :order :updated-at-asc))
-     (not= :updated-at-asc sort-order) (conj (-> sql-map :search-part-by-community-id :order :updated-at-desc))
+     (conj (str " AND " (-> sql-map :search-part-by-community-id :where :cursor sort-order)))
+     (= :hold-at-asc sort-order) (conj (-> sql-map :search-part-by-community-id :order :hold-at-asc))
+     (not= :hold-at-asc sort-order) (conj (-> sql-map :search-part-by-community-id :order :hold-at-desc))
      (some? request-size) (conj (-> sql-map :search-part-by-community-id :limit)))))
 
 (defrecord CommunityEventQueryRepository [db]
@@ -93,8 +96,24 @@ VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @catego
     (let [^js/better-sqlite3 db (:db this)]
       (map db->domain (-> db (.prepare (:search-by-community-id sql-map)) (.all community-id) (js->clj)))))
   (-search-part-community-event-by-community-id [this community-id request-size from-cursor sort-order]
+    (let [^js/better-sqlite3 db (:db this)
+          query (build-sql-search-part-community-event-by-community-id
+                 request-size from-cursor sort-order)
+          args (filter some? [community-id (:hold-at from-cursor) request-size])]
+      (map (comp db->domain js->clj)
+           (interface.gateway.sqlite3.util/apply-all
+            (-> db (.prepare query)) args))))
+  (-size-community-event [this community-id]
     (let [^js/better-sqlite3 db (:db this)]
-      [])))
+      (-> db (.prepare (-> sql-map :size)) (.get community-id) (js->clj) (get "total_size" 0))))
+  (-before-size-community-event [this community-event community-id]
+    (let [^js/better-sqlite3 db (:db this)
+          db->domain (fn [{:keys [before_size total_size]}] {:before-size before_size :total-size total_size})]
+      (-> db (.prepare (-> sql-map :before-size))
+          (.get community-id community-id (:hold-at community-event))
+          (js->clj)
+          clojure.walk/keywordize-keys
+          db->domain))))
 
 (defrecord CommunityEventCommandRepository [db]
   ICommunityEventCommandRepository
@@ -103,13 +122,9 @@ VALUES (@id, @community_id, @owned_member_id, @name, @details, @hold_at, @catego
           db-model (domain->db event)]
       (try
         (-> db (.prepare (:create sql-map)) (.run (clj->js db-model)))
-        (try (-> db (.prepare (:fetch sql-map)) (.get (:id db-model)) (js->clj) (db->domain))
-             (catch js/Error e
-               (warn "insert result cannot fetched" e)
-               {:id (:id db-model)}))
+        (:id db-model)
         (catch js/Error e
-          (warn "insert failed" e)
-          nil)))))
+          (warn "insert failed" e) nil)))))
 
 (defn make-community-event-query-repository [db]
   (->CommunityEventQueryRepository db))

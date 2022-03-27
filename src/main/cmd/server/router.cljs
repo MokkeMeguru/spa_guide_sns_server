@@ -17,6 +17,7 @@
             [infrastructure.api.handler.community.list]
             [infrastructure.api.handler.community.get]
             [infrastructure.api.handler.my.profile.get]
+            [infrastructure.api.handler.community.event.list]
             [infrastructure.api.swagger-spec]
             [clojure.spec.alpha :as s]
             [macchiato.util.response :as r]))
@@ -45,9 +46,11 @@
    ["/communities"
     {:get infrastructure.api.handler.community.list/operation}]
    ["/communities/{communityId}"
-    {:get infrastructure.api.handler.community.get/operation}]])
+    {:get infrastructure.api.handler.community.get/operation}]
+   ["/communities/{communityId}/events"
+    {:get infrastructure.api.handler.community.event.list/operation}]])
 
-(defn app [config repository]
+(defn app [config repository cache]
   (ring/ring-handler
    (ring/router
     [routes]
@@ -59,6 +62,7 @@
                          cmd.server.util/wrap-body-to-params
                          #(cmd.server.util/wrap-config % config)
                          #(cmd.server.util/wrap-repository % repository)
+                         #(cmd.server.util/wrap-cache % cache)
                          cmd.server.util/wrap-coercion-exception
                          cmd.server.util/wrap-log
                          rrc/coerce-request-middleware

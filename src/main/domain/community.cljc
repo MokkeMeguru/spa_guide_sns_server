@@ -38,7 +38,7 @@
   :ret (s/* ::query))
 
 (s/fdef list-part-community
-  :args (s/cat :this any? :request-size pos-int? :from-cursor (s/nilable ::id) :sort-order ::sort-order :keyword (s/nilable ::keyword))
+  :args (s/cat :this any? :request-size pos-int? :from-cursor (s/nilable ::query) :sort-order ::sort-order :keyword (s/nilable ::keyword))
   :ret (s/* ::query))
 
 (s/fdef fetch-community
@@ -55,7 +55,7 @@
 
 (s/fdef create-community
   :args (s/cat :this any? :community ::command)
-  :ret (s/or :succeed ::query
+  :ret (s/or :succeed ::id
              :failed nil?))
 
 (defn list-community
@@ -68,23 +68,22 @@
 
   - request-size: 返しうる community の最大数
   - keyword: name, details について keyword に部分一致する community を検索します
-  - from-cursor: from-cursor をもつ communtity_id より `sort-order` 的に *後* のコミュニティを検索します
-     from-cursor が存在しないときには from-cursor に `nil` を指定したときと同じ挙動をします
+  - from-cursor: from-cursor より `sort-order` 的に *後* のコミュニティを検索します
   - sort-order:
-    - :updated-at-desc: 更新日時についてより新しい順
-    - :updated-at-asc: 更新日時についてより古い順
+    - :updated-at-desc: 更新日時について新しい順
+    - :updated-at-asc: 更新日時について古い順
 
   Example:
 
-     (list-part-community repo 5 nil :updated-at-desc nil) ;; 最新 5 件を取得
+      (list-part-community repo 5 nil :updated-at-desc nil) ;; 最新 5 件を取得
 
-     (list-part-community repo 5 \"47ace9f8-55a4-4bd5-8d64-63f4d432c59e\" :updated-at-desc nil) ;; 47ace... より古い community の最新5件を取得
+      (list-part-community repo 5 {...} :updated-at-desc nil) ;; ... より古い community の最新5件を取得
   "
   [this request-size from-cursor sort-order keyword]
   (-list-part-community this request-size from-cursor sort-order keyword))
 
 (defn fetch-community
-  "community-id を持つ community を検索します。
+  "community-id を持つ community を検索します
   存在しないときには nil を返します"
   [this community-id]
   (-fetch-community this community-id))
@@ -102,7 +101,7 @@
 
   Example:
 
-    (before-size-community repo nil nil) ;; {:before-size 0 :total-size 10}
+      (before-size-community repo nil nil) ;; {:before-size 0 :total-size 10}
   "
   [this community keyword]
   (-before-size-community this community keyword))
