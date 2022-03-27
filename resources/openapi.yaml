@@ -16,24 +16,95 @@ servers:
     description: local server (run with `npm run start_release`)
 components:
   schemas:
-    User:
+    CommunityMember:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        communityId:
+          type: string
+        role:
+          enum:
+            - member
+            - owner
+          type: string
+      required:
+        - id
+        - user
+        - communityId
+        - role
+      description: community member information
+    CommunityInput:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-        iconUrl:
+        details:
+          type: string
+        category:
+          enum:
+            - anime
+            - geek
+            - gurmand
+            - sports
           type: string
       required:
         - id
         - name
-        - iconUrl
-      description: user information
+        - details
+        - category
+      description: community input model
       example:
-        id: 6e803bdf-55a7-4a31-849e-8489cc76a457
-        name: Meguru Mokke
-        iconUrl: https://avatars.githubusercontent.com/u/30849444?v=4
+        name: 辛い肩こりにPON☆と効く、ストレッチ研究会
+        details: 背筋を伸ばして寿命も伸ばそう
+        category: sports
+    CommunityEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        communityId:
+          type: string
+        ownedMemberId:
+          type: string
+        name:
+          type: string
+        details:
+          type: string
+        holdAt:
+          type: integer
+          format: int64
+        category:
+          enum:
+            - party
+            - seminar
+          type: string
+        imageUrl:
+          type: string
+      required:
+        - id
+        - communityId
+        - ownedMemberId
+        - name
+        - details
+        - holdAt
+        - category
+        - imageUrl
+      description: community event informatoion
+    CommunityEventCommentInput:
+      type: object
+      properties:
+        body:
+          type: string
+      required:
+        - body
+      description: the comment input model
+      example:
+        body: 深夜作業には、エナジードリンクと栄養ドリンク、どっちが向いていると思いますか？
     Community:
       type: object
       properties:
@@ -83,35 +154,27 @@ components:
         membership: 10
         createdAt: 1647307406
         updatedAt: 1647307406
-    CommunityMember:
+    User:
       type: object
       properties:
         id:
           type: string
-        user:
-          $ref: "#/components/schemas/User"
-        communityId:
+        name:
           type: string
-        role:
-          enum:
-            - member
-            - owner
+        iconUrl:
           type: string
       required:
         - id
-        - user
-        - communityId
-        - role
-      description: community member information
-    CommunityEvent:
+        - name
+        - iconUrl
+      description: user information
+      example:
+        id: 6e803bdf-55a7-4a31-849e-8489cc76a457
+        name: Meguru Mokke
+        iconUrl: https://avatars.githubusercontent.com/u/30849444?v=4
+    CommunityEventInput:
       type: object
       properties:
-        id:
-          type: string
-        communityId:
-          type: string
-        ownedMemberId:
-          type: string
         name:
           type: string
         details:
@@ -124,18 +187,17 @@ components:
             - party
             - seminar
           type: string
-        imageUrl:
-          type: string
       required:
-        - id
-        - communityId
-        - ownedMemberId
         - name
         - details
         - holdAt
         - category
-        - imageUrl
-      description: community event informatoion
+      description: community event input model
+      example:
+        name: 超激辛麻婆豆腐を味わいに冬木市に行こう
+        details: 食うか―――？
+        holdAt: 1656795600000
+        category: party
     CommunityEventComment:
       type: object
       properties:
@@ -157,6 +219,12 @@ components:
         - body
         - commentAt
       description: the comment on the community event
+      example:
+        id: 4ad8ef9d-8a2e-45fb-b77c-a16dd32a3746
+        eventId: 687a7541-336a-43b1-8f29-a1f5412512ee
+        commentedMemberId: eb86ddc9-6446-44d3-8afa-5def58bbe340
+        body: ポインタには中身がある…………そんなふうに考えていた時期が俺にもありました
+        commentAt: 1648397939347
     Error:
       type: object
       properties:
@@ -246,6 +314,29 @@ paths:
           required: false
           schema:
             type: string
+    post:
+      operationId: createCommunity
+      tags:
+        - community
+      description: 新しいコミュニティを作成します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommunityInput"
+      responses:
+        "200":
+          description: コミュニティの ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
   "/communities/{communityId}":
     get:
       operationId: getCommunity
@@ -376,6 +467,36 @@ paths:
           required: false
           schema:
             type: string
+    post:
+      operationId: createCommunityEvent
+      tags:
+        - communityEvent
+      description: コミュニティのイベントを作成します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommunityEventInput"
+      responses:
+        "200":
+          description: コミュニティイベントの ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+      parameters:
+        - name: communityId
+          in: path
+          description: ""
+          required: true
+          schema:
+            type: string
   "/communities/{communityId}/events/{eventId}/comments":
     get:
       operationId: listCommunityEventComment
@@ -414,6 +535,78 @@ paths:
           schema:
             type: string
         - name: eventId
+          in: path
+          description: ""
+          required: true
+          schema:
+            type: string
+    post:
+      operationId: createCommunityEventComment
+      tags:
+        - communityEventComment
+      description: コミュニティイベントにコメントを投稿します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommunityEventCommentInput"
+      responses:
+        "200":
+          description: コメントの ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+      parameters:
+        - name: communityId
+          in: path
+          description: ""
+          required: true
+          schema:
+            type: string
+        - name: eventId
+          in: path
+          description: ""
+          required: true
+          schema:
+            type: string
+  "/communities/{communityId}/join":
+    post:
+      operationId: joinCommunity
+      tags:
+        - community
+      description: コミュニティに参加します
+      responses:
+        "200":
+          description: 新規メンバーID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        "204":
+          description: メンバーID (すでに community に参加済み)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+      parameters:
+        - name: communityId
           in: path
           description: ""
           required: true

@@ -68,6 +68,10 @@
                                              :community/membership
                                              :community/createdAt
                                              :community/updatedAt]))
+(s/def :community/communityInput (s/keys :req-un [:community/id
+                                                  :community/name
+                                                  :community/details
+                                                  :community/category]))
 (s/def :community/isJoined boolean?)
 (s/def :community/keyword (s/and string? #(<= 0 (count %) 140)))
 
@@ -85,6 +89,16 @@
      :membership 10
      :createdAt 1647307406
      :updatedAt 1647307406}}))
+
+(def communityInput
+  (st/spec
+   {:spec :community/communityInput
+    :name "CommunityInput"
+    :description "community input model"
+    :openapi/example
+    {:name "辛い肩こりにPON☆と効く、ストレッチ研究会"
+     :details "背筋を伸ばして寿命も伸ばそう"
+     :category :sports}}))
 
 (defn community->http [community]
   (let [{:keys [id name details category image-url created-at updated-at membership]} community]
@@ -133,12 +147,15 @@
 (s/def :community-event/category ::domain.community.event/category)
 (s/def :community-event/imageUrl ::domain.community.event/image-url)
 (s/def :community-event/keyword (s/and string? #(<= 0 (count %) 140)))
-
 (s/def :community-event/communityEvent
   (s/keys :req-un
           [:community-event/id :community-event/communityId :community-event/ownedMemberId
            :community-event/name :community-event/details
            :community-event/holdAt :community-event/category :community-event/imageUrl]))
+(s/def :community-event/communityEventInput
+  (s/keys :req-un
+          [:community-event/name :community-event/details
+           :community-event/holdAt :community-event/category]))
 
 (def community-event {})
 (def communityEvent
@@ -146,6 +163,17 @@
    {:spec :community-event/communityEvent
     :name "CommunityEvent"
     :description "community event informatoion"}))
+
+(def communityEventInput
+  (st/spec
+   {:spec :community-event/communityEventInput
+    :name "CommunityEventInput"
+    :description "community event input model"
+    :openapi/example
+    {:name "超激辛麻婆豆腐を味わいに冬木市に行こう"
+     :details "食うか―――？"
+     :holdAt 1656795600000
+     :category :party}}))
 
 (defn community-event->http [community-event]
   (let [{:keys [id community-id owned-member-id name details hold-at category image-url]} community-event]
@@ -163,18 +191,34 @@
 (s/def :community-event-comment/commentedMemberId ::domain.community.member/id)
 (s/def :community-event-comment/body ::domain.community.event.comment/body)
 (s/def :community-event-comment/commentAt ::domain.community.event.comment/comment-at)
-
 (s/def :community-event-comment/communityEventComment (s/keys :req-un
                                                               [:community-event-comment/id
                                                                :community-event-comment/eventId
                                                                :community-event-comment/commentedMemberId
                                                                :community-event-comment/body
                                                                :community-event-comment/commentAt]))
+(s/def :community-event-comment/communityEventCommentInput (s/keys :req-un
+                                                                   [:community-event-comment/body]))
+
 (def communityEventComment
   (st/spec
    {:spec :community-event-comment/communityEventComment
-    :name "communityEventComment"
-    :description "the comment on the community event"}))
+    :name "CommunityEventComment"
+    :description "the comment on the community event"
+    :openapi/example
+    {:id "4ad8ef9d-8a2e-45fb-b77c-a16dd32a3746"
+     :eventId "687a7541-336a-43b1-8f29-a1f5412512ee"
+     :commentedMemberId "eb86ddc9-6446-44d3-8afa-5def58bbe340"
+     :body "ポインタには中身がある…………そんなふうに考えていた時期が俺にもありました"
+     :commentAt 1648397939347}}))
+
+(def communityEventCommentInput
+  (st/spec
+   {:spec :community-event-comment/communityEventCommentInput
+    :name "CommunityEventCommentInput"
+    :description "the comment input model"
+    :openapi/example
+    {:body "深夜作業には、エナジードリンクと栄養ドリンク、どっちが向いていると思いますか？"}}))
 
 (defn community-event-comment->http [community-event-comment]
   (let [{:keys [id event-id member-id body comment-at]} community-event-comment]

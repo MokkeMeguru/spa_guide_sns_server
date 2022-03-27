@@ -31,6 +31,9 @@
                                        :CommunityMember infrastructure.api.swagger-spec/communityMember
                                        :CommunityEvent infrastructure.api.swagger-spec/communityEvent
                                        :CommunityEventComment infrastructure.api.swagger-spec/communityEventComment
+                                       :CommunityInput infrastructure.api.swagger-spec/communityInput
+                                       :CommunityEventInput infrastructure.api.swagger-spec/communityEventInput
+                                       :CommunityEventCommentInput infrastructure.api.swagger-spec/communityEventCommentInput
                                        :Error infrastructure.api.swagger-spec/error}}}
       openapi/openapi-spec
       :components
@@ -114,7 +117,17 @@
                                                                                :isJoined (assoc (openapi/transform infrastructure.api.swagger-spec/community-is-joined)
                                                                                                 :nullable true)}}}
                                                    :beforeSize (openapi/transform infrastructure.api.swagger-spec/before-size)
-                                                   :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}}
+                                                   :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}
+    :post {:operationId "createCommunity"
+           :tags ["community"]
+           :description (clojure.string/join "<br/>\n" ["新しいコミュニティを作成します"])
+           :requestBody
+           {:required true
+            :content {"application/json"
+                      {:schema {"$ref" "#/components/schemas/CommunityInput"}}}}
+           :responses {200 {:description "コミュニティの ID"
+                            :content
+                            {"application/json" {:schema (openapi/transform (s/keys :req-un [:community/id]))}}}}}}
    "/communities/{communityId}"
    {:get {:operationId "getCommunity"
           :tags ["community"]
@@ -130,6 +143,20 @@
                                                                     :nullable true)
                                                    :members {:type "array"
                                                              :items {"$ref" "#/components/schemas/CommunityMember"}}}}}}}}}}
+   "/communities/{communityId}/join"
+   {:post {:operationId "joinCommunity"
+           :tags ["community"]
+           :description (clojure.string/join "<br/>\n" ["コミュニティに参加します"])
+           ::openapi/parameters {:path (s/keys :req-un [:path/communityId])}
+           :responses {200 {:description "新規メンバーID"
+                            :content
+                            {"application/json"
+                             {:schema (openapi/transform (s/keys :req-un [:community-member/id]))}}}
+                       204  {:description "メンバーID (すでに community に参加済み)"
+                             :content
+                             {"application/json"
+                              {:schema (openapi/transform (s/keys :req-un [:community-member/id]))}}}}}}
+
    "/communities/{communityId}/events"
    {:get {:operationId "listCommunityEvent"
           :tags ["communityEvent"]
@@ -162,8 +189,18 @@
                                                                        {:communityMembers {:type "array"
                                                                                            :items {"$ref" "#/components/schemas/CommunityMember"}}}}
                                                             :beforeSize (openapi/transform infrastructure.api.swagger-spec/before-size)
-                                                            :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}}
-
+                                                            :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}
+    :post {:operationId "createCommunityEvent"
+           :tags ["communityEvent"]
+           :description (clojure.string/join "<br/>\n" ["コミュニティのイベントを作成します"])
+           ::openapi/parameters {:path (s/keys :req-un [:path/communityId])}
+           :requestBody
+           {:required true
+            :content {"application/json"
+                      {:schema {"$ref" "#/components/schemas/CommunityEventInput"}}}}
+           :responses {200 {:description "コミュニティイベントの ID"
+                            :content
+                            {"application/json" {:schema (openapi/transform (s/keys :req-un [:community-event/id]))}}}}}}
    "/communities/{communityId}/events/{eventId}/comments"
    {:get {:operationId "listCommunityEventComment"
           :tags ["communityEventComment"]
@@ -180,7 +217,18 @@
                                                            :required [:communityMembers]
                                                            :properties
                                                            {:communityMembers {:type "array"
-                                                                               :items {"$ref" "#/components/schemas/CommunityMember"}}}}}}}}}}}}})
+                                                                               :items {"$ref" "#/components/schemas/CommunityMember"}}}}}}}}}}}
+    :post {:operationId "createCommunityEventComment"
+           :tags ["communityEventComment"]
+           ::openapi/parameters {:path (s/keys :req-un [:path/communityId :path/eventId])}
+           :description (clojure.string/join "<br/>\n" ["コミュニティイベントにコメントを投稿します"])
+           :requestBody
+           {:required true
+            :content {"application/json"
+                      {:schema {"$ref" "#/components/schemas/CommunityEventCommentInput"}}}}
+           :responses {200 {:description "コメントの ID"
+                            :content
+                            {"application/json" {:schema (openapi/transform (s/keys :req-un [:community-event-comment/id]))}}}}}}})
 
 (defn generate-openapi []
   (-> (openapi/openapi-spec
