@@ -18,6 +18,7 @@
             [infrastructure.api.handler.community.get]
             [infrastructure.api.handler.my.profile.get]
             [infrastructure.api.handler.community.event.list]
+            [infrastructure.api.handler.community.event.comment.list]
             [infrastructure.api.swagger-spec]
             [clojure.spec.alpha :as s]
             [macchiato.util.response :as r]))
@@ -48,7 +49,9 @@
    ["/communities/{communityId}"
     {:get infrastructure.api.handler.community.get/operation}]
    ["/communities/{communityId}/events"
-    {:get infrastructure.api.handler.community.event.list/operation}]])
+    {:get infrastructure.api.handler.community.event.list/operation}]
+   ["/communities/{communityId}/events/{eventId}/comments"
+    {:get infrastructure.api.handler.community.event.comment.list/operation}]])
 
 (defn app [config repository cache]
   (ring/ring-handler

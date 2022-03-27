@@ -30,7 +30,8 @@
               (keyword (str "community-event-comments:" id))
               (fn [] (->> (domain.community.event.comment/fetch-community-event-comment-by-event-id
                            (:community-event-comment-query-repository repo) id)
-                          (sort-by :comment-at)))))
+                          (sort-by :comment-at)
+                          reverse))))
 
            community-events)
           member-ids (distinct (concat (map :owned-member-id community-events) (apply concat (map (fn [community-event-comment] (map :member-id community-event-comment)) community-event-comments-list))))

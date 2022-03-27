@@ -17,7 +17,8 @@
                                   (:community-members includes)))))
 
 (defn- ->http [[{:keys [community-events representative-comments-list total-size before-size includes]} err]]
-  (if (nil? err)
+  (if (some? err)
+    {:status 500 :body err}
     {:status 200 :body {:events
                         (let [representative-comments-map (->> representative-comments-list
                                                                (filter #(-> % count pos-int?))
@@ -30,8 +31,7 @@
                                community-events))
                         :totalSize total-size
                         :beforeSize before-size
-                        :includes (includes->http includes)}}
-    {:status 500 :body err}))
+                        :includes (includes->http includes)}}))
 
 (def operation
   {:operationId "listCommunityEvent"

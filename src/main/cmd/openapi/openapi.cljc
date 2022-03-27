@@ -164,7 +164,7 @@
                                                             :beforeSize (openapi/transform infrastructure.api.swagger-spec/before-size)
                                                             :totalSize (openapi/transform infrastructure.api.swagger-spec/total-size)}}}}}}}}
 
-   "/communityes/{communityId}/events/{eventId}/comments"
+   "/communities/{communityId}/events/{eventId}/comments"
    {:get {:operationId "listCommunityEventComment"
           :tags ["communityEventComment"]
           ::openapi/parameters {:path (s/keys :req-un [:path/communityId :path/eventId])}

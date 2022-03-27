@@ -26,9 +26,9 @@
        :event-id event_id
        :member-id member_id
        :body body
-       :comment_at comment_at
-       :created_at created_at
-       :updated_at updated_at})))
+       :comment-at comment_at
+       :created-at created_at
+       :updated-at updated_at})))
 
 (defn domain->db [domain-model]
   (when domain-model

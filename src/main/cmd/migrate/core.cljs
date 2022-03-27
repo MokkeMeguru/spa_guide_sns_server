@@ -66,7 +66,7 @@
       (domain.community.event.comment/create-community-event-comment
        (:community-event-comment-command-repository repository)
        community-event-comment))
-    (reverse (:community-event-comment samples)))))
+    (:community-event-comment samples))))
 
 (defn migrate
   ([]
