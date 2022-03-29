@@ -68,8 +68,7 @@
                                              :community/membership
                                              :community/createdAt
                                              :community/updatedAt]))
-(s/def :community/communityInput (s/keys :req-un [:community/id
-                                                  :community/name
+(s/def :community/communityInput (s/keys :req-un [:community/name
                                                   :community/details
                                                   :community/category]))
 (s/def :community/isJoined boolean?)

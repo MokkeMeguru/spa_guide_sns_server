@@ -39,8 +39,6 @@ components:
     CommunityInput:
       type: object
       properties:
-        id:
-          type: string
         name:
           type: string
         details:
@@ -53,7 +51,6 @@ components:
             - sports
           type: string
       required:
-        - id
         - name
         - details
         - category

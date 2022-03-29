@@ -16,6 +16,7 @@
             [infrastructure.api.handler.user.get]
             [infrastructure.api.handler.community.list]
             [infrastructure.api.handler.community.get]
+            [infrastructure.api.handler.community.create]
             [infrastructure.api.handler.my.profile.get]
             [infrastructure.api.handler.community.event.list]
             [infrastructure.api.handler.community.event.comment.list]
@@ -45,13 +46,25 @@
    ["/users/{id}"
     {:get infrastructure.api.handler.user.get/operation}]
    ["/communities"
-    {:get infrastructure.api.handler.community.list/operation}]
+    {:get infrastructure.api.handler.community.list/operation
+     :post infrastructure.api.handler.community.create/operation}]
    ["/communities/{communityId}"
     {:get infrastructure.api.handler.community.get/operation}]
    ["/communities/{communityId}/events"
     {:get infrastructure.api.handler.community.event.list/operation}]
    ["/communities/{communityId}/events/{eventId}/comments"
     {:get infrastructure.api.handler.community.event.comment.list/operation}]])
+
+(defn extra-middleware [handler]
+  (fn [request respond raise]
+    (let [request-method (-> request :request-method)
+          uri (-> request :uri)]
+      (handler
+       (cond-> request
+         (and (= "/communities" uri) (= :post request-method))
+         (update-in [:body-params :category] #(if (nil? %) nil (keyword %))))
+       respond
+       raise))))
 
 (defn app [config repository cache]
   (ring/ring-handler
@@ -63,6 +76,7 @@
                          params/wrap-params
                          #(rf/wrap-restful-format % {:keywordize? true})
                          cmd.server.util/wrap-body-to-params
+                         extra-middleware
                          #(cmd.server.util/wrap-config % config)
                          #(cmd.server.util/wrap-repository % repository)
                          #(cmd.server.util/wrap-cache % cache)
