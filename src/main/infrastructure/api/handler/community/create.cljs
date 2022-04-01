@@ -12,10 +12,10 @@
                  :category category
                  :image-url (domain.community/sample-dummy-image-url category)}}))
 
-(defn- ->http [[community-id err]]
+(defn- ->http [[ret err]]
   (cond
     (some? err) {:status (:code err) :body {:message (:message err)}}
-    :else {:status 200 :body {:id (:community-id community-id)}}))
+    :else {:status 200 :body {:id (:community-id ret)}}))
 
 (def operation
   {:operation "createCommunity"

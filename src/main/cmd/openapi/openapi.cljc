@@ -152,7 +152,7 @@
                             :content
                             {"application/json"
                              {:schema (openapi/transform (s/keys :req-un [:community-member/id]))}}}
-                       204  {:description "メンバーID (すでに community に参加済み)"
+                       409  {:description "メンバーID (すでに community に参加済み)"
                              :content
                              {"application/json"
                               {:schema (openapi/transform (s/keys :req-un [:community-member/id]))}}}}}}

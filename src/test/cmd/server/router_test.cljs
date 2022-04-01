@@ -19,4 +19,6 @@
       (t/is (= {:id "6e803bdf-55a7-4a31-849e-8489cc76a457"}
                (->path-params "/users/6e803bdf-55a7-4a31-849e-8489cc76a457"))))
     (t/testing "listCommunity"
-      (t/is (= "listCommunity" (->operationId "/communities" :get))))))
+      (t/is (= "listCommunity" (->operationId "/communities" :get))))
+    (t/testing "joinCommunity"
+      (t/is (= "joinCommunity" (->operationId "/communities/2fbbc61f-b6b2-4711-bf05-d920f42de9be/join" :post))))))

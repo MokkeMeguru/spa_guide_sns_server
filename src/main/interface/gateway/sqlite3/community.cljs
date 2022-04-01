@@ -85,7 +85,8 @@ COUNT(*) AS before_size,
 (SELECT COUNT(*) FROM communities WHERE (communities.name LIKE ? OR communities.details LIKE ?)) AS total_size
 FROM communities WHERE updated_at > ?
 AND (communities.name LIKE ? OR communities.details LIKE ?)"}
-     :create "INSERT INTO communities (id, name, details, category, image_url, created_at, updated_at) VALUES (@id, @name, @details, @category, @image_url, @created_at, @updated_at)"}))
+     :create "INSERT INTO communities (id, name, details, category, image_url, created_at, updated_at) VALUES (@id, @name, @details, @category, @image_url, @created_at, @updated_at)"
+     :touch "UPDATE communities SET updated_at = ? WHERE id = ?"}))
 
 (defn build-sql-list-part-community [request-size from-cursor-updated-at sort-order keyword]
   (clojure.string/join
@@ -154,7 +155,14 @@ AND (communities.name LIKE ? OR communities.details LIKE ?)"}
         (-> db (.prepare (-> sql-map :create)) (.run (clj->js db-model)))
         (:id db-model)
         (catch js/Error e
-          (warn "insert failed" e) nil)))))
+          (warn "insert failed" e) nil))))
+  (-touch-community [this community-id]
+    (let [^js/better-sqlite3 db (:db this)
+          updated-at (interface.gateway.sqlite3.util/now)]
+      (try
+        (-> db (.prepare (-> sql-map :touch)) (.run updated-at community-id) (js->clj) (get "changes") (= 1))
+        (catch js/Error e
+          (warn "update failed" e) nil)))))
 
 (defn make-community-query-repository [^js/better-sqlite3 db]
   (->CommunityQueryRepository db))

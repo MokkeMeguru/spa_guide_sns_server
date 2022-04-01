@@ -42,7 +42,7 @@
 (s/fdef check-joined
   :args (s/cat :this any? :user-id ::domain.user/id
                :community-ids (s/+ ::domain.community/id))
-  :ret (s/* ::domain.community/id))
+  :ret (s/* (s/keys :req-un [::id ::community-id])))
 
 (s/fdef search-community-member-by-community-id
   :args (s/cat :this any? :community-id ::domain.community/id)
@@ -70,7 +70,7 @@
   (-fetch-community-members this member-ids))
 
 (defn check-joined
-  "user-id を持つ user が、community-ids のうちの所属する community-id を返します
+  "user-id を持つ user が、community-ids のうちの所属する community-id と member-id の構造体を返します
   community-ids - (返ってきた communtiy-id のリスト) = そのユーザが所属していない community です"
   [this user-id community-ids]
   (-check-joined this user-id community-ids))
