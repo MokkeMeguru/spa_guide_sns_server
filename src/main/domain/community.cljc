@@ -31,7 +31,8 @@
   (-before-size-community [this community keyword]))
 
 (defprotocol ICommunityCommandRepository
-  (-create-community [this community]))
+  (-create-community [this community])
+  (-touch-community [this community-id]))
 
 (s/fdef list-community
   :args (s/cat :this any?)
@@ -57,6 +58,10 @@
   :args (s/cat :this any? :community ::command)
   :ret (s/or :succeed ::id
              :failed nil?))
+
+(s/fdef touch-community
+  :args (s/cat :this any? :community-id ::id)
+  :ret boolean?)
 
 (defn list-community
   "community を全件取得します"
@@ -111,7 +116,14 @@
   [this community]
   (-create-community this community))
 
+(defn touch-community
+  "community を更新時間を更新します"
+  [this community-id]
+  (-touch-community this community-id))
+
 ;; dummy utility
+
+
 (s/fdef sample-dummy-image-url
   :args (s/cat :category ::category)
   :ret ::domain.util.url/url)

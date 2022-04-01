@@ -21,6 +21,7 @@
         is-joined-set (when user-id (->> communities
                                          (map :id)
                                          (domain.community.member/check-joined (:community-member-query-repository repo) user-id)
+                                         (map :community-id)
                                          set))]
     [{:communities (map
                     (fn [community]

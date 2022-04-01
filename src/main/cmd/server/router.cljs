@@ -20,6 +20,7 @@
             [infrastructure.api.handler.my.profile.get]
             [infrastructure.api.handler.community.event.list]
             [infrastructure.api.handler.community.event.comment.list]
+            [infrastructure.api.handler.community.join]
             [infrastructure.api.swagger-spec]
             [clojure.spec.alpha :as s]
             [macchiato.util.response :as r]))
@@ -50,6 +51,8 @@
      :post infrastructure.api.handler.community.create/operation}]
    ["/communities/{communityId}"
     {:get infrastructure.api.handler.community.get/operation}]
+   ["/communities/{communityId}/join"
+    {:post infrastructure.api.handler.community.join/operation}]
    ["/communities/{communityId}/events"
     {:get infrastructure.api.handler.community.event.list/operation}]
    ["/communities/{communityId}/events/{eventId}/comments"

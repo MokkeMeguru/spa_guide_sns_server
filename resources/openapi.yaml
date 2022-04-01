@@ -591,7 +591,7 @@ paths:
                     type: string
                 required:
                   - id
-        "204":
+        "409":
           description: メンバーID (すでに community に参加済み)
           content:
             application/json:

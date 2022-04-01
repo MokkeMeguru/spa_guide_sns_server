@@ -209,4 +209,6 @@ LIMIT ?"))))
       (t/is (= 1 (domain.community/size-community
                   (:community-query-repository repo) "辛い"))))
     ;; TODO before size community
-    ))
+    (t/testing "touch"
+      (t/is (true? (domain.community/touch-community
+                    (:community-command-repository repo) "f61f5f38-174b-43e1-8873-4f7cdbee1c18"))))))

@@ -79,7 +79,7 @@ VALUES (@id, @community_id, @user_id, @role, @created_at, @updated_at)"}))
      "\n"
      ["
 SELECT
- community_id
+ id, community_id
 FROM community_members
 WHERE user_id = ?"
       (str " AND community_id IN " "(" params ")")])))
@@ -106,12 +106,15 @@ WHERE user_id = ?"
     (let [^js/better-sqlite3 db (:db this)]
       (map db->domain (-> db (.prepare (build-sql-fecth-community-members member-ids)) (.all (clj->js member-ids)) (js->clj)))))
   (-check-joined [this user-id community-ids]
-    (let [^js/better-sqlite3 db (:db this)]
+    (let [^js/better-sqlite3 db (:db this)
+          db->domain (fn [{:keys [id community_id]}] {:id id :community-id community_id})]
       (->> (-> db (.prepare (build-sql-check-joined community-ids)) (.all user-id (clj->js community-ids)) (js->clj))
-           (map (comp :community_id clojure.walk/keywordize-keys)))))
+           (map  (comp db->domain clojure.walk/keywordize-keys)))))
   (-search-community-member-by-community-id [this community-id]
     (let [^js/better-sqlite3 db (:db this)]
-      (map db->domain (-> db (.prepare (:search-by-community-id sql-map)) (.all community-id) (js->clj))))))
+      (map db->domain (-> db (.prepare (:search-by-community-id sql-map)) (.all community-id) (js->clj)))))
+  Object
+  (toString [_] "CommunityMemberQueryRepository"))
 
 (defrecord CommunityMemberCommandRepository [db]
   ICommunityMemberCommandRepository
@@ -122,7 +125,9 @@ WHERE user_id = ?"
         (-> db (.prepare (:create sql-map)) (.run (clj->js db-model)))
         (:id db-model)
         (catch js/Error e
-          (warn "insert failed" e) nil)))))
+          (warn "insert failed" e) nil))))
+  Object
+  (toString [_] "CommunnityMemberCommandRepository"))
 
 (defn make-community-member-query-repository [db]
   (->CommunityMemberQueryRepository db))
