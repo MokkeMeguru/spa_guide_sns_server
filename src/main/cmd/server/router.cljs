@@ -21,6 +21,7 @@
             [infrastructure.api.handler.community.event.list]
             [infrastructure.api.handler.community.event.create]
             [infrastructure.api.handler.community.event.comment.list]
+            [infrastructure.api.handler.community.event.comment.create]
             [infrastructure.api.handler.community.join]
             [infrastructure.api.swagger-spec]
             [clojure.spec.alpha :as s]
@@ -58,7 +59,8 @@
     {:get infrastructure.api.handler.community.event.list/operation
      :post infrastructure.api.handler.community.event.create/operation}]
    ["/communities/{communityId}/events/{eventId}/comments"
-    {:get infrastructure.api.handler.community.event.comment.list/operation}]])
+    {:get infrastructure.api.handler.community.event.comment.list/operation
+     :post infrastructure.api.handler.community.event.comment.create/operation}]])
 
 (defn extra-middleware [handler]
   (fn [request respond raise]

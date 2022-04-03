@@ -27,7 +27,6 @@
     (first community-members)))
 
 (defn- create-communtiy-event [event repo]
-  (println event)
   (when-not (s/valid? :domain.community.event/command event)
     (throw (ex-info "spec failed: invalid community-event"
                     {:code 403 :community-event event :reason (s/explain-data :domain.community.event/command event)})))
@@ -35,7 +34,7 @@
     event-id
     (throw (ex-info "failed: create community-event" {:code 500 :community-event event}))))
 
-(defn touch-community [communtiy-id repo]
+(defn- touch-community [communtiy-id repo]
   (try (if (>= (domain.community/touch-community (:community-command-repository repo) communtiy-id) 1)
          nil
          (error (str "communtiy not updated at updated-at with unknown reason: " communtiy-id)))
