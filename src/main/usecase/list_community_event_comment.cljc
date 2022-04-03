@@ -18,7 +18,7 @@
     (let [community-event (domain.community.event/fetch-community-event (:community-event-query-repository repo) event-id)
           community-event-comments (pkg.cache.core/fetch-or-miss
                                     cache
-                                    (keyword (str "community-event-comments:" event-id))
+                                    (domain.community.event.comment/list-cache-key event-id)
                                     (fn [] (->> (domain.community.event.comment/fetch-community-event-comment-by-event-id
                                                  (:community-event-comment-query-repository repo) event-id)
                                                 (sort-by :comment-at)

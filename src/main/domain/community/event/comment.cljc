@@ -50,3 +50,6 @@
 (defn fetch-community-event-comment-by-event-id [this event-id] (-fetch-community-event-comment-by-event-id this event-id))
 (defn fetch-community-event-comment-by-event-ids [this event-ids] (-fetch-community-event-comment-by-event-ids this event-ids))
 (defn create-community-event-comment [this command] (-create-community-event-comment this command))
+
+(defn list-cache-key [event-id]
+  (keyword (str "community-event-comments:" event-id)))
