@@ -30,14 +30,14 @@
     member-id
     (throw (ex-info (str "failed to create member") {:code 500 :user-id user-id :communtiy-id community-id}))))
 
-(defn touch-community [communtiy-id repo]
-  (try (if (>= (domain.community/touch-community (:community-command-repository repo) communtiy-id) 1)
-         nil
-         (error (str "communtiy not updated at updated-at with unknown reason: " communtiy-id)))
-       (catch #?(:clj Throwable
-                 :cljs js/Error) e
-         (error e)
-         nil)))
+;; (defn touch-community [communtiy-id repo]
+;;   (try (if (>= (domain.community/touch-community (:community-command-repository repo) communtiy-id) 1)
+;;          nil
+;;          (error (str "communtiy not updated at updated-at with unknown reason: " communtiy-id)))
+;;        (catch #?(:clj Throwable
+;;                  :cljs js/Error) e
+;;          (error e)
+;;          nil)))
 
 (defn fetch-community [community-id repo]
   (if-let [community (domain.community/fetch-community (:community-query-repository repo) community-id)]
@@ -53,10 +53,10 @@
                  (:transaction-repository repo)
                  (fn [user-id community-id repo]
                    (if-let [member-id (create-community-member user-id community-id repo)]
-                     (do (touch-community community-id repo)
-                         {:member-id member-id
-                          :community-id community-id
-                          :user-id user-id})
+                    ;; (touch-community community-id repo)
+                     {:member-id member-id
+                      :community-id community-id
+                      :user-id user-id}
                      (throw (ex-info "create member failed with unknown reason" {:code 500})))))]
       [(tx-fn (:id user) (:id community) repo) nil])
     (catch #?(:clj Throwable

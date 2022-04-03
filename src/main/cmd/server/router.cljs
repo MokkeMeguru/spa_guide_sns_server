@@ -19,6 +19,7 @@
             [infrastructure.api.handler.community.create]
             [infrastructure.api.handler.my.profile.get]
             [infrastructure.api.handler.community.event.list]
+            [infrastructure.api.handler.community.event.create]
             [infrastructure.api.handler.community.event.comment.list]
             [infrastructure.api.handler.community.join]
             [infrastructure.api.swagger-spec]
@@ -54,17 +55,20 @@
    ["/communities/{communityId}/join"
     {:post infrastructure.api.handler.community.join/operation}]
    ["/communities/{communityId}/events"
-    {:get infrastructure.api.handler.community.event.list/operation}]
+    {:get infrastructure.api.handler.community.event.list/operation
+     :post infrastructure.api.handler.community.event.create/operation}]
    ["/communities/{communityId}/events/{eventId}/comments"
     {:get infrastructure.api.handler.community.event.comment.list/operation}]])
 
 (defn extra-middleware [handler]
   (fn [request respond raise]
     (let [request-method (-> request :request-method)
-          uri (-> request :uri)]
+          uri (get-in request [:reitit.core/match :template])]
       (handler
        (cond-> request
          (and (= "/communities" uri) (= :post request-method))
+         (update-in [:body-params :category] #(if (nil? %) nil (keyword %)))
+         (and (= "/communities/{communityId}/events" uri) (= :post request-method))
          (update-in [:body-params :category] #(if (nil? %) nil (keyword %))))
        respond
        raise))))
