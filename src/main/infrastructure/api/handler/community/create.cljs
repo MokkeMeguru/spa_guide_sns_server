@@ -6,7 +6,7 @@
             [clojure.spec.alpha :as s]))
 
 (defn- http-> [request]
-  (let [{:keys [name details category imageUrl]} (-> request :body-params)]
+  (let [{:keys [name details category]} (-> request :body-params)]
     {:community {:name name
                  :details details
                  :category category
@@ -18,7 +18,7 @@
     :else {:status 200 :body {:id (:community-id ret)}}))
 
 (def operation
-  {:operation "createCommunity"
+  {:operationId "createCommunity"
    :parameters {:body infrastructure.api.swagger-spec/communityInput}
    :responses {200 {:body (s/keys :req-un [:community/id])}}
    :handler (fn [request respond _]

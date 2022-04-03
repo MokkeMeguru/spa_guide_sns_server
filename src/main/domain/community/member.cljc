@@ -70,7 +70,7 @@
   (-fetch-community-members this member-ids))
 
 (defn check-joined
-  "user-id を持つ user が、community-ids のうちの所属する community-id と member-id の構造体を返します
+  "user-id を持つ user が、community-ids のうちの所属する community-id と id の構造体を返します
   community-ids - (返ってきた communtiy-id のリスト) = そのユーザが所属していない community です"
   [this user-id community-ids]
   (-check-joined this user-id community-ids))

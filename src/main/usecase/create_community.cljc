@@ -13,11 +13,12 @@
     (throw (ex-info "failed: create community" {:code 500 :community community}))))
 
 (defn- create-community-member [member repo]
-  (when-not (s/valid? :domain.community.member/command member) (throw (ex-info "spec failed: invalid community-member" {:code 403 :community-member member})))
+  (when-not (s/valid? :domain.community.member/command member)
+    (throw (ex-info "spec failed: invalid community-member" {:code 403 :community-member member})))
   (if-let [member-id (domain.community.member/create-community-member
                       (:community-member-command-repository repo) member)]
     member-id
-    (throw (ex-info "failed: create community-member" {:community-member member}))))
+    (throw (ex-info "failed: create community-member" {:code 500 :community-member member}))))
 
 (defn execute [{:keys [user-id community]} repo]
   (let [user (domain.user/fetch-user (:user-query-repository repo) user-id)]
