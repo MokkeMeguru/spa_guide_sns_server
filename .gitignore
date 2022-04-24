@@ -19,3 +19,4 @@ pom.xml.asc
 .hgignore
 .hg/
 db.sqlite3
+/out/cmd/server/cljs-runtime/
