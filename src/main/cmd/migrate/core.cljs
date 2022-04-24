@@ -8,8 +8,8 @@
             [infrastructure.sqlite3.util]
             [infrastructure.sqlite3.up]
             [taoensso.timbre :refer [error info]]
-            ["better-sqlite3" :as better-sqlite3]
-            [infrastructure.sqlite3.core]))
+            [infrastructure.sqlite3.core]
+            ["better-sqlite3" :as better-sqlite3]))
 
 (def db-path "db.sqlite3")
 

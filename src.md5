@@ -1,7 +1,7 @@
 src/dev/dev.cljs	ee1694db2e2a8ed8f9464594e4e807f7
 src/dev/user.cljs	cae1ee37d5d18075d05744767dfc20c0
 src/main/cmd/migrate/config.cljs	96e058879e6ebf83fc8bb2d67b43e5d6
-src/main/cmd/migrate/core.cljs	f2b0d09db099b4b4a6c1570adf9264f5
+src/main/cmd/migrate/core.cljs	38f7ca944cb60530556505dc659fa22b
 src/main/cmd/openapi/core.cljs	1102680e95de835b90931b13fe16fe28
 src/main/cmd/openapi/openapi.cljc	a61d07cfbaf7cb7f81b53c33a24778b1
 src/main/cmd/server/config.cljs	3db65a024f0c30361b6910ca9f4aabea
@@ -12,7 +12,7 @@ src/main/domain/community.cljc	c4c478b551daf04454af66383f4a47e3
 src/main/domain/community/event.cljc	350f41e0e7a9171c0610d5ea2e1a6f88
 src/main/domain/community/event/comment.cljc	6dc729fae6e8d9d7dfa4e6ea88bfe804
 src/main/domain/community/member.cljc	4c33d93a3c02c2333163c869076fc9f7
-src/main/domain/mock.cljs	52e034d52e77a1138050e288a98c818a
+src/main/domain/mock.cljs	8cac20ca4b4ca66fc2cc66157b10a174
 src/main/domain/user.cljc	3ba9656493d378079e1db101a8d60d01
 src/main/domain/util.cljc	0e2fbb6cf683825b59e3e092ab89770e
 src/main/domain/util/url.cljc	04ff058a0950309d55dc73cc0eb5819e
@@ -38,7 +38,7 @@ src/main/infrastructure/api/swagger_spec.cljc	6bda347bac03b32a81416dea90ae755c
 src/main/infrastructure/api/util.cljs	4575254af146a76945b12429d213502a
 src/main/infrastructure/sqlite3/core.cljs	9e6efd1371c1a382c00d07418a269a71
 src/main/infrastructure/sqlite3/up.cljs	54e21ebb70dc36afbe38c71b558b52d2
-src/main/infrastructure/sqlite3/util.cljs	a65988ed998e1ada7e4dd836b9b4d7d0
+src/main/infrastructure/sqlite3/util.cljs	66e12e478c6ea51d4fb05e80e687386a
 src/main/interface/gateway/sqlite3/community.cljs	02b1cbcf7fb7e93888e9315b9dd93f68
 src/main/interface/gateway/sqlite3/community_event.cljs	c9638cd2fb9ff9e3045f1cfb567f5fb6
 src/main/interface/gateway/sqlite3/community_event_comment.cljs	fb111d3301296f90352e417f3bf0a069
