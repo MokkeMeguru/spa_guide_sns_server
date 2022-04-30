@@ -13,6 +13,7 @@
     "release": "shadow-cljs release app",
     "start_release": "node -e 'require(\"./out/cmd/server/main.js\").server()'",
     "migrate": "shadow-cljs release migrate",
+    "prestart_migrate": "rm -rf db.sqlite3 && touch db.sqlite3",
     "start_migrate": "node -e 'require(\"./out/cmd/migrate/main.js\").migrate()'",
     "openapi": "shadow-cljs release openapi",
     "start_openapi": "node -e 'require(\"./out/cmd/openapi/main.js\").openapi()'"

@@ -19,8 +19,6 @@ DB をリセットしたくなったときにも同じコマンドを使って�
 
 ```sh
 npm install --production
-rm -rf db.sqlite3
-touch db.sqlite3
 npm run start_migrate
 ```
 
