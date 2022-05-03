@@ -5,12 +5,12 @@
   "src/test"]
 
  :dependencies
- [[macchiato/core "0.2.16"]
-  [com.taoensso/timbre "5.1.2"]
-  [metosin/reitit "0.5.16"]
+ [[macchiato/core "0.2.22"]
+  [com.taoensso/timbre "5.2.1"]
+  [metosin/reitit "0.5.18"]
   [metosin/spec-tools "0.10.5"]
   ^:dev [orchestra "2021.01.01-1"]
-  ^:dev [tortue/spy "2.9.0"]]
+  ^:dev [tortue/spy "2.13.0"]]
 
  :builds
  {:node-test

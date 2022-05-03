@@ -33,4 +33,13 @@ debug-release: src
 debug-openapi: src
 	npm run openapi
 	npm run start_openapi
+
+.PHONY: check-upgrade-npm
+check-upgrade-npm:
+	npm install -g npm-check-updates
+	ncu
+
+.PHONY: check-upgrade-clj
+check-upgrade-clj:
+	clojure -Sdeps '{:deps {antq/antq {:mvn/version "RELEASE"}}}' -M -m antq.core
 # end
