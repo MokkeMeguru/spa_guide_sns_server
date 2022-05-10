@@ -1,4 +1,4 @@
-# SPA Guide Server
+# SPA Guide Server v1.0.1
 
 SPA チュートリアルで用いる API サーバです。
 
